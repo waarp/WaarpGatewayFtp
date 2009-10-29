@@ -26,6 +26,8 @@ import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply500Exception;
 import goldengate.common.command.exception.Reply501Exception;
+import goldengate.common.logging.GgInternalLogger;
+import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
 
 /**
@@ -36,6 +38,11 @@ import goldengate.ftp.core.command.AbstractCommand;
  *
  */
 public class AUTHUPDATE extends AbstractCommand {
+    /**
+     * Internal Logger
+     */
+    private static final GgInternalLogger logger = GgInternalLoggerFactory
+            .getLogger(AUTHUPDATE.class);
 
     /* (non-Javadoc)
      * @see goldengate.common.command.CommandInterface#exec()
@@ -60,6 +67,7 @@ public class AUTHUPDATE extends AbstractCommand {
         if (! ((FileBasedConfiguration) getConfiguration()).initializeAuthent(filename)) {
             throw new Reply501Exception("Filename given as parameter is not correct");
         }
+        logger.warn("Authentication was updated from "+filename);
         getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
             "Authentication is updated");
     }
