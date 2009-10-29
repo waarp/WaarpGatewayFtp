@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<document>
+	<properties>
+		<title>GoldenGate Ftp Exec</title>
+		<author email="fredbregier@free.fr">Frederic Bregier</author>
+	</properties>
+	<body>
+		<release version="0.9.0" date="2009-10-27" description="First release">
+			<action dev="Frederic Bregier" type="add">First public version</action>
+		</release>
+	</body>
+</document>
