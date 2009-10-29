@@ -28,13 +28,16 @@ import goldengate.common.command.exception.Reply550Exception;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.file.FtpFile;
+import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
+import goldengate.ftp.exec.config.AUTHUPDATE;
 import goldengate.ftp.exec.exec.Executor;
 import goldengate.ftp.exec.file.FileBasedAuth;
 import goldengate.ftp.exec.file.FileBasedDir;
@@ -230,5 +233,36 @@ public class ExecBusinessHandler extends BusinessHandler {
             throw new Reply502Exception("OPTS not implemented for " + args[0]);
         }
         throw new Reply502Exception("OPTS not implemented");
+    }
+
+    /* (non-Javadoc)
+     * @see goldengate.ftp.core.control.BusinessHandler#getSpecializedSiteCommand(goldengate.ftp.core.session.FtpSession, java.lang.String)
+     */
+    @Override
+    public AbstractCommand getSpecializedSiteCommand(FtpSession session,
+            String line) {
+        String newline = line;
+        if (newline == null) {
+            return null;
+        }
+        String command = null;
+        String arg = null;
+        if (newline.indexOf(' ') == -1) {
+            command = newline;
+            arg = null;
+        } else {
+            command = newline.substring(0, newline.indexOf(' '));
+            arg = newline.substring(newline.indexOf(' ') + 1);
+            if (arg.length() == 0) {
+                arg = null;
+            }
+        }
+        String COMMAND = command.toUpperCase();
+        if (! COMMAND.equals("AUTHUPDATE")) {
+            return null;
+        }
+        AbstractCommand abstractCommand = new AUTHUPDATE();
+        abstractCommand.setArgs(session, COMMAND, arg, FtpCommandCode.SITE);
+        return abstractCommand;
     }
 }

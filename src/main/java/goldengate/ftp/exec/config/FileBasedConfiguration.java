@@ -217,7 +217,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * File containing the authentications
      */
-    private String authenticationFile;
+    public String authenticationFile;
 
     /**
      * @param classtype
@@ -410,25 +410,26 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         authenticationFile = node.getText();
         document = null;
-        return initializeAuthent();
+        return initializeAuthent(authenticationFile);
     }
     /**
      * Initialize Authentication from current authenticationFile
-     * @return
+     * @param filename the filename from which authentication will be loaded
+     * @return True if OK
      */
     @SuppressWarnings("unchecked")
-    public boolean initializeAuthent() {
+    public boolean initializeAuthent(String filename) {
         Document document = null;
         try {
-            document = new SAXReader().read(authenticationFile);
+            document = new SAXReader().read(filename);
         } catch (DocumentException e) {
             logger.error("Unable to read the XML Authentication file: " +
-                    authenticationFile, e);
+                    filename, e);
             return false;
         }
         if (document == null) {
             logger.error("Unable to read the XML Authentication file: " +
-                    authenticationFile);
+                    filename);
             return false;
         }
         List<Node> list = document.selectNodes(XML_AUTHENTICATION_BASED);
@@ -475,9 +476,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
     /**
      * Export the Authentication to the original files
+     * @param filename the filename where the authentication will be exported
      * @return True if successful
      */
-    public boolean saveAuthenticationFile() {
+    public boolean saveAuthenticationFile(String filename) {
         Document document = DocumentHelper.createDocument();
         Element root = document.addElement(XML_AUTHENTBASE_BASED);
         for (SimpleAuth auth : authentications.values()) {
@@ -493,15 +495,15 @@ public class FileBasedConfiguration extends FtpConfiguration {
         format.setEncoding("ISO-8859-1");
         XMLWriter writer = null;
         try {
-            writer = new XMLWriter(new FileWriter(authenticationFile), format);
+            writer = new XMLWriter(new FileWriter(filename), format);
         } catch (IOException e) {
-            logger.error("Cannot open for write file: "+authenticationFile+" since {}", e.getMessage());
+            logger.error("Cannot open for write file: "+filename+" since {}", e.getMessage());
             return false;
         }
         try {
             writer.write(document);
         } catch (IOException e) {
-            logger.error("Cannot write to file: "+authenticationFile+" since {}", e.getMessage());
+            logger.error("Cannot write to file: "+filename+" since {}", e.getMessage());
             return false;
         }
         try {
