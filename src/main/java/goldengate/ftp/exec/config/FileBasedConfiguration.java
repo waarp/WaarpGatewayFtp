@@ -36,6 +36,7 @@ import goldengate.ftp.exec.exec.Executor;
 import goldengate.ftp.exec.file.SimpleAuth;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
@@ -43,8 +44,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 import org.dom4j.Node;
+import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
+import org.dom4j.io.XMLWriter;
 import org.jboss.netty.handler.traffic.AbstractTrafficShapingHandler;
 
 /**
@@ -161,32 +166,43 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * Authentication
      */
-    private static final String XML_AUTHENTIFICATION_FILE = "/config/authentfile";
+    private static final String XML_AUTHENTICATION_FILE = "/config/authentfile";
 
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTIFICATION_BASED = "/authent/entry";
+    private static final String XML_AUTHENTBASE_BASED = "authent";
 
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTIFICATION_USER = "user";
+    private static final String XML_AUTHENTENTRY_BASED = "entry";
 
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTIFICATION_PASSWD = "passwd";
+    private static final String XML_AUTHENTICATION_BASED =
+        "/"+XML_AUTHENTBASE_BASED+"/"+XML_AUTHENTENTRY_BASED;
 
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTIFICATION_ACCOUNT = "account";
+    private static final String XML_AUTHENTICATION_USER = "user";
 
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTIFICATION_ADMIN = "admin";
+    private static final String XML_AUTHENTICATION_PASSWD = "passwd";
+
+    /**
+     * Authentication Fields
+     */
+    private static final String XML_AUTHENTICATION_ACCOUNT = "account";
+
+    /**
+     * Authentication Fields
+     */
+    private static final String XML_AUTHENTICATION_ADMIN = "admin";
 
     /**
      * RANGE of PORT for Passive Mode
@@ -197,6 +213,11 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * All authentications
      */
     private final ConcurrentHashMap<String, SimpleAuth> authentications = new ConcurrentHashMap<String, SimpleAuth>();
+
+    /**
+     * File containing the authentications
+     */
+    private String authenticationFile;
 
     /**
      * @param classtype
@@ -221,7 +242,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * @param filename
      * @return True if OK
      */
-    @SuppressWarnings("unchecked")
     public boolean setConfigurationFromXml(String filename) {
         Document document = null;
         // Open config file
@@ -235,7 +255,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             logger.error("Unable to read the XML Config file: " + filename);
             return false;
         }
-        Node nodebase, node = null;
+        Node node = null;
         node = document.selectSingleNode(XML_SERVER_PASSWD);
         if (node == null) {
             logger.error("Unable to find Password in Config file: " + filename);
@@ -382,47 +402,56 @@ public class FileBasedConfiguration extends FtpConfiguration {
         Executor.initializeExecutor(retrieve, retrievedelay, store, storedelay);
         // We use Apache Commons IO
         FilesystemBasedDirJdkAbstract.ueApacheCommonsIo = true;
-        node = document.selectSingleNode(XML_AUTHENTIFICATION_FILE);
+        node = document.selectSingleNode(XML_AUTHENTICATION_FILE);
         if (node == null) {
             logger.error("Unable to find Authentication file in Config file: " +
                     filename);
             return false;
         }
-        String fileauthent = node.getText();
+        authenticationFile = node.getText();
         document = null;
+        return initializeAuthent();
+    }
+    /**
+     * Initialize Authentication from current authenticationFile
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public boolean initializeAuthent() {
+        Document document = null;
         try {
-            document = new SAXReader().read(fileauthent);
+            document = new SAXReader().read(authenticationFile);
         } catch (DocumentException e) {
             logger.error("Unable to read the XML Authentication file: " +
-                    fileauthent, e);
+                    authenticationFile, e);
             return false;
         }
         if (document == null) {
             logger.error("Unable to read the XML Authentication file: " +
-                    fileauthent);
+                    authenticationFile);
             return false;
         }
-        List<Node> list = document.selectNodes(XML_AUTHENTIFICATION_BASED);
+        List<Node> list = document.selectNodes(XML_AUTHENTICATION_BASED);
         Iterator<Node> iterator = list.iterator();
         while (iterator.hasNext()) {
-            nodebase = iterator.next();
-            node = nodebase.selectSingleNode(XML_AUTHENTIFICATION_USER);
+            Node nodebase = iterator.next();
+            Node node = nodebase.selectSingleNode(XML_AUTHENTICATION_USER);
             if (node == null) {
                 continue;
             }
             String user = node.getText();
-            node = nodebase.selectSingleNode(XML_AUTHENTIFICATION_PASSWD);
+            node = nodebase.selectSingleNode(XML_AUTHENTICATION_PASSWD);
             if (node == null) {
                 continue;
             }
             String userpasswd = node.getText();
-            node = nodebase.selectSingleNode(XML_AUTHENTIFICATION_ADMIN);
+            node = nodebase.selectSingleNode(XML_AUTHENTICATION_ADMIN);
             boolean isAdmin = false;
             if (node != null) {
                 isAdmin = node.getText().equals("1")? true : false;
             }
             List<Node> listaccount = nodebase
-                    .selectNodes(XML_AUTHENTIFICATION_ACCOUNT);
+                    .selectNodes(XML_AUTHENTICATION_ACCOUNT);
             String[] account = null;
             if (!listaccount.isEmpty()) {
                 account = new String[listaccount.size()];
@@ -432,6 +461,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
                     node = iteratoraccount.next();
                     account[i] = node.getText();
                     // logger.debug("User: {} Acct: {}", user, account[i]);
+                    File directory = new File(getBaseDirectory()+"/"+user+"/"+account[i]);
+                    directory.mkdirs();
                     i ++;
                 }
             }
@@ -442,7 +473,43 @@ public class FileBasedConfiguration extends FtpConfiguration {
         document = null;
         return true;
     }
-
+    /**
+     * Export the Authentication to the original files
+     * @return True if successful
+     */
+    public boolean saveAuthenticationFile() {
+        Document document = DocumentHelper.createDocument();
+        Element root = document.addElement(XML_AUTHENTBASE_BASED);
+        for (SimpleAuth auth : authentications.values()) {
+            Element entry = root.addElement(XML_AUTHENTENTRY_BASED);
+            entry.addElement(XML_AUTHENTICATION_USER, auth.user);
+            entry.addElement(XML_AUTHENTICATION_PASSWD, auth.password);
+            entry.addElement(XML_AUTHENTICATION_ADMIN, auth.isAdmin ? "1" : "0");
+            for (String acct : auth.accounts) {
+                entry.addElement(XML_AUTHENTICATION_ACCOUNT, acct);
+            }
+        }
+        OutputFormat format = OutputFormat.createPrettyPrint();
+        format.setEncoding("ISO-8859-1");
+        XMLWriter writer = null;
+        try {
+            writer = new XMLWriter(new FileWriter(authenticationFile), format);
+        } catch (IOException e) {
+            logger.error("Cannot open for write file: "+authenticationFile+" since {}", e.getMessage());
+            return false;
+        }
+        try {
+            writer.write(document);
+        } catch (IOException e) {
+            logger.error("Cannot write to file: "+authenticationFile+" since {}", e.getMessage());
+            return false;
+        }
+        try {
+            writer.close();
+        } catch (IOException e) {
+        }
+        return true;
+    }
     /**
      * @param user
      * @return the SimpleAuth if any for this user

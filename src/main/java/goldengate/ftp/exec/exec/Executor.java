@@ -25,6 +25,7 @@ import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.config.FtpInternalConfiguration;
 
+import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.exec.CommandLine;
@@ -82,7 +83,8 @@ public class Executor {
 
     /**
      *
-     * @param args containing in that order "User Account BaseDir FilePath(relative to BaseDir) Command"
+     * @param args containing in that order
+     *          "User Account BaseDir FilePath(relative to BaseDir) Command"
      * @param isStore True for a STORE like operation, else False
      * @param futureCompletion
      */
@@ -101,6 +103,15 @@ public class Executor {
         } else {
             command = retrieveCMD.split(" ");
             delay = retrieveDelay;
+        }
+        File exec = new File(command[0]);
+        if (exec.isAbsolute()) {
+            if (! exec.canExecute()) {
+                logger.error("Exec command is not executable: " + command[0]+" "+
+                        args[0]+":"+args[1]+":"+args[3]+":"+args[4]);
+                futureCompletion.cancel();
+                return;
+            }
         }
         CommandLine commandLine = new CommandLine(command[0]);
         for (int i = 1; i < command.length; i ++) {
