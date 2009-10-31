@@ -61,6 +61,13 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public void afterTransferDone(FtpTransfer transfer) {
+        // if Admin, do nothing
+        if (getFtpSession() == null || getFtpSession().getAuth() == null) {
+            return;
+        }
+        if (getFtpSession().getAuth().isAdmin()) {
+            return;
+        }
         // if STOR like: get file (can be STOU) and execute external action
         switch (transfer.getCommand()) {
             case RETR:
@@ -132,11 +139,18 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public void afterRunCommandOk() throws CommandAbstractException {
-        // nothing to do
+        // nothing to do since it is only Command and not transfer
     }
 
     @Override
     public void beforeRunCommand() throws CommandAbstractException {
+        // if Admin, do nothing
+        if (getFtpSession() == null || getFtpSession().getAuth() == null) {
+            return;
+        }
+        if (getFtpSession().getAuth().isAdmin()) {
+            return;
+        }
         FtpCommandCode code = getFtpSession().getCurrentCommand().getCode();
         switch (code) {
             case APPE:
@@ -209,7 +223,7 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public String getHelpMessage(String arg) {
-        return "This FTP server is only intend as a Gateway.\n"
+        return "This FTP server is only intend as a Gateway. RETRieve actions may be unallowed.\n"
                 + "This FTP server refers to RFC 959, 775, 2389, 2428, 3659 and supports XCRC, XMD5 and XSHA1 commands.\n"
                 + "XCRC, XMD5 and XSHA1 take a simple filename as argument and return \"250 digest-value is the digest of filename\".";
     }
@@ -219,6 +233,10 @@ public class ExecBusinessHandler extends BusinessHandler {
         StringBuilder builder = new StringBuilder("Extensions supported:");
         builder.append('\n');
         builder.append(getDefaultFeatMessage());
+        builder.append('\n');
+        builder.append(FtpCommandCode.SITE.name());
+        builder.append(' ');
+        builder.append("AUTHUPDATE");
         builder.append("\nEnd");
         return builder.toString();
     }
@@ -241,6 +259,12 @@ public class ExecBusinessHandler extends BusinessHandler {
     @Override
     public AbstractCommand getSpecializedSiteCommand(FtpSession session,
             String line) {
+        if (getFtpSession() == null || getFtpSession().getAuth() == null) {
+            return null;
+        }
+        if (!session.getAuth().isAdmin()) {
+            return null;
+        }
         String newline = line;
         if (newline == null) {
             return null;

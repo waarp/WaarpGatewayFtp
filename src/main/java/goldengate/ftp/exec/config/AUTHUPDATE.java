@@ -32,7 +32,10 @@ import goldengate.ftp.core.command.AbstractCommand;
 
 /**
  * AUTHENTUPDATE command: implements the command that will try to update the authentications
- * from the file given as second argument or the original one if no argument is given.
+ * from the file given as argument or the original one if no argument is given.<br>
+ * Two optional arguments exist:<br>
+ * - PURGE: empty first the current authentications before applying the update<br>
+ * - SAVE: save the final authentications on the original name given at startup.<br>
  *
  * @author Frederic Bregier
  *
@@ -54,18 +57,35 @@ public class AUTHUPDATE extends AbstractCommand {
             throw new Reply500Exception("Command Not Allowed");
         }
         String filename = null;
+        boolean purge = false;
+        boolean write = false;
         if (!hasArg()) {
             filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
         } else {
-            String[] limits = getArgs();
-            filename = limits[0];
+            String[] authents = getArgs();
+            for (int i = 0; i < authents.length; i++) {
+                if (authents[i].equalsIgnoreCase("PURGE")) {
+                    purge = true;
+                } else if (authents[i].equalsIgnoreCase("SAVE")) {
+                    write = true;
+                } else if (filename == null) {
+                    filename = authents[i];
+                }
+            }
             File file = new File(filename);
             if (! file.canRead()) {
-                throw new Reply501Exception("Filename given as parameter is not found");
+                throw new Reply501Exception("Filename given as parameter is not found: "+filename);
             }
         }
-        if (! ((FileBasedConfiguration) getConfiguration()).initializeAuthent(filename)) {
+        if (! ((FileBasedConfiguration) getConfiguration()).initializeAuthent(filename, purge)) {
             throw new Reply501Exception("Filename given as parameter is not correct");
+        }
+        if (write) {
+            if (! ((FileBasedConfiguration) getConfiguration()).
+                    saveAuthenticationFile(
+                            ((FileBasedConfiguration) getConfiguration()).authenticationFile)) {
+                throw new Reply501Exception("Update is done but Write operation is not correct");
+            }
         }
         logger.warn("Authentication was updated from "+filename);
         getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,

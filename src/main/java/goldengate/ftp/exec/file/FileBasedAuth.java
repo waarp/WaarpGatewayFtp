@@ -23,7 +23,6 @@ package goldengate.ftp.exec.file;
 import goldengate.common.command.NextCommandReply;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.Reply421Exception;
-import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply530Exception;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -113,13 +112,6 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
             throw new Reply530Exception("PASS needs a USER first");
         }
         if (currentAuth.isPasswordValid(password)) {
-            if (user.equals("test")) {
-                // logger.debug("User test");
-                try {
-                    return setAccount("test");
-                } catch (Reply502Exception e) {
-                }
-            }
             return new NextCommandReply(FtpCommandCode.ACCT,
                     ReplyCode.REPLY_332_NEED_ACCOUNT_FOR_LOGIN, null);
         }
@@ -180,6 +172,8 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
     }
 
     public boolean isAdmin() {
+        if (currentAuth == null)
+            return false;
         return currentAuth.isAdmin;
     }
 }

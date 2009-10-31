@@ -50,6 +50,7 @@ import org.dom4j.Node;
 import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
+import org.dom4j.tree.DefaultElement;
 import org.jboss.netty.handler.traffic.AbstractTrafficShapingHandler;
 
 /**
@@ -212,7 +213,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * All authentications
      */
-    private final ConcurrentHashMap<String, SimpleAuth> authentications = new ConcurrentHashMap<String, SimpleAuth>();
+    private ConcurrentHashMap<String, SimpleAuth> authentications = new ConcurrentHashMap<String, SimpleAuth>();
 
     /**
      * File containing the authentications
@@ -410,15 +411,16 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         authenticationFile = node.getText();
         document = null;
-        return initializeAuthent(authenticationFile);
+        return initializeAuthent(authenticationFile, false);
     }
     /**
      * Initialize Authentication from current authenticationFile
      * @param filename the filename from which authentication will be loaded
+     * @param purge if True, the current authentications are totally replaced by the new ones
      * @return True if OK
      */
     @SuppressWarnings("unchecked")
-    public boolean initializeAuthent(String filename) {
+    public boolean initializeAuthent(String filename, boolean purge) {
         Document document = null;
         try {
             document = new SAXReader().read(filename);
@@ -434,6 +436,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         List<Node> list = document.selectNodes(XML_AUTHENTICATION_BASED);
         Iterator<Node> iterator = list.iterator();
+        ConcurrentHashMap<String, SimpleAuth> newAuthents =
+            new ConcurrentHashMap<String, SimpleAuth>();
         while (iterator.hasNext()) {
             Node nodebase = iterator.next();
             Node node = nodebase.selectSingleNode(XML_AUTHENTICATION_USER);
@@ -469,10 +473,29 @@ public class FileBasedConfiguration extends FtpConfiguration {
             }
             SimpleAuth auth = new SimpleAuth(user, userpasswd, account);
             auth.setAdmin(isAdmin);
-            authentications.put(user, auth);
+            newAuthents.put(user, auth);
+        }
+        if (purge) {
+            ConcurrentHashMap<String, SimpleAuth> previousOne = authentications;
+            authentications = newAuthents;
+            previousOne.clear();
+        } else {
+            authentications.putAll(newAuthents);
+            newAuthents.clear();
         }
         document = null;
         return true;
+    }
+    /**
+     * Construct a new Element with value
+     * @param name
+     * @param value
+     * @return the new Element
+     */
+    private static Element newElement(String name, String value) {
+        Element node = new DefaultElement(name);
+        node.addText(value);
+        return node;
     }
     /**
      * Export the Authentication to the original files
@@ -484,11 +507,11 @@ public class FileBasedConfiguration extends FtpConfiguration {
         Element root = document.addElement(XML_AUTHENTBASE_BASED);
         for (SimpleAuth auth : authentications.values()) {
             Element entry = root.addElement(XML_AUTHENTENTRY_BASED);
-            entry.addElement(XML_AUTHENTICATION_USER, auth.user);
-            entry.addElement(XML_AUTHENTICATION_PASSWD, auth.password);
-            entry.addElement(XML_AUTHENTICATION_ADMIN, auth.isAdmin ? "1" : "0");
+            entry.add(newElement(XML_AUTHENTICATION_USER, auth.user));
+            entry.add(newElement(XML_AUTHENTICATION_PASSWD, auth.password));
+            entry.add(newElement(XML_AUTHENTICATION_ADMIN, auth.isAdmin ? "1" : "0"));
             for (String acct : auth.accounts) {
-                entry.addElement(XML_AUTHENTICATION_ACCOUNT, acct);
+                entry.add(newElement(XML_AUTHENTICATION_ACCOUNT, acct));
             }
         }
         OutputFormat format = OutputFormat.createPrettyPrint();

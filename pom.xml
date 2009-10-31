@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtpExec</artifactId>
   <name>GoldenGate Ftp Exec</name>
-  <version>0.9.0</version>
+  <version>0.9.1</version>
   <description>Full GoldenGate FTP Server with Exec support as GoldenGate Project:
   this is an extension of GoldenGate FTP server with execution support at the end of
   a transfer.</description>
