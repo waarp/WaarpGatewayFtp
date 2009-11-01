@@ -35,7 +35,9 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 
 /**
- * Executor class.
+ * Executor class. If the command starts with "REFUSED", the command will be refused at execution.
+ * If "REFUSED" is set, the command "RETR" or "STOR" like operations will be stopped at starting
+ * of command.
  * @author Frederic Bregier
  *
  */
@@ -69,14 +71,32 @@ public class Executor {
      * @param store
      * @param storDelay
      */
-    public static final void initializeExecutor(String retrieve, long retrDelay,
+    public static void initializeExecutor(String retrieve, long retrDelay,
             String store, long storDelay) {
-        retrieveCMD= retrieve;
+        retrieveCMD = retrieve;
         retrieveDelay = retrDelay;
         storeCMD = store;
         storeDelay = storDelay;
     }
-
+    /**
+     * Check if the given operation is allowed
+     * @param isStore
+     * @return True if allowed, else False
+     */
+    public static boolean isValidOperation(boolean isStore) {
+        String command;
+        if (isStore) {
+            command = storeCMD;
+        } else {
+            command = retrieveCMD;
+        }
+        if (command.startsWith("REFUSED")) {
+            logger.error((isStore?"STORe like operations ":"RETRieve operations ")+
+                    "REFUSED by exec: " + command);
+            return false;
+        }
+        return true;
+    }
     private final String [] args;
     private final GgFuture futureCompletion;
     private final boolean isStore;
@@ -95,14 +115,23 @@ public class Executor {
     }
 
     public void run() {
+        String fullCommand;
         String []command;
         long delay;
         if (isStore) {
+            fullCommand = storeCMD;
             command = storeCMD.split(" ");
             delay = storeDelay;
         } else {
+            fullCommand = retrieveCMD;
             command = retrieveCMD.split(" ");
             delay = retrieveDelay;
+        }
+        if (command[0].equals("REFUSED")) {
+            logger.error((isStore?"STORe like operations ":"RETRieve operations ")+
+                    "REFUSED by exec: " + fullCommand);
+            futureCompletion.cancel();
+            return;
         }
         File exec = new File(command[0]);
         if (exec.isAbsolute()) {

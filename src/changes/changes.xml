@@ -5,9 +5,10 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="0.9.1" date="2009-10-31" description="Small Fixes">
+		<release version="0.9.1" date="2009-11-01" description="Small Fixes">
 			<action dev="Frederic Bregier" type="fix">Fix authentication by removing user "test"</action>
 			<action dev="Frederic Bregier" type="fix">Prevent actions when Admin user</action>
+			<action dev="Frederic Bregier" type="add">Add REFUSED in possible actions</action>
 		</release>
 		<release version="0.9.0" date="2009-10-27" description="First release">
 			<action dev="Frederic Bregier" type="add">First public version</action>

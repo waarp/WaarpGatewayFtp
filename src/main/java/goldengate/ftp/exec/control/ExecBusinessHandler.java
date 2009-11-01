@@ -24,6 +24,7 @@ import java.io.File;
 
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply502Exception;
+import goldengate.common.command.exception.Reply504Exception;
 import goldengate.common.command.exception.Reply550Exception;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
@@ -156,9 +157,15 @@ public class ExecBusinessHandler extends BusinessHandler {
             case APPE:
             case STOR:
             case STOU:
+                if (!Executor.isValidOperation(true)) {
+                    throw new Reply504Exception("STORe like operations are not allowed");
+                }
                 // nothing to do now
                 break;
             case RETR:
+                if (!Executor.isValidOperation(false)) {
+                    throw new Reply504Exception("RETRieve like operations are not allowed");
+                }
                 // execute the external retrieve command before the execution of RETR
                 GgFuture futureCompletion = new GgFuture(true);
                 String []args = new String[5];

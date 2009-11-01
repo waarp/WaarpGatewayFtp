@@ -374,15 +374,17 @@ public class FileBasedConfiguration extends FtpConfiguration {
             return false;
         }
         String retrieve = node.getText();
-        File test = new File(retrieve);
-        if (! test.canExecute()) {
-            logger.error("Unable to find an executable Retrieve Command in Config file: " + filename);
-            return false;
-        }
-        node = document.selectSingleNode(XML_DELAYRETRIEVE_COMMAND);
         int retrievedelay = 0;
-        if (node != null) {
-            retrievedelay = Integer.parseInt(node.getText());
+        if (!retrieve.startsWith("REFUSED")) {
+            File test = new File(retrieve);
+            if (! test.canExecute()) {
+                logger.error("Unable to find an executable Retrieve Command in Config file: " + filename);
+                return false;
+            }
+            node = document.selectSingleNode(XML_DELAYRETRIEVE_COMMAND);
+            if (node != null) {
+                retrievedelay = Integer.parseInt(node.getText());
+            }
         }
         node = document.selectSingleNode(XML_STORE_COMMAND);
         if (node == null) {
@@ -390,15 +392,17 @@ public class FileBasedConfiguration extends FtpConfiguration {
             return false;
         }
         String store = node.getText();
-        test = new File(store);
-        if (! test.canExecute()) {
-            logger.error("Unable to find an executable Store Command in Config file: " + filename);
-            return false;
-        }
-        node = document.selectSingleNode(XML_DELAYSTORE_COMMAND);
         int storedelay = 0;
-        if (node != null) {
-            storedelay = Integer.parseInt(node.getText());
+        if (!store.startsWith("REFUSED")) {
+            File test = new File(store);
+            if (! test.canExecute()) {
+                logger.error("Unable to find an executable Store Command in Config file: " + filename);
+                return false;
+            }
+            node = document.selectSingleNode(XML_DELAYSTORE_COMMAND);
+            if (node != null) {
+                storedelay = Integer.parseInt(node.getText());
+            }
         }
         Executor.initializeExecutor(retrieve, retrievedelay, store, storedelay);
         // We use Apache Commons IO
