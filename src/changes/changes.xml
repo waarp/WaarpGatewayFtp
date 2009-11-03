@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="0.9.2" date="2009-11-02" description="Use new version of File from Common">
+			<action dev="Frederic Bregier" type="fix">Use new version of File from Common</action>
+		</release>
 		<release version="0.9.1" date="2009-11-01" description="Small Fixes">
 			<action dev="Frederic Bregier" type="fix">Fix authentication by removing user "test"</action>
 			<action dev="Frederic Bregier" type="fix">Prevent actions when Admin user</action>

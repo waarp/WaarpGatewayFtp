@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtpExec</artifactId>
   <name>GoldenGate Ftp Exec</name>
-  <version>0.9.1</version>
+  <version>0.9.2</version>
   <description>Full GoldenGate FTP Server with Exec support as GoldenGate Project:
   this is an extension of GoldenGate FTP server with execution support at the end of
   a transfer.</description>
@@ -177,18 +177,18 @@
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateCommon</artifactId>
-      <version>1.0.5</version>
+      <version>1.0.6</version>
       <scope>compile</scope>
     </dependency>
   	<dependency>
   		<groupId>GoldenGate</groupId>
   		<artifactId>GoldenGateFtp-Core</artifactId>
-  		<version>1.0.4</version>
+  		<version>1.0.5</version>
   	</dependency>
   	<dependency>
   		<groupId>GoldenGate</groupId>
   		<artifactId>GoldenGateFtp-Filesystem</artifactId>
-  		<version>1.0.4</version>
+  		<version>1.0.5</version>
   	</dependency>
   </dependencies>
   <properties>
