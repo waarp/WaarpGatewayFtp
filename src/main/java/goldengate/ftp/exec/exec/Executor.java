@@ -51,6 +51,7 @@ public class Executor {
      * Retrieve External Command
      */
     private static String retrieveCMD;
+    private static boolean retrieveRefused = false;
     /**
      * Retrieve Delay (0 = unlimited)
      */
@@ -59,6 +60,7 @@ public class Executor {
      * Store External Command
      */
     private static String storeCMD;
+    private static boolean storeRefused = false;
     /**
      * Store Delay (0 = unlimited)
      */
@@ -74,9 +76,17 @@ public class Executor {
     public static void initializeExecutor(String retrieve, long retrDelay,
             String store, long storDelay) {
         retrieveCMD = retrieve;
+        if (retrieveCMD.startsWith("REFUSED")) {
+            retrieveRefused = true;
+        }
         retrieveDelay = retrDelay;
         storeCMD = store;
+        if (storeCMD.startsWith("REFUSED")) {
+            storeRefused = true;
+        }
         storeDelay = storDelay;
+        logger.warn("Executor configured as [RETR: "+retrieveCMD+":"+retrieveDelay+":"+retrieveRefused+
+                "] [STOR: "+storeCMD+":"+storeDelay+":"+storeRefused+"]");
     }
     /**
      * Check if the given operation is allowed
@@ -84,15 +94,11 @@ public class Executor {
      * @return True if allowed, else False
      */
     public static boolean isValidOperation(boolean isStore) {
-        String command;
-        if (isStore) {
-            command = storeCMD;
-        } else {
-            command = retrieveCMD;
-        }
-        if (command.startsWith("REFUSED")) {
-            logger.error((isStore?"STORe like operations ":"RETRieve operations ")+
-                    "REFUSED by exec: " + command);
+        if (isStore && storeRefused) {
+            logger.info("STORe like operations REFUSED");
+            return false;
+        } else if ((!isStore) && retrieveRefused) {
+            logger.info("RETRieve operations REFUSED");
             return false;
         }
         return true;
@@ -115,23 +121,24 @@ public class Executor {
     }
 
     public void run() {
-        String fullCommand;
         String []command;
         long delay;
         if (isStore) {
-            fullCommand = storeCMD;
+            if (storeRefused)  {
+                logger.error("STORe like operation REFUSED");
+                futureCompletion.cancel();
+                return;
+            }
             command = storeCMD.split(" ");
             delay = storeDelay;
         } else {
-            fullCommand = retrieveCMD;
+            if (retrieveRefused)  {
+                logger.error("RETRieve operation REFUSED");
+                futureCompletion.cancel();
+                return;
+            }
             command = retrieveCMD.split(" ");
             delay = retrieveDelay;
-        }
-        if (command[0].equals("REFUSED")) {
-            logger.error((isStore?"STORe like operations ":"RETRieve operations ")+
-                    "REFUSED by exec: " + fullCommand);
-            futureCompletion.cancel();
-            return;
         }
         File exec = new File(command[0]);
         if (exec.isAbsolute()) {

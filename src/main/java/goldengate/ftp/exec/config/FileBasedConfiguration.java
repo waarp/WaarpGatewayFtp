@@ -375,7 +375,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         String retrieve = node.getText();
         int retrievedelay = 0;
-        if (!retrieve.startsWith("REFUSED")) {
+        if (retrieve.startsWith("REFUSED")) {
+            logger.info("RETRieve Command is REFUSED");
+        } else {
             File test = new File(retrieve);
             if (! test.canExecute()) {
                 logger.error("Unable to find an executable Retrieve Command in Config file: " + filename);
@@ -393,7 +395,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         String store = node.getText();
         int storedelay = 0;
-        if (!store.startsWith("REFUSED")) {
+        if (store.startsWith("REFUSED")) {
+            logger.info("STORe Command is REFUSED");
+        } else {
             File test = new File(store);
             if (! test.canExecute()) {
                 logger.error("Unable to find an executable Store Command in Config file: " + filename);
