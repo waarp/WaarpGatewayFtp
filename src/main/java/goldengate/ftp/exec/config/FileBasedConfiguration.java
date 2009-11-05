@@ -32,7 +32,7 @@ import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
-import goldengate.ftp.exec.exec.Executor;
+import goldengate.ftp.exec.exec.AbstractExecutor;
 import goldengate.ftp.exec.file.SimpleAuth;
 
 import java.io.File;
@@ -375,18 +375,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         String retrieve = node.getText();
         int retrievedelay = 0;
-        if (retrieve.startsWith("REFUSED")) {
-            logger.info("RETRieve Command is REFUSED");
-        } else {
-            File test = new File(retrieve);
-            if (! test.canExecute()) {
-                logger.error("Unable to find an executable Retrieve Command in Config file: " + filename);
-                return false;
-            }
-            node = document.selectSingleNode(XML_DELAYRETRIEVE_COMMAND);
-            if (node != null) {
-                retrievedelay = Integer.parseInt(node.getText());
-            }
+        node = document.selectSingleNode(XML_DELAYRETRIEVE_COMMAND);
+        if (node != null) {
+            retrievedelay = Integer.parseInt(node.getText());
         }
         node = document.selectSingleNode(XML_STORE_COMMAND);
         if (node == null) {
@@ -395,20 +386,11 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         String store = node.getText();
         int storedelay = 0;
-        if (store.startsWith("REFUSED")) {
-            logger.info("STORe Command is REFUSED");
-        } else {
-            File test = new File(store);
-            if (! test.canExecute()) {
-                logger.error("Unable to find an executable Store Command in Config file: " + filename);
-                return false;
-            }
-            node = document.selectSingleNode(XML_DELAYSTORE_COMMAND);
-            if (node != null) {
-                storedelay = Integer.parseInt(node.getText());
-            }
+        node = document.selectSingleNode(XML_DELAYSTORE_COMMAND);
+        if (node != null) {
+            storedelay = Integer.parseInt(node.getText());
         }
-        Executor.initializeExecutor(retrieve, retrievedelay, store, storedelay);
+        AbstractExecutor.initializeExecutor(retrieve, retrievedelay, store, storedelay);
         // We use Apache Commons IO
         FilesystemBasedDirJdkAbstract.ueApacheCommonsIo = true;
         node = document.selectSingleNode(XML_AUTHENTICATION_FILE);

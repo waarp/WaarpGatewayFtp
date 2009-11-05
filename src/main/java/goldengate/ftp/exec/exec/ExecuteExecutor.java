@@ -35,125 +35,53 @@ import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.PumpStreamHandler;
 
 /**
- * Executor class. If the command starts with "REFUSED", the command will be refused at execution.
- * If "REFUSED" is set, the command "RETR" or "STOR" like operations will be stopped at starting
- * of command.
+ * ExecuteExecutor class. The given argument will be executed after replacements.
+ *
+ *
+ * <br>
+ * The following replacement are done dynamically before the command is executed:<br>
+ * - #BASEPATH# is replaced by the full path for the root of FTP Directory<br>
+ * - #FILE# is replaced by the current file path relative to FTP Directory (so #BASEPATH##FILE# is the full path of the file)<br>
+ * - #USER# is replaced by the username<br>
+ * - #ACCOUNT# is replaced by the account<br>
+ * - #COMMAND# is replaced by the command issued for the file<br>
+ *
  * @author Frederic Bregier
  *
  */
-public class Executor {
+public class ExecuteExecutor extends AbstractExecutor {
     /**
      * Internal Logger
      */
     private static final GgInternalLogger logger = GgInternalLoggerFactory
-            .getLogger(Executor.class);
-    /**
-     * Retrieve External Command
-     */
-    private static String retrieveCMD;
-    private static boolean retrieveRefused = false;
-    /**
-     * Retrieve Delay (0 = unlimited)
-     */
-    private static long retrieveDelay = 0;
-    /**
-     * Store External Command
-     */
-    private static String storeCMD;
-    private static boolean storeRefused = false;
-    /**
-     * Store Delay (0 = unlimited)
-     */
-    private static long storeDelay = 0;
-
-    /**
-     * Initialize the Executor with the correct command and delay
-     * @param retrieve
-     * @param retrDelay
-     * @param store
-     * @param storDelay
-     */
-    public static void initializeExecutor(String retrieve, long retrDelay,
-            String store, long storDelay) {
-        retrieveCMD = retrieve;
-        if (retrieveCMD.startsWith("REFUSED")) {
-            retrieveRefused = true;
-        }
-        retrieveDelay = retrDelay;
-        storeCMD = store;
-        if (storeCMD.startsWith("REFUSED")) {
-            storeRefused = true;
-        }
-        storeDelay = storDelay;
-        logger.warn("Executor configured as [RETR: "+retrieveCMD+":"+retrieveDelay+":"+retrieveRefused+
-                "] [STOR: "+storeCMD+":"+storeDelay+":"+storeRefused+"]");
-    }
-    /**
-     * Check if the given operation is allowed
-     * @param isStore
-     * @return True if allowed, else False
-     */
-    public static boolean isValidOperation(boolean isStore) {
-        if (isStore && storeRefused) {
-            logger.info("STORe like operations REFUSED");
-            return false;
-        } else if ((!isStore) && retrieveRefused) {
-            logger.info("RETRieve operations REFUSED");
-            return false;
-        }
-        return true;
-    }
+            .getLogger(ExecuteExecutor.class);
     private final String [] args;
     private final GgFuture futureCompletion;
-    private final boolean isStore;
+    private final long delay;
 
     /**
      *
-     * @param args containing in that order
-     *          "User Account BaseDir FilePath(relative to BaseDir) Command"
-     * @param isStore True for a STORE like operation, else False
+     * @param command
+     * @param delay
      * @param futureCompletion
      */
-    public Executor(String []args, boolean isStore, GgFuture futureCompletion) {
-        this.args = args;
+    public ExecuteExecutor(String command, long delay, GgFuture futureCompletion) {
+        this.args = command.split(" ");
         this.futureCompletion = futureCompletion;
-        this.isStore = isStore;
+        this.delay = delay;
     }
 
     public void run() {
-        String []command;
-        long delay;
-        if (isStore) {
-            if (storeRefused)  {
-                logger.error("STORe like operation REFUSED");
-                futureCompletion.cancel();
-                return;
-            }
-            command = storeCMD.split(" ");
-            delay = storeDelay;
-        } else {
-            if (retrieveRefused)  {
-                logger.error("RETRieve operation REFUSED");
-                futureCompletion.cancel();
-                return;
-            }
-            command = retrieveCMD.split(" ");
-            delay = retrieveDelay;
-        }
-        File exec = new File(command[0]);
+        File exec = new File(args[0]);
         if (exec.isAbsolute()) {
             if (! exec.canExecute()) {
-                logger.error("Exec command is not executable: " + command[0]+" "+
-                        args[0]+":"+args[1]+":"+args[3]+":"+args[4]);
+                logger.error("Exec command is not executable: " + args[0]);
                 futureCompletion.cancel();
                 return;
             }
         }
-        CommandLine commandLine = new CommandLine(command[0]);
-        for (int i = 1; i < command.length; i ++) {
-            commandLine.addArgument(command[i]);
-        }
-        for (int i = 0; i < args.length; i ++) {
+        CommandLine commandLine = new CommandLine(args[0]);
+        for (int i = 1; i < args.length; i ++) {
             commandLine.addArgument(args[i]);
         }
         DefaultExecutor defaultExecutor = new DefaultExecutor();

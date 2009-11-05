@@ -29,6 +29,7 @@ import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.common.logging.GgSlf4JLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
+import goldengate.ftp.exec.config.R66FileBasedConfiguration;
 import goldengate.ftp.exec.control.ExecBusinessHandler;
 import goldengate.ftp.exec.data.FileSystemBasedDataBusinessHandler;
 
@@ -55,9 +56,9 @@ public class ExecGatewayFtpServer {
      * @param args
      */
     public static void main(String[] args) {
-        if (args.length != 1) {
+        if (args.length < 1) {
             System.err.println("Usage: " +
-                    ExecGatewayFtpServer.class.getName() + " <config-file>");
+                    ExecGatewayFtpServer.class.getName() + " <config-file> [<r66config-file>]");
             return;
         }
         InternalLoggerFactory.setDefaultFactory(new GgSlf4JLoggerFactory(
@@ -78,6 +79,12 @@ public class ExecGatewayFtpServer {
             FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk6());
         } else {
             FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk5());
+        }
+        if (args.length > 1) {
+            if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1])) {
+                System.err.println("Bad R66 configuration");
+                return;
+            }
         }
         // Start server.
         configuration.serverStartup();

@@ -39,7 +39,7 @@ import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.exec.config.AUTHUPDATE;
-import goldengate.ftp.exec.exec.Executor;
+import goldengate.ftp.exec.exec.AbstractExecutor;
 import goldengate.ftp.exec.file.FileBasedAuth;
 import goldengate.ftp.exec.file.FileBasedDir;
 
@@ -112,7 +112,8 @@ public class ExecBusinessHandler extends BusinessHandler {
                     return;
                 }
                 args[4] = transfer.getCommand().toString();
-                Executor executor = new Executor(args, true, futureCompletion);
+                AbstractExecutor executor =
+                    AbstractExecutor.createAbstractExecutor(args, true, futureCompletion);
                 executor.run();
                 try {
                     futureCompletion.await();
@@ -157,13 +158,13 @@ public class ExecBusinessHandler extends BusinessHandler {
             case APPE:
             case STOR:
             case STOU:
-                if (!Executor.isValidOperation(true)) {
+                if (!AbstractExecutor.isValidOperation(true)) {
                     throw new Reply504Exception("STORe like operations are not allowed");
                 }
                 // nothing to do now
                 break;
             case RETR:
-                if (!Executor.isValidOperation(false)) {
+                if (!AbstractExecutor.isValidOperation(false)) {
                     throw new Reply504Exception("RETRieve like operations are not allowed");
                 }
                 // execute the external retrieve command before the execution of RETR
@@ -176,7 +177,8 @@ public class ExecBusinessHandler extends BusinessHandler {
                 FtpFile file = getFtpSession().getDir().setFile(filename, false);
                 args[3] = file.getFile();
                 args[4] = code.toString();
-                Executor executor = new Executor(args, false, futureCompletion);
+                AbstractExecutor executor =
+                    AbstractExecutor.createAbstractExecutor(args, false, futureCompletion);
                 executor.run();
                 try {
                     futureCompletion.await();

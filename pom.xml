@@ -190,6 +190,11 @@
   		<artifactId>GoldenGateFtp-Filesystem</artifactId>
   		<version>1.0.5</version>
   	</dependency>
+  	<dependency>
+  		<groupId>GoldenGate</groupId>
+  		<artifactId>GoldenGateR66</artifactId>
+  		<version>0.9.3</version>
+  	</dependency>
   </dependencies>
   <properties>
   	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
