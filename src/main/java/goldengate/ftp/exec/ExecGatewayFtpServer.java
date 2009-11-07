@@ -32,6 +32,7 @@ import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.config.R66FileBasedConfiguration;
 import goldengate.ftp.exec.control.ExecBusinessHandler;
 import goldengate.ftp.exec.data.FileSystemBasedDataBusinessHandler;
+import goldengate.ftp.exec.exec.AbstractExecutor;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 
@@ -71,7 +72,7 @@ public class ExecGatewayFtpServer {
                 FileSystemBasedDataBusinessHandler.class,
                 new FilesystemBasedFileParameterImpl());
         if (!configuration.setConfigurationFromXml(config)) {
-            System.err.println("Bad configuration");
+            System.err.println("Bad main configuration");
             return;
         }
         // Init according JDK
@@ -80,9 +81,16 @@ public class ExecGatewayFtpServer {
         } else {
             FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk5());
         }
-        if (args.length > 1) {
-            if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1])) {
-                System.err.println("Bad R66 configuration");
+        if (AbstractExecutor.useDatabase) {
+            // Use R66 module
+            if (args.length > 1) {
+                if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1])) {
+                    System.err.println("Bad R66 configuration");
+                    return;
+                }
+            } else {
+                // Cannot get R66 functional
+                System.err.println("No R66PrepareTransfer configuration file: stop");
                 return;
             }
         }

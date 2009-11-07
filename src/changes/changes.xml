@@ -5,6 +5,12 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.0" date="2009-11-06" description="Production Release">
+			<action dev="Frederic Bregier" type="fix">Fix Executor commands</action>
+			<action dev="Frederic Bregier" type="fix">Fix Shutdown in severe cases</action>
+			<action dev="Frederic Bregier" type="fix">Fix logger output</action>
+			<action dev="Frederic Bregier" type="add">Add Execute and R66PreparedTransfer commands</action>
+		</release>
 		<release version="0.9.2" date="2009-11-02" description="Use new version of File from Common">
 			<action dev="Frederic Bregier" type="fix">Use new version of File from Common</action>
 		</release>

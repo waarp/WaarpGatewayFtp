@@ -76,7 +76,9 @@ public class ExecuteExecutor extends AbstractExecutor {
         if (exec.isAbsolute()) {
             if (! exec.canExecute()) {
                 logger.error("Exec command is not executable: " + args[0]);
-                futureCompletion.cancel();
+                ExecutorException exc =
+                    new ExecutorException("Exec command is not executable: " + args[0]);
+                futureCompletion.setFailure(exc);
                 return;
             }
         }
@@ -109,31 +111,44 @@ public class ExecuteExecutor extends AbstractExecutor {
                     status = defaultExecutor.execute(commandLine);
                 } catch (ExecuteException e2) {
                     pumpStreamHandler.stop();
-                    logger.error("System Exception: " + e.getMessage() +
-                            " Exec cannot execute command " + commandLine.toString());
-                    futureCompletion.setFailure(e);
+                    logger.debug("System Exception: " + e.getMessage() +
+                            "\n    Exec cannot execute command " + commandLine.toString());
+                    ExecutorException exc =
+                        new ExecutorException("System Exception: " + e.getMessage() +
+                                "\n    Exec cannot execute command " + commandLine.toString(),
+                                e);
+                    futureCompletion.setFailure(exc);
                     return;
                 } catch (IOException e2) {
                     pumpStreamHandler.stop();
-                    logger.error("Exception: " + e.getMessage() +
-                            " Exec in error with " + commandLine.toString());
-                    futureCompletion.setFailure(e);
+                    logger.debug("Exception: " + e.getMessage() +
+                            "\n    Exec in error with " + commandLine.toString());
+                    ExecutorException exc =
+                        new ExecutorException("Exception: " + e.getMessage() +
+                                "\n    Exec in error with " + commandLine.toString(), e);
+                    futureCompletion.setFailure(exc);
                     return;
                 }
                 logger.info("System Exception: " + e.getMessage() +
                         " but finally get the command executed " + commandLine.toString());
             } else {
                 pumpStreamHandler.stop();
-                logger.error("Exception: " + e.getMessage() +
-                    " Exec in error with " + commandLine.toString());
-                futureCompletion.setFailure(e);
+                logger.debug("Exception: " + e.getMessage() +
+                    "\n    Exec in error with " + commandLine.toString());
+                ExecutorException exc =
+                    new ExecutorException("Exception: " + e.getMessage() +
+                            "\n    Exec in error with " + commandLine.toString(), e);
+                futureCompletion.setFailure(exc);
                 return;
             }
         } catch (IOException e) {
             pumpStreamHandler.stop();
-            logger.error("Exception: " + e.getMessage() +
-                    " Exec in error with " + commandLine.toString());
-            futureCompletion.setFailure(e);
+            logger.debug("Exception: " + e.getMessage() +
+                    "\n    Exec in error with " + commandLine.toString());
+            ExecutorException exc =
+                new ExecutorException("Exception: " + e.getMessage() +
+                        "\n    Exec in error with " + commandLine.toString(), e);
+            futureCompletion.setFailure(exc);
             return;
         }
         pumpStreamHandler.stop();
@@ -147,12 +162,16 @@ public class ExecuteExecutor extends AbstractExecutor {
             futureCompletion.setSuccess();
             logger.info("Exec OK with {}", commandLine);
         } else if (status == 1) {
-            logger.warn("Exec in warning with " + commandLine.toString());
+            logger.warn("Exec in warning with {}", commandLine);
             futureCompletion.setSuccess();
         } else {
-            logger.error("Status: " + status + " Exec in error with " +
+            logger.debug("Status: " + status + " Exec in error with " +
                     commandLine.toString());
-            futureCompletion.cancel();
+            ExecutorException exc = new ExecutorException("Status: " + status +
+                    (status == -1 ? " Tiemout":"")+
+                    " Exec in error with " +
+                    commandLine.toString());
+            futureCompletion.setFailure(exc);
         }
     }
 }

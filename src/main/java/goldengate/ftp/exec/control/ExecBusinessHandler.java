@@ -22,10 +22,11 @@ package goldengate.ftp.exec.control;
 
 import java.io.File;
 
+import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.command.exception.Reply426Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply504Exception;
-import goldengate.common.command.exception.Reply550Exception;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -40,8 +41,13 @@ import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.exec.config.AUTHUPDATE;
 import goldengate.ftp.exec.exec.AbstractExecutor;
+import goldengate.ftp.exec.exec.R66PreparedTransferExecutor;
 import goldengate.ftp.exec.file.FileBasedAuth;
 import goldengate.ftp.exec.file.FileBasedDir;
+
+import openr66.database.DbConstant;
+import openr66.database.DbSession;
+import openr66.database.exception.OpenR66DatabaseNoConnectionError;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -60,13 +66,30 @@ public class ExecBusinessHandler extends BusinessHandler {
     private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(ExecBusinessHandler.class);
 
+    /**
+     * Associated DbSession
+     */
+    public DbSession dbSession = null;
+    private boolean internalDb = false;
+
+
+
+    /* (non-Javadoc)
+     * @see goldengate.ftp.core.control.BusinessHandler#afterTransferDoneBeforeAnswer(goldengate.ftp.core.data.FtpTransfer)
+     */
     @Override
-    public void afterTransferDone(FtpTransfer transfer) {
+    public void afterTransferDoneBeforeAnswer(FtpTransfer transfer)
+            throws CommandAbstractException {
         // if Admin, do nothing
         if (getFtpSession() == null || getFtpSession().getAuth() == null) {
             return;
         }
         if (getFtpSession().getAuth().isAdmin()) {
+            return;
+        }
+        if (getFtpSession().getReplyCode() != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY) {
+            // Do nothing
+            logger.debug("Which code: "+getFtpSession().getReplyCode().getMesg());
             return;
         }
         // if STOR like: get file (can be STOU) and execute external action
@@ -91,6 +114,9 @@ public class ExecBusinessHandler extends BusinessHandler {
                     logger.error("PostExecution in Error for Transfer since No File found: {} " +
                             transfer.getStatus() + " {}",
                             transfer.getCommand(), transfer.getPath());
+                    getFtpSession().setReplyCode(
+                            ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                            "PostExecution in Error for Transfer since No File found");
                     return;
                 }
                 try {
@@ -102,6 +128,9 @@ public class ExecBusinessHandler extends BusinessHandler {
                                 newfile.getAbsolutePath()+":"+newfile.canRead()+
                                 " "+transfer.getStatus() + " {}",
                                 transfer.getCommand(), transfer.getPath());
+                        getFtpSession().setReplyCode(
+                                ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                                "Transfer done but force disconnection since an error occurs on PostOperation");
                         return;
                     }
                 } catch (CommandAbstractException e1) {
@@ -109,11 +138,17 @@ public class ExecBusinessHandler extends BusinessHandler {
                     logger.error("PostExecution in Error for Transfer since No File found: {} " +
                             transfer.getStatus() + " {}",
                             transfer.getCommand(), transfer.getPath());
+                    getFtpSession().setReplyCode(
+                            ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                            "Transfer done but force disconnection since an error occurs on PostOperation");
                     return;
                 }
                 args[4] = transfer.getCommand().toString();
                 AbstractExecutor executor =
                     AbstractExecutor.createAbstractExecutor(args, true, futureCompletion);
+                if (executor instanceof R66PreparedTransferExecutor){
+                    ((R66PreparedTransferExecutor)executor).setDbsession(dbSession);
+                }
                 executor.run();
                 try {
                     futureCompletion.await();
@@ -127,11 +162,19 @@ public class ExecBusinessHandler extends BusinessHandler {
                             transfer.getStatus() + " {} \n   "+(futureCompletion.getCause() != null?
                                     futureCompletion.getCause().getMessage():"Internal error of PostExecution"),
                             transfer.getCommand(), transfer.getPath());
+                    getFtpSession().setReplyCode(
+                            ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                            "Transfer done but force disconnection since an error occurs on PostOperation");
                 }
                 break;
             default:
                 // nothing to do
         }
+    }
+
+    @Override
+    public void afterTransferDone(FtpTransfer transfer) {
+        // Do nothing
     }
 
     @Override
@@ -179,6 +222,9 @@ public class ExecBusinessHandler extends BusinessHandler {
                 args[4] = code.toString();
                 AbstractExecutor executor =
                     AbstractExecutor.createAbstractExecutor(args, false, futureCompletion);
+                if (executor instanceof R66PreparedTransferExecutor){
+                    ((R66PreparedTransferExecutor)executor).setDbsession(dbSession);
+                }
                 executor.run();
                 try {
                     futureCompletion.await();
@@ -187,11 +233,23 @@ public class ExecBusinessHandler extends BusinessHandler {
                 if (futureCompletion.isSuccess()) {
                     // File should be ready
                     if (! file.canRead()) {
-                        throw new Reply550Exception("File downloaded but not ready to be retrieved");
+                        logger.error("PreExecution in Error for Transfer since " +
+                                "File downloaded but not ready to be retrieved: {} " +
+                                " {} \n   "+(futureCompletion.getCause() != null?
+                                        futureCompletion.getCause().getMessage():
+                                            "File downloaded but not ready to be retrieved"),
+                                            args[4], args[3]);
+                        throw new Reply426Exception("File downloaded but not ready to be retrieved");
                     }
                 } else {
                     // File cannot be retrieved
-                    throw new Reply550Exception("File cannot be prepared to be retrieved");
+                    logger.error("PreExecution in Error for Transfer since " +
+                            "File cannot be prepared to be retrieved: {} " +
+                            " {} \n   "+(futureCompletion.getCause() != null?
+                                    futureCompletion.getCause().getMessage():
+                                        "File cannot be prepared to be retrieved"),
+                                        args[4], args[3]);
+                    throw new Reply426Exception("File cannot be prepared to be retrieved");
                 }
                 break;
             default:
@@ -209,10 +267,27 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public void executeChannelClosed() {
+        if (AbstractExecutor.useDatabase){
+            if (! internalDb) {
+                if (dbSession != null) {
+                    dbSession.disconnect();
+                    dbSession = null;
+                }
+            }
+        }
     }
 
     @Override
     public void executeChannelConnected(Channel channel) {
+        if (AbstractExecutor.useDatabase) {
+            try {
+                dbSession = new DbSession(DbConstant.admin, false);
+            } catch (OpenR66DatabaseNoConnectionError e1) {
+                logger.warn("Database not ready due to {}", e1.getMessage());
+                dbSession = DbConstant.admin.session;
+                internalDb = true;
+            }
+        }
     }
 
     @Override

@@ -48,10 +48,10 @@ public abstract class AbstractExecutor {
      */
     private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(AbstractExecutor.class);
-    protected static final String BASEPATH = "#BASEPATH#";
-    protected static final String FILE = "#FILE#";
     protected static final String USER = "#USER#";
     protected static final String ACCOUNT = "#ACCOUNT#";
+    protected static final String BASEPATH = "#BASEPATH#";
+    protected static final String FILE = "#FILE#";
     protected static final String COMMAND = "#COMMAND#";
 
     protected static final String REFUSED = "REFUSED";
@@ -82,6 +82,8 @@ public abstract class AbstractExecutor {
      */
     protected static long storeDelay = 0;
 
+    public static boolean useDatabase = false;
+
     /**
      * Initialize the Executor with the correct command and delay
      * @param retrieve
@@ -102,6 +104,7 @@ public abstract class AbstractExecutor {
             } else if (retrieve.startsWith(R66PREPARETRANSFER)) {
                 retrieveCMD = retrieve.substring(R66PREPARETRANSFER.length()).trim();
                 retrieveType = tR66PREPARETRANSFER;
+                useDatabase = true;
             } else {
                 // Default EXECUTE
                 retrieveCMD = retrieve.trim();
@@ -120,6 +123,7 @@ public abstract class AbstractExecutor {
             } else if (store.startsWith(R66PREPARETRANSFER)) {
                 storeCMD = store.substring(R66PREPARETRANSFER.length()).trim();
                 storeType = tR66PREPARETRANSFER;
+                useDatabase = true;
             } else {
                 // Default EXECUTE
                 storeCMD = store.trim();
@@ -201,11 +205,14 @@ public abstract class AbstractExecutor {
      */
     public static String getPreparedCommand(String command, String []args) {
         StringBuilder builder = new StringBuilder(command);
+        logger.debug("Will replace value in "+command+" with User="+args[0]+":Acct="
+                +args[1]+":Base="+args[2]+":File="+args[3]+":Cmd="+args[4]);
         replaceAll(builder, USER, args[0]);
         replaceAll(builder, ACCOUNT, args[1]);
         replaceAll(builder, BASEPATH, args[2]);
         replaceAll(builder, FILE, args[3]);
         replaceAll(builder, COMMAND, args[4]);
+        logger.debug("Result: {}",builder);
         return builder.toString();
     }
     /**
