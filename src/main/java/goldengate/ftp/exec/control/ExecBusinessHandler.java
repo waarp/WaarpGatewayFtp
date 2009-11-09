@@ -24,6 +24,7 @@ import java.io.File;
 
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.command.exception.Reply426Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply504Exception;
@@ -32,6 +33,7 @@ import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
 import goldengate.ftp.core.command.FtpCommandCode;
+import goldengate.ftp.core.command.access.QUIT;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.exception.FtpNoFileException;
@@ -179,12 +181,18 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public void afterRunCommandKo(CommandAbstractException e) {
-        logger.warn("GBBH: AFTKO: {} {}", getFtpSession(), e.getMessage());
+        logger.warn("ExecHandler: KO: {} {}", getFtpSession(), e.getMessage());
     }
 
     @Override
     public void afterRunCommandOk() throws CommandAbstractException {
         // nothing to do since it is only Command and not transfer
+        // except if QUIT due to database error
+        if (this.getFtpSession().getCurrentCommand() instanceof QUIT
+                && this.dbSession == null) {
+            throw new Reply421Exception(
+                    "Post operations cannot be done so force disconnection... Try again later on");
+        }
     }
 
     @Override
@@ -284,7 +292,10 @@ public class ExecBusinessHandler extends BusinessHandler {
                 dbSession = new DbSession(DbConstant.admin, false);
             } catch (OpenR66DatabaseNoConnectionError e1) {
                 logger.warn("Database not ready due to {}", e1.getMessage());
-                dbSession = DbConstant.admin.session;
+                QUIT command = (QUIT)
+                    FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
+                this.getFtpSession().setNextCommand(command);
+                dbSession = null;
                 internalDb = true;
             }
         }
