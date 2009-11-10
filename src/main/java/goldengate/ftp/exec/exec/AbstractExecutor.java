@@ -20,6 +20,7 @@
  */
 package goldengate.ftp.exec.exec;
 
+import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -241,5 +242,5 @@ public abstract class AbstractExecutor {
         }
     }
 
-    public abstract void run();
+    public abstract void run() throws CommandAbstractException;
 }

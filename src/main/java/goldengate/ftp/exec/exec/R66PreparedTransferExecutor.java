@@ -28,6 +28,8 @@ import openr66.database.data.DbTaskRunner;
 import openr66.database.exception.OpenR66DatabaseException;
 import openr66.protocol.configuration.Configuration;
 import openr66.protocol.localhandler.packet.RequestPacket;
+import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -139,29 +141,24 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
         this.dbsession = dbsession;
     }
 
-    public void run() {
+    public void run() throws CommandAbstractException {
         String message = "R66Prepared with -to " + remoteHost + " -rule " +
                 rulename + " -file " + filename + " -nolog: " + nolog +
                 " -isMD5: " + isMD5 + " -info " + fileinfo;
         if (remoteHost == null || rulename == null || filename == null) {
-            logger.debug("Mandatory argument is missing: -to " + remoteHost +
+            logger.error("Mandatory argument is missing: -to " + remoteHost +
                     " -rule " + rulename + " -file " + filename);
-            ExecutorException exc = new ExecutorException(
-                    "Mandatory argument is missing\n    " + message);
-            this.future.setFailure(exc);
-            return;
+            throw new Reply421Exception("Mandatory argument is missing\n    " + message);
         }
         logger.debug(message);
         DbRule rule;
         try {
             rule = new DbRule(dbsession, rulename);
         } catch (OpenR66DatabaseException e) {
-            logger.debug("Cannot get Rule: " + rulename + " since {}\n    " +
+            logger.error("Cannot get Rule: " + rulename + " since {}\n    " +
                     message, e.getMessage());
-            ExecutorException exc = new ExecutorException("Cannot get Rule: " +
-                    rulename + "\n    " + message, e);
-            this.future.setFailure(exc);
-            return;
+            throw new Reply421Exception("Cannot get Rule: " +
+                    rulename + "\n    " + message);
         }
         int mode = rule.mode;
         if (isMD5) {
@@ -177,23 +174,17 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
             taskRunner = new DbTaskRunner(dbsession, rule, isRetrieve, request,
                     remoteHost);
         } catch (OpenR66DatabaseException e) {
-            logger.debug("Cannot get new task since {}\n    " + message, e
+            logger.error("Cannot get new task since {}\n    " + message, e
                     .getMessage());
-            ExecutorException exc = new ExecutorException(
-                    "Cannot get new task\n    " + message, e);
-            this.future.setFailure(exc);
-            return;
+            throw new Reply421Exception("Cannot get new task\n    " + message);
         }
         taskRunner.changeUpdatedInfo(AbstractDbData.UpdatedInfo.TOSUBMIT);
         try {
             taskRunner.update();
         } catch (OpenR66DatabaseException e) {
-            logger.debug("Cannot prepare task since {}\n    " + message, e
+            logger.error("Cannot prepare task since {}\n    " + message, e
                     .getMessage());
-            ExecutorException exc = new ExecutorException(
-                    "Cannot prepare task\n    " + message, e);
-            this.future.setFailure(exc);
-            return;
+            throw new Reply421Exception("Cannot prepare task\n    " + message);
         }
         future.setSuccess();
     }

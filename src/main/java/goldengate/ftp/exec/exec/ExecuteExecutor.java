@@ -20,6 +20,7 @@
  */
 package goldengate.ftp.exec.exec;
 
+import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -71,15 +72,12 @@ public class ExecuteExecutor extends AbstractExecutor {
         this.delay = delay;
     }
 
-    public void run() {
+    public void run() throws Reply421Exception {
         File exec = new File(args[0]);
         if (exec.isAbsolute()) {
             if (! exec.canExecute()) {
                 logger.error("Exec command is not executable: " + args[0]);
-                ExecutorException exc =
-                    new ExecutorException("Exec command is not executable: " + args[0]);
-                futureCompletion.setFailure(exc);
-                return;
+                throw new Reply421Exception("Pre Exec command is not executable");
             }
         }
         CommandLine commandLine = new CommandLine(args[0]);
@@ -111,45 +109,28 @@ public class ExecuteExecutor extends AbstractExecutor {
                     status = defaultExecutor.execute(commandLine);
                 } catch (ExecuteException e2) {
                     pumpStreamHandler.stop();
-                    logger.debug("System Exception: " + e.getMessage() +
+                    logger.error("System Exception: " + e.getMessage() +
                             "\n    Exec cannot execute command " + commandLine.toString());
-                    ExecutorException exc =
-                        new ExecutorException("System Exception: " + e.getMessage() +
-                                "\n    Exec cannot execute command " + commandLine.toString(),
-                                e);
-                    futureCompletion.setFailure(exc);
-                    return;
+                    throw new Reply421Exception("Cannot execute Pre command");
                 } catch (IOException e2) {
                     pumpStreamHandler.stop();
-                    logger.debug("Exception: " + e.getMessage() +
+                    logger.error("Exception: " + e.getMessage() +
                             "\n    Exec in error with " + commandLine.toString());
-                    ExecutorException exc =
-                        new ExecutorException("Exception: " + e.getMessage() +
-                                "\n    Exec in error with " + commandLine.toString(), e);
-                    futureCompletion.setFailure(exc);
-                    return;
+                    throw new Reply421Exception("Cannot execute Pre command");
                 }
                 logger.info("System Exception: " + e.getMessage() +
                         " but finally get the command executed " + commandLine.toString());
             } else {
                 pumpStreamHandler.stop();
-                logger.debug("Exception: " + e.getMessage() +
+                logger.error("Exception: " + e.getMessage() +
                     "\n    Exec in error with " + commandLine.toString());
-                ExecutorException exc =
-                    new ExecutorException("Exception: " + e.getMessage() +
-                            "\n    Exec in error with " + commandLine.toString(), e);
-                futureCompletion.setFailure(exc);
-                return;
+                throw new Reply421Exception("Cannot execute Pre command");
             }
         } catch (IOException e) {
             pumpStreamHandler.stop();
-            logger.debug("Exception: " + e.getMessage() +
+            logger.error("Exception: " + e.getMessage() +
                     "\n    Exec in error with " + commandLine.toString());
-            ExecutorException exc =
-                new ExecutorException("Exception: " + e.getMessage() +
-                        "\n    Exec in error with " + commandLine.toString(), e);
-            futureCompletion.setFailure(exc);
-            return;
+            throw new Reply421Exception("Cannot execute Pre command");
         }
         pumpStreamHandler.stop();
         if (watchdog != null &&
@@ -165,13 +146,10 @@ public class ExecuteExecutor extends AbstractExecutor {
             logger.warn("Exec in warning with {}", commandLine);
             futureCompletion.setSuccess();
         } else {
-            logger.debug("Status: " + status + " Exec in error with " +
+            logger.debug("Status: " + status + (status == -1 ? " Tiemout":"")
+                    +" Exec in error with " +
                     commandLine.toString());
-            ExecutorException exc = new ExecutorException("Status: " + status +
-                    (status == -1 ? " Tiemout":"")+
-                    " Exec in error with " +
-                    commandLine.toString());
-            futureCompletion.setFailure(exc);
+            throw new Reply421Exception("Pre command executed in error");
         }
     }
 }

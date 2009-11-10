@@ -25,7 +25,6 @@ import java.io.File;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply421Exception;
-import goldengate.common.command.exception.Reply426Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply504Exception;
 import goldengate.common.future.GgFuture;
@@ -116,10 +115,8 @@ public class ExecBusinessHandler extends BusinessHandler {
                     logger.error("PostExecution in Error for Transfer since No File found: {} " +
                             transfer.getStatus() + " {}",
                             transfer.getCommand(), transfer.getPath());
-                    getFtpSession().setReplyCode(
-                            ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                    throw new Reply421Exception(
                             "PostExecution in Error for Transfer since No File found");
-                    return;
                 }
                 try {
                     args[3] = file.getFile();
@@ -130,20 +127,16 @@ public class ExecBusinessHandler extends BusinessHandler {
                                 newfile.getAbsolutePath()+":"+newfile.canRead()+
                                 " "+transfer.getStatus() + " {}",
                                 transfer.getCommand(), transfer.getPath());
-                        getFtpSession().setReplyCode(
-                                ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                        throw new Reply421Exception(
                                 "Transfer done but force disconnection since an error occurs on PostOperation");
-                        return;
                     }
                 } catch (CommandAbstractException e1) {
                     // File cannot be sent
                     logger.error("PostExecution in Error for Transfer since No File found: {} " +
                             transfer.getStatus() + " {}",
                             transfer.getCommand(), transfer.getPath());
-                    getFtpSession().setReplyCode(
-                            ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                    throw new Reply421Exception(
                             "Transfer done but force disconnection since an error occurs on PostOperation");
-                    return;
                 }
                 args[4] = transfer.getCommand().toString();
                 AbstractExecutor executor =
@@ -164,8 +157,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                             transfer.getStatus() + " {} \n   "+(futureCompletion.getCause() != null?
                                     futureCompletion.getCause().getMessage():"Internal error of PostExecution"),
                             transfer.getCommand(), transfer.getPath());
-                    getFtpSession().setReplyCode(
-                            ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED,
+                    throw new Reply421Exception(
                             "Transfer done but force disconnection since an error occurs on PostOperation");
                 }
                 break;
@@ -247,7 +239,8 @@ public class ExecBusinessHandler extends BusinessHandler {
                                         futureCompletion.getCause().getMessage():
                                             "File downloaded but not ready to be retrieved"),
                                             args[4], args[3]);
-                        throw new Reply426Exception("File downloaded but not ready to be retrieved");
+                        throw new Reply421Exception(
+                            "File downloaded but not ready to be retrieved");
                     }
                 } else {
                     // File cannot be retrieved
@@ -257,7 +250,8 @@ public class ExecBusinessHandler extends BusinessHandler {
                                     futureCompletion.getCause().getMessage():
                                         "File cannot be prepared to be retrieved"),
                                         args[4], args[3]);
-                    throw new Reply426Exception("File cannot be prepared to be retrieved");
+                    throw new Reply421Exception(
+                        "File cannot be prepared to be retrieved");
                 }
                 break;
             default:
