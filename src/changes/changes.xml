@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.2" date="2009-11-11" description="Production Release">
+			<action dev="Frederic Bregier" type="Fix">Use of new OpenR66</action>
+		</release>
 		<release version="1.0.1" date="2009-11-09" description="Production Release">
 			<action dev="Frederic Bregier" type="Fix">Use of new GG Common</action>
 			<action dev="Frederic Bregier" type="Fix">R66PreparedTransfer command (Database related)</action>
