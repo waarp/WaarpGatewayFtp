@@ -31,7 +31,7 @@ import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.core.command.AbstractCommand;
 
 /**
- * AUTHENTUPDATE command: implements the command that will try to update the authentications
+ * AUTHTUPDATE command: implements the command that will try to update the authentications
  * from the file given as argument or the original one if no argument is given.<br>
  * Two optional arguments exist:<br>
  * - PURGE: empty first the current authentications before applying the update<br>
