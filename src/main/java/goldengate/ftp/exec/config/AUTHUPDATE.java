@@ -72,6 +72,9 @@ public class AUTHUPDATE extends AbstractCommand {
                     filename = authents[i];
                 }
             }
+            if (filename == null) {
+                filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
+            }
             File file = new File(filename);
             if (! file.canRead()) {
                 throw new Reply501Exception("Filename given as parameter is not found: "+filename);
