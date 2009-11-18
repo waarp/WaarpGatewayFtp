@@ -5,12 +5,16 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="1.0.3" date="2009-11-18" description="Production Release">
+			<action dev="Frederic Bregier" type="fix">Use of new OpenR66 and Netty</action>
+			<action dev="Frederic Bregier" type="fix">AUTHUPDATE fix</action>
+		</release>
 		<release version="1.0.2" date="2009-11-11" description="Production Release">
-			<action dev="Frederic Bregier" type="Fix">Use of new OpenR66</action>
+			<action dev="Frederic Bregier" type="fix">Use of new OpenR66</action>
 		</release>
 		<release version="1.0.1" date="2009-11-09" description="Production Release">
-			<action dev="Frederic Bregier" type="Fix">Use of new GG Common</action>
-			<action dev="Frederic Bregier" type="Fix">R66PreparedTransfer command (Database related)</action>
+			<action dev="Frederic Bregier" type="fix">Use of new GG Common</action>
+			<action dev="Frederic Bregier" type="fix">R66PreparedTransfer command (Database related)</action>
 		</release>
 		<release version="1.0.0" date="2009-11-06" description="Production Release">
 			<action dev="Frederic Bregier" type="fix">Fix Executor commands</action>
