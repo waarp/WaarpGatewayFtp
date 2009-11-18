@@ -188,12 +188,12 @@
   	<dependency>
   		<groupId>GoldenGate</groupId>
   		<artifactId>GoldenGateFtp-Core</artifactId>
-  		<version>1.0.6</version>
+  		<version>1.0.7</version>
   	</dependency>
   	<dependency>
   		<groupId>GoldenGate</groupId>
   		<artifactId>GoldenGateFtp-Filesystem</artifactId>
-  		<version>1.0.6</version>
+  		<version>1.0.7</version>
   	</dependency>
   </dependencies>
   <properties>
