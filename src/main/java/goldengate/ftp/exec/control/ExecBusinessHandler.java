@@ -90,7 +90,7 @@ public class ExecBusinessHandler extends BusinessHandler {
         }
         if (getFtpSession().getReplyCode() != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY) {
             // Do nothing
-            logger.debug("Which code: "+getFtpSession().getReplyCode().getMesg());
+            logger.debug("Transfer done with code: "+getFtpSession().getReplyCode().getMesg());
             return;
         }
         // if STOR like: get file (can be STOU) and execute external action
@@ -169,6 +169,7 @@ public class ExecBusinessHandler extends BusinessHandler {
     @Override
     public void afterTransferDone(FtpTransfer transfer) {
         // Do nothing
+        GoldenGateActionLogger.logAction("ExecHandler: TRSF OK:", this);
     }
 
     @Override
@@ -184,6 +185,8 @@ public class ExecBusinessHandler extends BusinessHandler {
                 && this.dbSession == null) {
             throw new Reply421Exception(
                     "Post operations cannot be done so force disconnection... Try again later on");
+        } else {
+            GoldenGateActionLogger.logAction("ExecHandler: OK:", this);
         }
     }
 
