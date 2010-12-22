@@ -20,37 +20,67 @@
  */
 package goldengate.ftp.exec.config;
 
+import goldengate.common.crypto.Des;
+import goldengate.common.crypto.ssl.GgSecureKeyStore;
+import goldengate.common.crypto.ssl.GgSslContextFactory;
+import goldengate.common.database.DbAdmin;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
 import goldengate.common.digest.FilesystemBasedDigest;
 import goldengate.common.digest.MD5;
+import goldengate.common.exception.CryptoException;
+import goldengate.common.file.DirInterface;
 import goldengate.common.file.FileParameterInterface;
 import goldengate.common.file.filesystembased.FilesystemBasedDirImpl;
 import goldengate.common.file.filesystembased.FilesystemBasedFileParameterImpl;
+import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
+import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdk6;
 import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.common.xml.XmlDecl;
+import goldengate.common.xml.XmlHash;
+import goldengate.common.xml.XmlType;
+import goldengate.common.xml.XmlUtil;
+import goldengate.common.xml.XmlValue;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
+import goldengate.ftp.exec.adminssl.HttpSslPipelineFactory;
+import goldengate.ftp.exec.control.ConstraintLimitHandler;
+import goldengate.ftp.exec.database.DbConstant;
+import goldengate.ftp.exec.database.model.DbModelFactory;
 import goldengate.ftp.exec.exec.AbstractExecutor;
+import goldengate.ftp.exec.exec.LocalExecClient;
+import goldengate.ftp.exec.file.FileBasedDir;
 import goldengate.ftp.exec.file.SimpleAuth;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-import org.dom4j.tree.DefaultElement;
+import org.jboss.netty.bootstrap.ServerBootstrap;
+import org.jboss.netty.channel.ChannelFactory;
+import org.jboss.netty.channel.group.ChannelGroup;
+import org.jboss.netty.channel.group.ChannelGroupFuture;
+import org.jboss.netty.channel.group.ChannelGroupFutureListener;
+import org.jboss.netty.channel.group.DefaultChannelGroup;
+import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.jboss.netty.handler.traffic.AbstractTrafficShapingHandler;
 
 /**
@@ -67,126 +97,338 @@ public class FileBasedConfiguration extends FtpConfiguration {
             .getLogger(FileBasedConfiguration.class);
 
     /**
+     * SERVER HOSTID
+     */
+    private static final String XML_SERVER_HOSTID = "hostid";
+    /**
+     * Authentication
+     */
+    private static final String XML_AUTHENTIFICATION_FILE = "authentfile";
+    /**
+     * SERVER CRYPTO for Password
+     */
+    private static final String XML_PATH_CRYPTOKEY = "cryptokey";
+
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] configIdentityDecls = {
+        // identity
+        new XmlDecl(XmlType.STRING, XML_SERVER_HOSTID), 
+        new XmlDecl(XmlType.STRING, XML_PATH_CRYPTOKEY),
+        new XmlDecl(XmlType.STRING, XML_AUTHENTIFICATION_FILE)
+    };
+    /**
+     * Use HTTP compression for R66 HTTP connection
+     */
+    private static final String XML_USEHTTPCOMP = "usehttpcomp";
+    /**
+     * Use external GoldenGate Local Exec for ExecTask and ExecMoveTask
+     */
+    private static final String XML_USELOCALEXEC = "uselocalexec";
+
+    /**
+     * Address of GoldenGate Local Exec for ExecTask and ExecMoveTask
+     */
+    private static final String XML_LEXECADDR = "lexecaddr";
+
+    /**
+     * Port of GoldenGate Local Exec for ExecTask and ExecMoveTask
+     */
+    private static final String XML_LEXECPORT = "lexecport";
+    /**
+     * ADMINISTRATOR SERVER NAME (shutdown)
+     */
+    private static final String XML_SERVER_ADMIN = "serveradmin";
+    /**
      * SERVER PASSWORD (shutdown)
      */
-    private static final String XML_SERVER_PASSWD = "/config/serverpasswd";
+    private static final String XML_SERVER_PASSWD = "serverpasswd";
+    /**
+     * SERVER SSL STOREKEY PATH ADMIN
+     */
+    private static final String XML_PATH_ADMIN_KEYPATH = "admkeypath";
 
+    /**
+     * SERVER SSL KEY PASS ADMIN
+     */
+    private static final String XML_PATH_ADMIN_KEYPASS = "admkeypass";
+
+    /**
+     * SERVER SSL STOREKEY PASS ADMIN
+     */
+    private static final String XML_PATH_ADMIN_KEYSTOREPASS = "admkeystorepass";
+    /**
+     * HTTP Admin Directory
+     */
+    private static final String XML_HTTPADMINPATH = "httpadmin";
+
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] configServerParamDecls = {
+        // server
+        new XmlDecl(XmlType.BOOLEAN, XML_USEHTTPCOMP),
+        new XmlDecl(XmlType.BOOLEAN, XML_USELOCALEXEC), 
+        new XmlDecl(XmlType.STRING, XML_LEXECADDR), 
+        new XmlDecl(XmlType.INTEGER, XML_LEXECPORT),
+        new XmlDecl(XmlType.STRING, XML_SERVER_ADMIN), 
+        new XmlDecl(XmlType.STRING, XML_SERVER_PASSWD),
+        new XmlDecl(XmlType.STRING, XML_HTTPADMINPATH),
+        new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYPATH), 
+        new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYSTOREPASS), 
+        new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYPASS)
+    };
     /**
      * SERVER PORT
      */
-    private static final String XML_SERVER_PORT = "/config/serverport";
+    private static final String XML_SERVER_PORT = "serverport";
     /**
      * SERVER ADDRESS if any
      */
-    private static final String XML_SERVER_ADDRESS = "/config/serveraddress";
+    private static final String XML_SERVER_ADDRESS = "serveraddress";
     /**
-     * Base Directory
+     * RANGE of PORT for Passive Mode
      */
-    private static final String XML_SERVER_HOME = "/config/serverhome";
+    private static final String XML_RANGE_PORT_MIN = "portmin";
 
+    /**
+     * RANGE of PORT for Passive Mode
+     */
+    private static final String XML_RANGE_PORT_MAX = "portmax";
+    /**
+     * SERVER HTTP PORT MONITORING
+     */
+    private static final String XML_SERVER_HTTP_PORT = "serverhttpport";
+    /**
+     * SERVER HTTPS PORT ADMINISTRATION
+     */
+    private static final String XML_SERVER_HTTPS_PORT = "serverhttpsport";
+
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] configNetworkServerDecls = {
+        // network
+        new XmlDecl(XmlType.INTEGER, XML_SERVER_PORT),
+        new XmlDecl(XmlType.STRING, XML_SERVER_ADDRESS),
+        new XmlDecl(XmlType.INTEGER, XML_RANGE_PORT_MIN),
+        new XmlDecl(XmlType.INTEGER, XML_RANGE_PORT_MAX),
+        new XmlDecl(XmlType.INTEGER, XML_SERVER_HTTP_PORT),
+        new XmlDecl(XmlType.INTEGER, XML_SERVER_HTTPS_PORT)
+    };
+    /**
+     * Database Driver as of oracle, mysql, postgresql, h2
+     */
+    private static final String XML_DBDRIVER = "dbdriver";
+
+    /**
+     * Database Server connection string as of
+     * jdbc:type://[host:port],[failoverhost:port]
+     * .../[database][?propertyName1][
+     * =propertyValue1][&propertyName2][=propertyValue2]...
+     */
+    private static final String XML_DBSERVER = "dbserver";
+
+    /**
+     * Database User
+     */
+    private static final String XML_DBUSER = "dbuser";
+
+    /**
+     * Database Password
+     */
+    private static final String XML_DBPASSWD = "dbpasswd";
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] configDbDecls = {
+        //db
+        new XmlDecl(XmlType.STRING, XML_DBDRIVER), 
+        new XmlDecl(XmlType.STRING, XML_DBSERVER),
+        new XmlDecl(XmlType.STRING, XML_DBUSER), 
+        new XmlDecl(XmlType.STRING, XML_DBPASSWD)
+    };
+    /**
+     * Should a file be deleted when a Store like command is aborted
+     */
+    private static final String XML_DELETEONABORT = "deleteonabort";
     /**
      * Default number of threads in pool for Server.
      */
-    private static final String XML_SERVER_THREAD = "/config/serverthread";
+    private static final String XML_SERVER_THREAD = "serverthread";
 
     /**
      * Default number of threads in pool for Client.
      */
-    private static final String XML_CLIENT_THREAD = "/config/clientthread";
+    private static final String XML_CLIENT_THREAD = "clientthread";
+    /**
+     * Memory Limit to use.
+     */
+    private static final String XML_MEMORY_LIMIT = "memorylimit";
 
     /**
-     * Limit per session
+     * Limit for Session
      */
-    private static final String XML_LIMITSESSION = "/config/sessionlimit";
+    private static final String XML_LIMITSESSION = "sessionlimit";
 
     /**
-     * Limit global
+     * Limit for Global
      */
-    private static final String XML_LIMITGLOBAL = "/config/globallimit";
-
+    private static final String XML_LIMITGLOBAL = "globallimit";
+    /**
+     * Delay between two checks for Limit
+     */
+    private static final String XML_LIMITDELAY = "delaylimit";
     /**
      * Nb of milliseconds after connection is in timeout
      */
-    private static final String XML_TIMEOUTCON = "/config/timeoutcon";
-
+    private static final String XML_TIMEOUTCON = "timeoutcon";
     /**
-     * Should a file be deleted when a Store like command is aborted
+     * Size by default of block size for receive/sending files. Should be a
+     * multiple of 8192 (maximum = 64K due to block limitation to 2 bytes)
      */
-    private static final String XML_DELETEONABORT = "/config/deleteonabort";
-
+    private static final String XML_BLOCKSIZE = "blocksize";
     /**
      * Should a file MD5 SHA1 be computed using NIO
      */
-    private static final String XML_USENIO = "/config/usenio";
+    private static final String XML_USENIO = "usenio";
 
     /**
      * Should a file MD5 be computed using FastMD5
      */
-    private static final String XML_USEFASTMD5 = "/config/usefastmd5";
+    private static final String XML_USEFASTMD5 = "usefastmd5";
 
     /**
      * If using Fast MD5, should we used the binary JNI library, empty meaning
      * no
      */
-    private static final String XML_FASTMD5 = "/config/fastmd5";
+    private static final String XML_FASTMD5 = "fastmd5";
+    /**
+     * Usage of CPU Limit
+     */
+    private static final String XML_CSTRT_USECPULIMIT = "usecpulimit";
 
     /**
-     * Size by default of block size for receive/sending files. Should be a
-     * multiple of 8192 (maximum = 64K due to block limitation to 2 bytes)
+     * Usage of JDK CPU Limit (True) or SysMon CPU Limit
      */
-    private static final String XML_BLOCKSIZE = "/config/blocksize";
+    private static final String XML_CSTRT_USECPUJDKLIMIT = "usejdkcpulimit";
 
     /**
-     * RANGE of PORT for Passive Mode
+     * CPU LIMIT between 0 and 1, where 1 stands for no limit
      */
-    private static final String XML_RANGE_PORT_MIN = "/config/rangeport/min";
-
+    private static final String XML_CSTRT_CPULIMIT = "cpulimit";
     /**
-     * RANGE of PORT for Passive Mode
+     * Connection limit where 0 stands for no limit
      */
-    private static final String XML_RANGE_PORT_MAX = "/config/rangeport/max";
-
-
+    private static final String XML_CSTRT_CONNLIMIT = "connlimit";
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] configLimitDecls = {
+        // limit
+        new XmlDecl(XmlType.BOOLEAN, XML_DELETEONABORT),
+        new XmlDecl(XmlType.LONG, XML_LIMITSESSION), 
+        new XmlDecl(XmlType.LONG, XML_LIMITGLOBAL), 
+        new XmlDecl(XmlType.LONG, XML_LIMITDELAY),
+        new XmlDecl(XmlType.INTEGER, XML_SERVER_THREAD), 
+        new XmlDecl(XmlType.INTEGER, XML_CLIENT_THREAD), 
+        new XmlDecl(XmlType.LONG, XML_MEMORY_LIMIT), 
+        new XmlDecl(XmlType.BOOLEAN, XML_CSTRT_USECPULIMIT),
+        new XmlDecl(XmlType.BOOLEAN, XML_CSTRT_USECPUJDKLIMIT),
+        new XmlDecl(XmlType.DOUBLE, XML_CSTRT_CPULIMIT),
+        new XmlDecl(XmlType.INTEGER, XML_CSTRT_CONNLIMIT),
+        new XmlDecl(XmlType.LONG, XML_TIMEOUTCON),
+        new XmlDecl(XmlType.BOOLEAN, XML_USENIO),
+        new XmlDecl(XmlType.BOOLEAN, XML_USEFASTMD5), 
+        new XmlDecl(XmlType.STRING, XML_FASTMD5), 
+        new XmlDecl(XmlType.INTEGER, XML_BLOCKSIZE)
+    };
+    
     /**
      * RETRIEVE COMMAND
      */
-    private static final String XML_RETRIEVE_COMMAND = "/config/retrievecmd";
+    public static final String XML_RETRIEVE_COMMAND = "retrievecmd";
 
     /**
      * STORE COMMAND
      */
-    private static final String XML_STORE_COMMAND = "/config/storecmd";
+    public static final String XML_STORE_COMMAND = "storecmd";
 
     /**
      * DELAY RETRIEVE COMMAND
      */
-    private static final String XML_DELAYRETRIEVE_COMMAND = "/config/retrievedelay";
+    public static final String XML_DELAYRETRIEVE_COMMAND = "retrievedelay";
 
     /**
      * DELAY STORE COMMAND
      */
-    private static final String XML_DELAYSTORE_COMMAND = "/config/storedelay";
-
+    public static final String XML_DELAYSTORE_COMMAND = "storedelay";
     /**
-     * Authentication
+     * Structure of the Configuration file
+     *
      */
-    private static final String XML_AUTHENTICATION_FILE = "/config/authentfile";
+    private static final XmlDecl [] configExecDecls = {
+        // Exec
+        new XmlDecl(XmlType.STRING, XML_RETRIEVE_COMMAND),
+        new XmlDecl(XmlType.LONG, XML_DELAYRETRIEVE_COMMAND), 
+        new XmlDecl(XmlType.STRING, XML_STORE_COMMAND), 
+        new XmlDecl(XmlType.LONG, XML_DELAYSTORE_COMMAND)
+    };
+    /**
+     * Base Directory
+     */
+    private static final String XML_SERVER_HOME = "serverhome";
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] configDirectoryDecls = {
+        // directory
+        new XmlDecl(XmlType.STRING, XML_SERVER_HOME)
+    };
+    /**
+     * Overall structure of the Configuration file
+     */
+    private static final String XML_ROOT = "/config/";
+    private static final String XML_IDENTITY = "identity";
+    private static final String XML_SERVER = "server";
+    private static final String XML_DIRECTORY = "directory";
+    private static final String XML_LIMIT = "limit";
+    private static final String XML_NETWORK = "network";
+    private static final String XML_EXEC = "exec";
+    private static final String XML_DB = "db";
+    /**
+     * Global Structure for Server Configuration
+     */
+    private static final XmlDecl[] configServer = {
+        new XmlDecl(XML_IDENTITY, XmlType.XVAL, XML_ROOT+XML_IDENTITY, configIdentityDecls, false),
+        new XmlDecl(XML_SERVER, XmlType.XVAL, XML_ROOT+XML_SERVER, configServerParamDecls, false),
+        new XmlDecl(XML_NETWORK, XmlType.XVAL, XML_ROOT+XML_NETWORK, configNetworkServerDecls, false),
+        new XmlDecl(XML_EXEC, XmlType.XVAL, XML_ROOT+XML_EXEC, configExecDecls, false),
+        new XmlDecl(XML_DIRECTORY, XmlType.XVAL, XML_ROOT+XML_DIRECTORY, configDirectoryDecls, false),
+        new XmlDecl(XML_LIMIT, XmlType.XVAL, XML_ROOT+XML_LIMIT, configLimitDecls, false),
+        new XmlDecl(XML_DB, XmlType.XVAL, XML_ROOT+XML_DB, configDbDecls, false)
+    };
 
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTBASE_BASED = "authent";
-
+    private static final String XML_AUTHENTIFICATION_ROOT = "authent";
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTENTRY_BASED = "entry";
-
+    private static final String XML_AUTHENTIFICATION_ENTRY = "entry";
     /**
      * Authentication Fields
      */
-    private static final String XML_AUTHENTICATION_BASED =
-        "/"+XML_AUTHENTBASE_BASED+"/"+XML_AUTHENTENTRY_BASED;
+    private static final String XML_AUTHENTIFICATION_BASED = "/"+
+        XML_AUTHENTIFICATION_ROOT+"/"+XML_AUTHENTIFICATION_ENTRY;
 
     /**
      * Authentication Fields
@@ -197,6 +439,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Authentication Fields
      */
     private static final String XML_AUTHENTICATION_PASSWD = "passwd";
+    /**
+     * Authentication Fields
+     */
+    private static final String XML_AUTHENTICATION_PASSWDFILE = "passwdfile";
 
     /**
      * Authentication Fields
@@ -207,12 +453,39 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * Authentication Fields
      */
     private static final String XML_AUTHENTICATION_ADMIN = "admin";
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] configAuthenticationDecls = {
+        // identity
+        new XmlDecl(XmlType.STRING, XML_AUTHENTICATION_USER), 
+        new XmlDecl(XmlType.STRING, XML_AUTHENTICATION_PASSWDFILE),
+        new XmlDecl(XmlType.STRING, XML_AUTHENTICATION_PASSWD),
+        new XmlDecl(XML_AUTHENTICATION_ACCOUNT, XmlType.STRING, XML_AUTHENTICATION_ACCOUNT, true),
+        new XmlDecl(XmlType.BOOLEAN, XML_AUTHENTICATION_ADMIN),
+        // Exec
+        new XmlDecl(XmlType.STRING, XML_RETRIEVE_COMMAND),
+        new XmlDecl(XmlType.LONG, XML_DELAYRETRIEVE_COMMAND), 
+        new XmlDecl(XmlType.STRING, XML_STORE_COMMAND), 
+        new XmlDecl(XmlType.LONG, XML_DELAYSTORE_COMMAND)
+    };
+    /**
+     * Global Structure for Server Configuration
+     */
+    private static final XmlDecl[] authentElements = {
+        new XmlDecl(XML_AUTHENTIFICATION_ENTRY, XmlType.XVAL, XML_AUTHENTIFICATION_BASED, 
+                configAuthenticationDecls, true)
+    };
 
     /**
      * RANGE of PORT for Passive Mode
      */
     private static final String RANGE_PORT = "FTP_RANGE_PORT";
-
+    /**
+     * Use to access directly the configuration
+     */
+    public static FileBasedConfiguration fileBasedConfiguration;
     /**
      * All authentications
      */
@@ -222,7 +495,77 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * File containing the authentications
      */
     public String authenticationFile;
+    /**
+     * Default HTTP server port
+     */
+    public int SERVER_HTTPPORT = 8066;
 
+    /**
+     * Default HTTP server port
+     */
+    public int SERVER_HTTPSPORT = 8067;
+    /**
+     * Max global memory limit: default is 4GB
+     */
+    public long maxGlobalMemory = 0x100000000L;
+    /**
+     * Http Admin base
+     */
+    public String httpBasePath = "src/main/admin/";
+    /**
+     * Delay in ms between two checks
+     */
+    public long delayLimit = 10000;
+    /**
+     * Does this server will try to compress HTTP connections
+     */
+    public boolean useHttpCompression = false;
+
+    /**
+     * Does this server will use GoldenGate LocalExec Daemon for Execute
+     */
+    public boolean useLocalExec = false;
+
+    /**
+     * Crypto Key
+     */
+    public Des cryptoKey = null;
+    /**
+     * Server Administration Key
+     */
+    private byte[] SERVERADMINKEY = null;
+    /**
+     * FTP server ID
+     */
+    public String HOST_ID = "noId";
+    /**
+     * Admin name Id
+     */
+    public String ADMINNAME = "noAdmin";
+    /**
+     * Limit on CPU and Connection
+     */
+    public ConstraintLimitHandler constraintLimitHandler = null;
+    
+    /**
+     * List of all Http Channels to enable the close call on them using Netty
+     * ChannelGroup
+     */
+    private ChannelGroup httpChannelGroup = null;
+    /**
+     * Bootstrap for Https server
+     */
+    private ServerBootstrap httpsBootstrap = null;
+    /**
+     * ChannelFactory for HttpsServer part
+     */
+    private ChannelFactory httpsChannelFactory = null;
+    /**
+     * ThreadPoolExecutor for Http and Https Server
+     */
+    private volatile OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
+
+    
     /**
      * @param classtype
      * @param businessHandler
@@ -240,177 +583,598 @@ public class FileBasedConfiguration extends FtpConfiguration {
         computeNbThreads();
     }
 
-    /**
-     * Initiate the configuration from the xml file
-     *
-     * @param filename
-     * @return True if OK
-     */
-    public boolean setConfigurationFromXml(String filename) {
-        Document document = null;
-        // Open config file
+    private static XmlValue[] configuration = null;
+    private static XmlHash hashConfig = null; 
+    
+    private boolean loadIdentity() {
+        XmlValue value = hashConfig.get(XML_SERVER_HOSTID);
+        if (value != null && (!value.isEmpty())) {
+            HOST_ID = value.getString();
+        } else {
+            logger.error("Unable to find Host ID in Config file");
+            return false;
+        }
+        return setCryptoKey();
+    }
+    
+    private boolean loadAuthentication() {
+            // if no database, must load authentication from file
+            XmlValue value = hashConfig.get(XML_AUTHENTIFICATION_FILE);
+            if (value != null && (!value.isEmpty())) {
+                authenticationFile = value.getString();
+                if (!initializeAuthent(authenticationFile, false)) {
+                    return false;
+                }
+            } else {
+                logger.warn("Unable to find Authentication file in Config file");
+                return false;
+            }
+        return true;
+    }
+    
+    private boolean loadServerParam() {
+        XmlValue value = hashConfig.get(XML_USEHTTPCOMP);
+        if (value != null && (!value.isEmpty())) {
+            useHttpCompression = value.getBoolean();
+        }
+        value = hashConfig.get(XML_USELOCALEXEC);
+        if (value != null && (!value.isEmpty())) {
+            useLocalExec = value.getBoolean();
+            if (useLocalExec) {
+                value = hashConfig.get(XML_LEXECADDR);
+                String saddr;
+                InetAddress addr;
+                if (value != null && (!value.isEmpty())) {
+                    saddr = value.getString();
+                    try {
+                        addr = InetAddress.getByName(saddr);
+                    } catch (UnknownHostException e) {
+                        logger.error("Unable to find LocalExec Address in Config file");
+                        return false;
+                    }
+                } else {
+                    logger.warn("Unable to find LocalExec Address in Config file");
+                    try {
+                        addr = InetAddress.getByAddress(new byte[]{127,0,0,1});
+                    } catch (UnknownHostException e) {
+                        logger.error("Unable to find LocalExec Address in Config file");
+                        return false;
+                    }
+                }
+                value = hashConfig.get(XML_LEXECPORT);
+                int port;
+                if (value != null && (!value.isEmpty())) {
+                    port = value.getInteger();
+                } else {
+                    port = 9999;
+                }
+                LocalExecClient.address = new InetSocketAddress(addr, port);
+            }
+        }
+        value = hashConfig.get(XML_SERVER_ADMIN);
+        if (value != null && (!value.isEmpty())) {
+            ADMINNAME = value.getString();
+        } else {
+            logger.error("Unable to find Administrator name in Config file");
+            return false;
+        }
+        if (cryptoKey == null) {
+            if (! setCryptoKey()) {
+                logger.error("Unable to find Crypto Key in Config file");
+                return false;
+            }
+        }
+        String passwd;
+        value = hashConfig.get(XML_SERVER_PASSWD);
+        if (value != null && (!value.isEmpty())) {
+            passwd = value.getString();
+        } else {
+            logger.error("Unable to find Password in Config file");
+            return false;
+        }
+        byte[] decodedByteKeys = null;
         try {
-            document = new SAXReader().read(filename);
-        } catch (DocumentException e) {
-            logger.error("Unable to read the XML Config file: " + filename, e);
+            decodedByteKeys =
+                cryptoKey.decryptHexInBytes(passwd);
+        } catch (Exception e) {
+            logger.error(
+                    "Unable to Decrypt Server Password in Config file from: " +
+                            passwd, e);
             return false;
         }
-        if (document == null) {
-            logger.error("Unable to read the XML Config file: " + filename);
+        setSERVERKEY(decodedByteKeys);
+        value = hashConfig.get(XML_HTTPADMINPATH);
+        if (value == null || (value.isEmpty())) {
+            logger.error("Unable to find Http Admin Base in Config file");
             return false;
         }
-        Node node = null;
-        node = document.selectSingleNode(XML_SERVER_PASSWD);
-        if (node == null) {
-            logger.error("Unable to find Password in Config file: " + filename);
+        String path = value.getString();
+        if (path == null || path.length() == 0) {
+            logger.error("Unable to set correct Http Admin Base in Config file");
             return false;
         }
-        String passwd = node.getText();
-        setPassword(passwd);
-        node = document.selectSingleNode(XML_SERVER_PORT);
-        int port = 21;
-        if (node != null) {
-            port = Integer.parseInt(node.getText());
-        }
-        setServerPort(port);
-        node = document.selectSingleNode(XML_SERVER_ADDRESS);
-        String address = null;
-        if (node != null) {
-            address = node.getText();
-        }
-        setServerAddress(address);
-        node = document.selectSingleNode(XML_SERVER_HOME);
-        if (node == null) {
-            logger.error("Unable to find Home in Config file: " + filename);
-            return false;
-        }
-        String path = node.getText();
         File file = new File(path);
+        if (!file.isDirectory()) {
+            logger.error("Http Admin is not a directory in Config file");
+            return false;
+        }
+        try {
+            httpBasePath =
+                FilesystemBasedDirImpl.normalizePath(file.getCanonicalPath())+ 
+                DirInterface.SEPARATOR;
+        } catch (IOException e1) {
+            logger.error("Unable to set Http Admin Path in Config file");
+            return false;
+        }
+        httpChannelGroup = new DefaultChannelGroup("HttpOpenR66");
+        // Key for HTTPS
+        value = hashConfig.get(XML_PATH_ADMIN_KEYPATH);
+        if (value != null && (!value.isEmpty())) {
+            String keypath = value.getString();
+            if ((keypath == null) || (keypath.length() == 0)) {
+                logger.error("Bad Key Path");
+                return false;
+            }
+            value = hashConfig.get(XML_PATH_ADMIN_KEYSTOREPASS);
+            if (value == null || (value.isEmpty())) {
+                logger.error("Unable to find KeyStore Passwd");
+                return false;
+            }
+            String keystorepass = value.getString();
+            if ((keystorepass == null) || (keystorepass.length() == 0)) {
+                logger.error("Bad KeyStore Passwd");
+                return false;
+            }
+            value = hashConfig.get(XML_PATH_ADMIN_KEYPASS);
+            if (value == null || (value.isEmpty())) {
+                logger.error("Unable to find Key Passwd");
+                return false;
+            }
+            String keypass = value.getString();
+            if ((keypass == null) || (keypass.length() == 0)) {
+                logger.error("Bad Key Passwd");
+                return false;
+            }
+            try {
+                HttpSslPipelineFactory.ggSecureKeyStore =
+                    new GgSecureKeyStore(keypath, keystorepass,
+                            keypass);
+            } catch (CryptoException e) {
+                logger.error("Bad SecureKeyStore construction for AdminSsl");
+                return false;
+            }
+            // No client authentication
+            try {
+                HttpSslPipelineFactory.ggSecureKeyStore.initEmptyTrustStore();
+            } catch (CryptoException e) {
+                logger.error("Bad TrustKeyStore construction");
+                return false;
+            }
+            HttpSslPipelineFactory.ggSslContextFactory =
+                new GgSslContextFactory(
+                        HttpSslPipelineFactory.ggSecureKeyStore, true);
+        }
+        return true;
+    }
+    private boolean loadDirectory() {
+        XmlValue value = hashConfig.get(XML_SERVER_HOME);
+        if (value == null || (value.isEmpty())) {
+            logger.error("Unable to find Home in Config file");
+            return false;
+        }
+        String path = value.getString();
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            logger.error("Home is not a directory in Config file");
+            return false;
+        }
         try {
             setBaseDirectory(FilesystemBasedDirImpl.normalizePath(file
                     .getCanonicalPath()));
         } catch (IOException e1) {
-            logger.error("Unable to set Home in Config file: " + filename);
+            logger.error("Unable to set Home in Config file: " + path);
             return false;
         }
-        if (!file.isDirectory()) {
-            logger.error("Home is not a directory in Config file: " + filename);
-            return false;
-        }
-        node = document.selectSingleNode(XML_SERVER_THREAD);
-        if (node != null) {
-            SERVER_THREAD = Integer.parseInt(node.getText());
-        }
-        node = document.selectSingleNode(XML_CLIENT_THREAD);
-        if (node != null) {
-            CLIENT_THREAD = Integer.parseInt(node.getText());
-        }
-        node = document.selectSingleNode(XML_LIMITGLOBAL);
-        if (node != null) {
-            serverGlobalReadLimit = Long.parseLong(node.getText());
+        return true;
+    }
+    private boolean loadLimit(boolean updateLimit) {
+        XmlValue value = hashConfig.get(XML_LIMITGLOBAL);
+        if (value != null && (!value.isEmpty())) {
+            serverGlobalReadLimit = value.getLong();
             if (serverGlobalReadLimit <= 0) {
                 serverGlobalReadLimit = 0;
             }
             serverGlobalWriteLimit = serverGlobalReadLimit;
-            logger.warn("Global Limit: {}", serverGlobalReadLimit);
+            logger.info("Global Limit: {}",
+                    serverGlobalReadLimit);
         }
-        node = document.selectSingleNode(XML_LIMITSESSION);
-        if (node != null) {
-            serverChannelReadLimit = Long.parseLong(node.getText());
+        value = hashConfig.get(XML_LIMITSESSION);
+        if (value != null && (!value.isEmpty())) {
+            serverChannelReadLimit = value.getLong();
             if (serverChannelReadLimit <= 0) {
                 serverChannelReadLimit = 0;
             }
             serverChannelWriteLimit = serverChannelReadLimit;
-            logger.warn("SessionInterface Limit: {}", serverChannelReadLimit);
+            logger.info("SessionInterface Limit: {}",
+                    serverChannelReadLimit);
         }
         delayLimit = AbstractTrafficShapingHandler.DEFAULT_CHECK_INTERVAL;
-        node = document.selectSingleNode(XML_TIMEOUTCON);
-        if (node != null) {
-            TIMEOUTCON = Integer.parseInt(node.getText());
+        value = hashConfig.get(XML_LIMITDELAY);
+        if (value != null && (!value.isEmpty())) {
+            delayLimit = value.getLong();
+            if (delayLimit <= 0) {
+                delayLimit = 0;
+            }
+            logger.info("Delay Limit: {}",
+                    delayLimit);
         }
-        node = document.selectSingleNode(XML_DELETEONABORT);
-        if (node != null) {
-            deleteOnAbort = Integer.parseInt(node.getText()) == 1? true : false;
+        boolean useCpuLimit = false;
+        boolean useCpuLimitJDK = false; 
+        double cpulimit = 1.0;
+        value = hashConfig.get(XML_CSTRT_USECPULIMIT);
+        if (value != null && (!value.isEmpty())) {
+            useCpuLimit = value.getBoolean();
+            value = hashConfig.get(XML_CSTRT_USECPUJDKLIMIT);
+            if (value != null && (!value.isEmpty())) {
+                useCpuLimitJDK = value.getBoolean();
+            }
+            value = hashConfig.get(XML_CSTRT_CPULIMIT);
+            if (value != null && (!value.isEmpty())) {
+                cpulimit = value.getDouble();
+            }
         }
-        node = document.selectSingleNode(XML_USENIO);
-        if (node != null) {
-            FilesystemBasedFileParameterImpl.useNio = Integer.parseInt(node
-                    .getText()) == 1? true : false;
+        int connlimit = 0;
+        value = hashConfig.get(XML_CSTRT_CONNLIMIT);
+        if (value != null && (!value.isEmpty())) {
+            connlimit = value.getInteger();
         }
-        node = document.selectSingleNode(XML_USEFASTMD5);
-        if (node != null) {
-            FilesystemBasedDigest.useFastMd5 = Integer.parseInt(node.getText()) == 1? true
-                    : false;
+        constraintLimitHandler =
+            new ConstraintLimitHandler(useCpuLimit, useCpuLimitJDK, cpulimit, connlimit);
+        value = hashConfig.get(XML_SERVER_THREAD);
+        if (value != null && (!value.isEmpty())) {
+            SERVER_THREAD = value.getInteger();
+        }
+        value = hashConfig.get(XML_CLIENT_THREAD);
+        if (value != null && (!value.isEmpty())) {
+            CLIENT_THREAD = value.getInteger();
+        }
+        value = hashConfig.get(XML_MEMORY_LIMIT);
+        if (value != null && (!value.isEmpty())) {
+            maxGlobalMemory = value.getLong();
+        }
+        ((FilesystemBasedFileParameterImpl)getFileParameter()).deleteOnAbort = false;
+        value = hashConfig.get(XML_USENIO);
+        if (value != null && (!value.isEmpty())) {
+            FilesystemBasedFileParameterImpl.useNio = value.getBoolean();
+        }
+        value = hashConfig.get(XML_USEFASTMD5);
+        if (value != null && (!value.isEmpty())) {
+            FilesystemBasedDigest.useFastMd5 = value.getBoolean();
             if (FilesystemBasedDigest.useFastMd5) {
-                node = document.selectSingleNode(XML_FASTMD5);
-                if (node != null) {
-                    FilesystemBasedDigest.fastMd5Path = node.getText();
+                value = hashConfig.get(XML_FASTMD5);
+                if (value != null && (!value.isEmpty())) {
+                    FilesystemBasedDigest.fastMd5Path = value.getString();
                     if (FilesystemBasedDigest.fastMd5Path == null ||
                             FilesystemBasedDigest.fastMd5Path.length() == 0) {
                         logger.info("FastMD5 init lib to null");
                         FilesystemBasedDigest.fastMd5Path = null;
+                        MD5.initNativeLibrary(true);
                     } else {
-                        logger.info("FastMD5 init lib to " +
+                        logger.info("FastMD5 init lib to {}",
                                 FilesystemBasedDigest.fastMd5Path);
-                        MD5
-                                .initNativeLibrary(FilesystemBasedDigest.fastMd5Path);
+                        MD5.initNativeLibrary(FilesystemBasedDigest.fastMd5Path);
                     }
                 }
             } else {
                 FilesystemBasedDigest.fastMd5Path = null;
+                MD5.initNativeLibrary(true);
             }
+        } else {
+            FilesystemBasedDigest.useFastMd5 = false;
+            FilesystemBasedDigest.fastMd5Path = null;
+            MD5.initNativeLibrary(true);
         }
-        node = document.selectSingleNode(XML_BLOCKSIZE);
-        if (node != null) {
-            BLOCKSIZE = Integer.parseInt(node.getText());
+        value = hashConfig.get(XML_BLOCKSIZE);
+        if (value != null && (!value.isEmpty())) {
+            BLOCKSIZE = value.getInteger();
         }
-        node = document.selectSingleNode(XML_RANGE_PORT_MIN);
-        int min = 100;
-        if (node != null) {
-            min = Integer.parseInt(node.getText());
+        value = hashConfig.get(XML_TIMEOUTCON);
+        if (value != null && (!value.isEmpty())) {
+            TIMEOUTCON = (int) value.getLong();
         }
-        node = document.selectSingleNode(XML_RANGE_PORT_MAX);
-        int max = 65535;
-        if (node != null) {
-            max = Integer.parseInt(node.getText());
+        value = hashConfig.get(XML_DELETEONABORT);
+        if (value != null && (!value.isEmpty())) {
+            deleteOnAbort = value.getBoolean();
         }
-        CircularIntValue rangePort = new CircularIntValue(min, max);
-        setRangePort(rangePort);
-        // Specific Exec command options
-        node = document.selectSingleNode(XML_RETRIEVE_COMMAND);
-        if (node == null) {
-            logger.error("Unable to find Retrieve Command in Config file: " + filename);
-            return false;
-        }
-        String retrieve = node.getText();
-        int retrievedelay = 0;
-        node = document.selectSingleNode(XML_DELAYRETRIEVE_COMMAND);
-        if (node != null) {
-            retrievedelay = Integer.parseInt(node.getText());
-        }
-        node = document.selectSingleNode(XML_STORE_COMMAND);
-        if (node == null) {
-            logger.error("Unable to find Store Command in Config file: " + filename);
-            return false;
-        }
-        String store = node.getText();
-        int storedelay = 0;
-        node = document.selectSingleNode(XML_DELAYSTORE_COMMAND);
-        if (node != null) {
-            storedelay = Integer.parseInt(node.getText());
-        }
-        AbstractExecutor.initializeExecutor(retrieve, retrievedelay, store, storedelay);
         // We use Apache Commons IO
         FilesystemBasedDirJdkAbstract.ueApacheCommonsIo = true;
-        node = document.selectSingleNode(XML_AUTHENTICATION_FILE);
-        if (node == null) {
-            logger.error("Unable to find Authentication file in Config file: " +
-                    filename);
+        if (USEJDK6) {
+            FileBasedDir.initJdkDependent(new FilesystemBasedDirJdk6());
+        } else {
+            FileBasedDir.initJdkDependent(new FilesystemBasedDirJdk5());
+        }
+        return true;
+    }
+    private boolean loadNetworkServer() {
+        XmlValue value = hashConfig.get(XML_SERVER_PORT);
+        int port = 21;
+        if (value != null && (!value.isEmpty())) {
+            port = value.getInteger();
+        } else {
+            port = 21;
+        }
+        setServerPort(port);
+        value = hashConfig.get(XML_SERVER_ADDRESS);
+        String address = null;
+        if (value != null && (!value.isEmpty())) {
+            address = value.getString();
+        }
+        setServerAddress(address);
+        int min = 100;
+        int max = 65535;
+        value = hashConfig.get(XML_RANGE_PORT_MIN);
+        if (value != null && (!value.isEmpty())) {
+            min = value.getInteger();
+        }
+        value = hashConfig.get(XML_RANGE_PORT_MAX);
+        if (value != null && (!value.isEmpty())) {
+            max = value.getInteger();
+        }
+        logger.warn("Passive Port range Min: "+min+" Max: "+max);
+        CircularIntValue rangePort = new CircularIntValue(min, max);
+        setRangePort(rangePort);
+        value = hashConfig.get(XML_SERVER_HTTP_PORT);
+        int httpport = 8066;
+        if (value != null && (!value.isEmpty())) {
+            httpport = value.getInteger();
+        }
+        SERVER_HTTPPORT = httpport;
+        value = hashConfig.get(XML_SERVER_HTTPS_PORT);
+        int httpsport = 8067;
+        if (value != null && (!value.isEmpty())) {
+            httpsport = value.getInteger();
+        }
+        SERVER_HTTPSPORT = httpsport;
+        return true;
+    }
+    /**
+     * Set the Crypto Key from the Document
+     * @param document
+     * @return True if OK
+     */
+    private boolean setCryptoKey() {
+        XmlValue value = hashConfig.get(XML_PATH_CRYPTOKEY);
+        if (value == null || (value.isEmpty())) {
+            logger.error("Unable to find CryptoKey in Config file");
             return false;
         }
-        authenticationFile = node.getText();
-        document = null;
-        return initializeAuthent(authenticationFile, false);
+        String filename = value.getString();
+        File key = new File(filename);
+        Des des = new Des();
+        try {
+            des.setSecretKey(key);
+        } catch (CryptoException e) {
+            logger.error("Unable to load CryptoKey from Config file");
+            return false;
+        } catch (IOException e) {
+            logger.error("Unable to load CryptoKey from Config file");
+            return false;
+        }
+        cryptoKey = des;
+        return true;
+    }
+    /**
+     * 
+     * @return True if the global Exec parameters are correctly loaded
+     */
+    private boolean loadExec() {
+        // Specific Exec command options
+        XmlValue value = hashConfig.get(XML_RETRIEVE_COMMAND);
+        if (value == null || (value.isEmpty())) {
+            logger.error("Unable to find Retrieve Command in Config file");
+            return false;
+        }
+        String retrieve = value.getString();
+        value = hashConfig.get(XML_DELAYRETRIEVE_COMMAND);
+        int retrievedelay = 0;
+        if (value != null && (!value.isEmpty())) {
+            retrievedelay = value.getInteger();
+        }
+        value = hashConfig.get(XML_STORE_COMMAND);
+        if (value == null || (value.isEmpty())) {
+            logger.error("Unable to find Store Command in Config file");
+            return false;
+        }
+        String store = value.getString();
+        value = hashConfig.get(XML_DELAYSTORE_COMMAND);
+        int storedelay = 0;
+        if (value != null && (!value.isEmpty())) {
+            storedelay = value.getInteger();
+        }
+        AbstractExecutor.initializeExecutor(retrieve, retrievedelay, store, storedelay);
+        return true;
+    }
+    /**
+     * Load database parameter
+     *
+     * @param document
+     * @return True if OK
+     */
+    private boolean loadDatabase() {
+        XmlValue value = hashConfig.get(XML_DBDRIVER);
+        if (value == null || (value.isEmpty())) {
+            logger.error("Unable to find DBDriver in Config file");
+            DbConstant.admin = new DbAdmin(); // no database support
+        } else {
+            String dbdriver = value.getString();
+            value = hashConfig.get(XML_DBSERVER);
+            if (value == null || (value.isEmpty())) {
+                logger.error("Unable to find DBServer in Config file");
+                return false;
+            }
+            String dbserver = value.getString();
+            value = hashConfig.get(XML_DBUSER);
+            if (value == null || (value.isEmpty())) {
+                logger.error("Unable to find DBUser in Config file");
+                return false;
+            }
+            String dbuser = value.getString();
+            value = hashConfig.get(XML_DBPASSWD);
+            if (value == null || (value.isEmpty())) {
+                logger.error("Unable to find DBPassword in Config file");
+                return false;
+            }
+            String dbpasswd = value.getString();
+            if (dbdriver == null || dbserver == null || dbuser == null ||
+                    dbpasswd == null || dbdriver.length() == 0 ||
+                    dbserver.length() == 0 || dbuser.length() == 0 ||
+                    dbpasswd.length() == 0) {
+                logger.error("Unable to find Correct DB data in Config file");
+                return false;
+            }
+            try {
+                DbConstant.admin = 
+                    DbModelFactory.initialize(dbdriver, dbserver, dbuser, dbpasswd,
+                        true);
+            } catch (GoldenGateDatabaseNoConnectionError e2) {
+                logger.error("Unable to Connect to DB", e2);
+                return false;
+            }
+            AbstractExecutor.useDatabase = true;
+        }
+        return true;
+    }
+   /**
+    * Initiate the configuration from the xml file for server
+    *
+    * @param filename
+    * @return True if OK
+    */
+   public boolean setConfigurationServerFromXml(String filename) {
+       Document document = null;
+       // Open config file
+       try {
+           document = new SAXReader().read(filename);
+       } catch (DocumentException e) {
+           logger.error("Unable to read the XML Config file: " + filename, e);
+           return false;
+       }
+       if (document == null) {
+           logger.error("Unable to read the XML Config file: " + filename);
+           return false;
+       }
+       configuration = XmlUtil.read(document, configServer);
+       hashConfig = new XmlHash(configuration);
+       // Now read the configuration
+       if (! loadIdentity()) {
+           logger.error("Cannot load Identity");
+           return false;
+       }
+       if (!loadDatabase()) {
+           logger.error("Cannot load Database configuration");
+           return false;
+       }
+       if (! loadServerParam()) {
+           logger.error("Cannot load Server Parameters");
+           return false;
+       }
+       if (! loadDirectory()) {
+           logger.error("Cannot load Directory configuration");
+           return false;
+       }
+       if (! loadLimit(false)) {
+           logger.error("Cannot load Limit configuration");
+           return false;
+       }
+       if (! loadNetworkServer()) {
+           logger.error("Cannot load Network configuration");
+           return false;
+       }
+       if (!loadExec()) {
+           logger.error("Cannot load Exec configuration");
+           return false;
+       }
+       //if (!DbConstant.admin.isConnected) {
+           // if no database, must load authentication from file
+           if (! loadAuthentication()) {
+               logger.error("Cannot load Authentication configuration");
+               return false;
+           }
+       //}
+       hashConfig.clear();
+       hashConfig = null;
+       configuration = null;
+       return true;
+   }
+   private class GgThreadFactory implements ThreadFactory {
+       private String GlobalName;
+       public GgThreadFactory(String globalName) {
+           GlobalName = globalName;
+       }
+       /* (non-Javadoc)
+        * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
+        */
+       @Override
+       public Thread newThread(Runnable arg0) {
+           Thread thread = new Thread(arg0);
+           thread.setName(GlobalName+thread.getName());
+           return thread;
+       }
+   }
+   /**
+    * Configure HTTPS
+    */
+   public void configureHttps() {
+       // Now start the HTTPS support
+       // Configure the server.
+       httpPipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
+               CLIENT_THREAD, maxGlobalMemory / 10, maxGlobalMemory, 500,
+               TimeUnit.MILLISECONDS, new GgThreadFactory("HttpExecutor"));
+       httpsChannelFactory = new NioServerSocketChannelFactory(
+               Executors.newCachedThreadPool(),
+               Executors.newCachedThreadPool(),
+               SERVER_THREAD);
+       httpsBootstrap = new ServerBootstrap(
+               httpsChannelFactory);
+       // Set up the event pipeline factory.
+       httpsBootstrap.setPipelineFactory(new HttpSslPipelineFactory(useHttpCompression,
+               true, getHttpPipelineExecutor()));
+       httpsBootstrap.setOption("child.tcpNoDelay", true);
+       httpsBootstrap.setOption("child.keepAlive", true);
+       httpsBootstrap.setOption("child.reuseAddress", true);
+       httpsBootstrap.setOption("child.connectTimeoutMillis", TIMEOUTCON);
+       httpsBootstrap.setOption("tcpNoDelay", true);
+       httpsBootstrap.setOption("reuseAddress", true);
+       httpsBootstrap.setOption("connectTimeoutMillis", TIMEOUTCON);
+       // Bind and start to accept incoming connections.
+       httpChannelGroup.add(httpsBootstrap.bind(new InetSocketAddress(SERVER_HTTPSPORT)));
+   }
+   /**
+    * Configure LocalExec
+    */
+   public void configureLExec() {
+       if (useLocalExec) {
+           LocalExecClient.initialize(this);
+       }
+   }
+    /**
+     * @param serverkey
+     *            the SERVERADMINKEY to set
+     */
+    public void setSERVERKEY(byte[] serverkey) {
+        SERVERADMINKEY = serverkey;
+    }
+    /**
+     * Check the password for Shutdown
+     *
+     * @param password
+     * @return True if the password is OK
+     */
+    public boolean checkPassword(String password) {
+        if (password == null) {
+            return false;
+        }
+        return Arrays.equals(SERVERADMINKEY, password.getBytes());
     }
     /**
      * Initialize Authentication from current authenticationFile
@@ -433,47 +1197,112 @@ public class FileBasedConfiguration extends FtpConfiguration {
                     filename);
             return false;
         }
-        List<Node> list = document.selectNodes(XML_AUTHENTICATION_BASED);
-        Iterator<Node> iterator = list.iterator();
+        XmlValue[] configuration = XmlUtil.read(document, authentElements);
+        XmlHash hashConfig = new XmlHash(configuration);
+
+        XmlValue value = hashConfig.get(XML_AUTHENTIFICATION_ENTRY);
+        List<XmlValue []> list = (List<XmlValue []>)value.getList();
         ConcurrentHashMap<String, SimpleAuth> newAuthents =
             new ConcurrentHashMap<String, SimpleAuth>();
-        while (iterator.hasNext()) {
-            Node nodebase = iterator.next();
-            Node node = nodebase.selectSingleNode(XML_AUTHENTICATION_USER);
-            if (node == null) {
+        for (XmlValue[] xmlValues: list) {
+            hashConfig = new XmlHash(xmlValues);
+            value = hashConfig.get(XML_AUTHENTICATION_USER);
+            if (value == null || (value.isEmpty())) {
+                logger.error("Unable to find a User in Config file");
                 continue;
             }
-            String user = node.getText();
-            node = nodebase.selectSingleNode(XML_AUTHENTICATION_PASSWD);
-            if (node == null) {
+            String user = value.getString();
+            value = hashConfig.get(XML_AUTHENTICATION_ACCOUNT);
+            if (value == null || (value.isEmpty())) {
+                logger.error("Unable to find a Account in Config file: "+user);
                 continue;
             }
-            String userpasswd = node.getText();
-            node = nodebase.selectSingleNode(XML_AUTHENTICATION_ADMIN);
-            boolean isAdmin = false;
-            if (node != null) {
-                isAdmin = node.getText().equals("1")? true : false;
-            }
-            List<Node> listaccount = nodebase
-                    .selectNodes(XML_AUTHENTICATION_ACCOUNT);
             String[] account = null;
+            List<String> listaccount = (List<String>) value.getList();
             if (!listaccount.isEmpty()) {
                 account = new String[listaccount.size()];
                 int i = 0;
-                Iterator<Node> iteratoraccount = listaccount.iterator();
+                Iterator<String> iteratoraccount = listaccount.iterator();
                 while (iteratoraccount.hasNext()) {
-                    node = iteratoraccount.next();
-                    account[i] = node.getText();
+                    account[i] = iteratoraccount.next();
                     // logger.debug("User: {} Acct: {}", user, account[i]);
                     File directory = new File(getBaseDirectory()+"/"+user+"/"+account[i]);
                     directory.mkdirs();
                     i ++;
                 }
+            } else {
+                logger.error("Unable to find a Account in Config file: "+user);
+                continue;
             }
-            SimpleAuth auth = new SimpleAuth(user, userpasswd, account);
+            value = hashConfig.get(XML_AUTHENTICATION_ADMIN);
+            boolean isAdmin = false;
+            if (value != null && (!value.isEmpty())) {
+                isAdmin = value.getBoolean();
+            }
+            String retrcmd = null;
+            long retrdelay = 0;
+            String storcmd = null;
+            long stordelay = 0;
+            value = hashConfig.get(XML_RETRIEVE_COMMAND);
+            if (value != null && (!value.isEmpty())) {
+                retrcmd = value.getString();
+            }
+            value = hashConfig.get(XML_DELAYRETRIEVE_COMMAND);
+            if (value != null && (!value.isEmpty())) {
+                retrdelay = value.getLong();
+            }
+            value = hashConfig.get(XML_STORE_COMMAND);
+            if (value != null && (!value.isEmpty())) {
+                storcmd = value.getString();
+            }
+            value = hashConfig.get(XML_DELAYSTORE_COMMAND);
+            if (value != null && (!value.isEmpty())) {
+                stordelay = value.getLong();
+            }
+            String passwd;
+            value = hashConfig.get(XML_AUTHENTICATION_PASSWDFILE);
+            if (value != null && (!value.isEmpty())) {
+                // load key from file
+                File key = new File(value.getString());
+                if (!key.canRead()) {
+                    logger.error("Cannot read key for user " + user+":"+key.getName());
+                    continue;
+                }
+                try {
+                    byte [] byteKeys = cryptoKey.decryptHexFile(key);
+                    passwd = new String(byteKeys);
+                } catch (Exception e2) {
+                    logger.error("Cannot read key for user " + user, e2);
+                    continue;
+                }
+            } else {
+                value = hashConfig.get(XML_AUTHENTICATION_PASSWD);
+                if (value != null && (!value.isEmpty())) {
+                    String encrypted = value.getString();
+                    byte[] byteKeys = null;
+                    try {
+                        byteKeys =
+                            cryptoKey.decryptHexInBytes(encrypted);
+                        passwd = new String(byteKeys);
+                    } catch (Exception e) {
+                        logger.error(
+                                "Unable to Decrypt Key for user " + user, e);
+                        continue;
+                    }
+                } else {
+                    logger.error("Unable to find Password in Config file");
+                    // DO NOT Allow empty key
+                    continue;
+                }
+            }
+            SimpleAuth auth = new SimpleAuth(user, passwd, account, 
+                    storcmd, stordelay, retrcmd, retrdelay);
             auth.setAdmin(isAdmin);
             newAuthents.put(user, auth);
+            hashConfig.clear();
         }
+        hashConfig.clear();
+        configuration = null;
         if (purge) {
             ConcurrentHashMap<String, SimpleAuth> previousOne = authentications;
             authentications = newAuthents;
@@ -486,51 +1315,68 @@ public class FileBasedConfiguration extends FtpConfiguration {
         return true;
     }
     /**
-     * Construct a new Element with value
-     * @param name
-     * @param value
-     * @return the new Element
-     */
-    private static Element newElement(String name, String value) {
-        Element node = new DefaultElement(name);
-        node.addText(value);
-        return node;
-    }
-    /**
      * Export the Authentication to the original files
      * @param filename the filename where the authentication will be exported
      * @return True if successful
      */
     public boolean saveAuthenticationFile(String filename) {
-        Document document = DocumentHelper.createDocument();
-        Element root = document.addElement(XML_AUTHENTBASE_BASED);
-        for (SimpleAuth auth : authentications.values()) {
-            Element entry = root.addElement(XML_AUTHENTENTRY_BASED);
-            entry.add(newElement(XML_AUTHENTICATION_USER, auth.user));
-            entry.add(newElement(XML_AUTHENTICATION_PASSWD, auth.password));
-            entry.add(newElement(XML_AUTHENTICATION_ADMIN, auth.isAdmin ? "1" : "0"));
-            for (String acct : auth.accounts) {
-                entry.add(newElement(XML_AUTHENTICATION_ACCOUNT, acct));
+        Document document = XmlUtil.createEmptyDocument();
+        XmlValue [] roots = new XmlValue[1];
+        XmlValue root = new XmlValue(authentElements[0]);
+        roots[0] = root;
+        Enumeration<SimpleAuth> auths = authentications.elements();
+        while (auths.hasMoreElements()) {
+            SimpleAuth auth = auths.nextElement();
+            XmlValue []values = new XmlValue[configAuthenticationDecls.length];
+            for (int i = 0; i < configAuthenticationDecls.length; i++) {
+                values[i] = new XmlValue(configAuthenticationDecls[i]);
+            }
+            values[0].setFromString(auth.user);
+            //values[1].setFromString();
+            values[2].setFromString(auth.password);
+            // Accounts
+            String []accts = auth.accounts;
+            for (String string: accts) {
+                try {
+                    values[3].addFromString(string);
+                } catch (InvalidObjectException e) {
+                    logger.error("Error during Write Authentication file", e);
+                    return false;
+                }
+            }
+            try {
+                values[4].setValue(auth.isAdmin);
+            } catch (InvalidObjectException e) {
+                logger.error("Error during Write Authentication file", e);
+                return false;
+            }
+            values[5].setFromString(auth.retrCmd);
+            try {
+                values[6].setValue(auth.retrDelay);
+            } catch (InvalidObjectException e) {
+                logger.error("Error during Write Authentication file", e);
+                return false;
+            }
+            values[7].setFromString(auth.storCmd);
+            try {
+                values[8].setValue(auth.storDelay);
+            } catch (InvalidObjectException e) {
+                logger.error("Error during Write Authentication file", e);
+                return false;
+            }
+            try {
+                root.addValue(values);
+            } catch (InvalidObjectException e) {
+                logger.error("Error during Write Authentication file", e);
+                return false;
             }
         }
-        OutputFormat format = OutputFormat.createPrettyPrint();
-        format.setEncoding("ISO-8859-1");
-        XMLWriter writer = null;
+        XmlUtil.write(document, roots);
         try {
-            writer = new XMLWriter(new FileWriter(filename), format);
-        } catch (IOException e) {
-            logger.error("Cannot open for write file: "+filename+" since {}", e.getMessage());
+            XmlUtil.saveDocument(filename, document);
+        } catch (IOException e1) {
+            logger.error("Cannot write to file: "+filename+" since {}", e1.getMessage());
             return false;
-        }
-        try {
-            writer.write(document);
-        } catch (IOException e) {
-            logger.error("Cannot write to file: "+filename+" since {}", e.getMessage());
-            return false;
-        }
-        try {
-            writer.close();
-        } catch (IOException e) {
         }
         return true;
     }
@@ -561,5 +1407,63 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     private void setRangePort(CircularIntValue rangePort) {
         setProperty(RANGE_PORT, rangePort);
+    }
+
+    /**
+     * @return
+     */
+    public OrderedMemoryAwareThreadPoolExecutor getHttpPipelineExecutor() {
+        return httpPipelineExecutor;
+    }
+    /**
+     * @return the httpChannelGroup
+     */
+    public ChannelGroup getHttpChannelGroup() {
+        return httpChannelGroup;
+    }
+    /**
+     * Finalize resources attached to handlers
+     *
+     * @author Frederic Bregier
+     */
+    private static class GgChannelGroupFutureListener implements
+            ChannelGroupFutureListener {
+        OrderedMemoryAwareThreadPoolExecutor pool;
+        String name;
+        ChannelFactory channelFactory;
+
+        public GgChannelGroupFutureListener(
+                String name,
+                OrderedMemoryAwareThreadPoolExecutor pool,
+                ChannelFactory channelFactory) {
+            this.name = name;
+            this.pool = pool;
+            this.channelFactory = channelFactory;
+        }
+
+        public void operationComplete(ChannelGroupFuture future)
+                throws Exception {
+            if (pool != null) {
+                pool.shutdownNow();
+            }
+            if (channelFactory != null) {
+                channelFactory.releaseExternalResources();
+            }
+            logger.info("Done with shutdown "+name);
+        }
+    }
+    @Override
+    public void releaseResources() {
+        final int result = getHttpChannelGroup().size();
+        logger.debug("HttpChannelGroup: " + result);
+        getHttpChannelGroup().close().addListener(
+                new GgChannelGroupFutureListener(
+                        "HttpChannelGroup",
+                        null,
+                        httpsChannelFactory));
+        if (useLocalExec) {
+            LocalExecClient.releaseResources();
+        }
+        DbAdmin.closeAllConnection();
     }
 }

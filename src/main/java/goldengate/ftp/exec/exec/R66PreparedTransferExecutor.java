@@ -21,15 +21,15 @@
 package goldengate.ftp.exec.exec;
 
 import openr66.database.DbConstant;
-import openr66.database.DbSession;
-import openr66.database.data.AbstractDbData;
 import openr66.database.data.DbRule;
 import openr66.database.data.DbTaskRunner;
-import openr66.database.exception.OpenR66DatabaseException;
 import openr66.protocol.configuration.Configuration;
 import openr66.protocol.localhandler.packet.RequestPacket;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply421Exception;
+import goldengate.common.database.DbSession;
+import goldengate.common.database.data.AbstractDbData;
+import goldengate.common.database.exception.GoldenGateDatabaseException;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -154,7 +154,7 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
         DbRule rule;
         try {
             rule = new DbRule(dbsession, rulename);
-        } catch (OpenR66DatabaseException e) {
+        } catch (GoldenGateDatabaseException e) {
             logger.error("Cannot get Rule: " + rulename + " since {}\n    " +
                     message, e.getMessage());
             throw new Reply421Exception("Cannot get Rule: " +
@@ -173,7 +173,7 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
         try {
             taskRunner = new DbTaskRunner(dbsession, rule, isRetrieve, request,
                     remoteHost);
-        } catch (OpenR66DatabaseException e) {
+        } catch (GoldenGateDatabaseException e) {
             logger.error("Cannot get new task since {}\n    " + message, e
                     .getMessage());
             throw new Reply421Exception("Cannot get new task\n    " + message);
@@ -181,7 +181,7 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
         taskRunner.changeUpdatedInfo(AbstractDbData.UpdatedInfo.TOSUBMIT);
         try {
             taskRunner.update();
-        } catch (OpenR66DatabaseException e) {
+        } catch (GoldenGateDatabaseException e) {
             logger.error("Cannot prepare task since {}\n    " + message, e
                     .getMessage());
             throw new Reply421Exception("Cannot prepare task\n    " + message);

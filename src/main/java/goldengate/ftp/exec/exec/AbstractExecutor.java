@@ -84,6 +84,12 @@ public abstract class AbstractExecutor {
     protected static long storeDelay = 0;
 
     public static boolean useDatabase = false;
+    
+    /**
+     * Local Exec Daemon is used or not for execution of external commands
+     */
+    public static boolean useLocalExec = false;
+
 
     /**
      * Initialize the Executor with the correct command and delay

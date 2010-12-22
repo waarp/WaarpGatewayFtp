@@ -29,10 +29,11 @@ import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.common.logging.GgSlf4JLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
-import goldengate.ftp.exec.config.R66FileBasedConfiguration;
 import goldengate.ftp.exec.control.ExecBusinessHandler;
 import goldengate.ftp.exec.data.FileSystemBasedDataBusinessHandler;
 import goldengate.ftp.exec.exec.AbstractExecutor;
+
+import openr66.protocol.configuration.Configuration;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 
@@ -71,10 +72,11 @@ public class ExecGatewayFtpServer {
                 ExecGatewayFtpServer.class, ExecBusinessHandler.class,
                 FileSystemBasedDataBusinessHandler.class,
                 new FilesystemBasedFileParameterImpl());
-        if (!configuration.setConfigurationFromXml(config)) {
+        if (!configuration.setConfigurationServerFromXml(config)) {
             System.err.println("Bad main configuration");
             return;
         }
+        Configuration.configuration.useLocalExec = configuration.useLocalExec;
         // Init according JDK
         if (FtpConfiguration.USEJDK6) {
             FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk6());
@@ -84,18 +86,21 @@ public class ExecGatewayFtpServer {
         if (AbstractExecutor.useDatabase) {
             // Use R66 module
             if (args.length > 1) {
-                if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1])) {
+                if (! openr66.configuration.FileBasedConfiguration.setSubmitClientConfigurationFromXml(args[1])) {
+                //if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1])) {
                     System.err.println("Bad R66 configuration");
                     return;
                 }
             } else {
                 // Cannot get R66 functional
-                System.err.println("No R66PrepareTransfer configuration file: stop");
-                return;
+                System.err.println("No R66PrepareTransfer configuration file");
             }
         }
+        FileBasedConfiguration.fileBasedConfiguration = configuration;
         // Start server.
+        configuration.configureLExec();
         configuration.serverStartup();
+        configuration.configureHttps();
         logger.warn("FTP started");
     }
 

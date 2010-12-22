@@ -56,16 +56,41 @@ public class SimpleAuth {
      * bandwidth limitation)
      */
     public boolean isAdmin = false;
-
+    /**
+     * Specific Store command for this user
+     */
+    public String storCmd = null;
+    /**
+     * Specific Store command delay for this user
+     */
+    public long storDelay = 0;
+    /**
+     * Specific Retrieve command for this user
+     */
+    public String retrCmd = null;
+    /**
+     * Specific Retrieve command delay for this user
+     */
+    public long retrDelay = 0;
+    
     /**
      * @param user
      * @param password
      * @param accounts
+     * @param storCmd
+     * @param storDelay
+     * @param retrCmd
+     * @param retrDelay
      */
-    public SimpleAuth(String user, String password, String[] accounts) {
+    public SimpleAuth(String user, String password, String[] accounts,
+            String storCmd, long storDelay, String retrCmd, long retrDelay) {
         this.user = user;
         this.password = password;
         this.accounts = accounts;
+        this.storCmd = storCmd;
+        this.storDelay = storDelay;
+        this.retrCmd = retrCmd;
+        this.retrDelay = retrDelay;
     }
 
     /**

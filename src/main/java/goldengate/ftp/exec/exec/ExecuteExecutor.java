@@ -57,6 +57,7 @@ public class ExecuteExecutor extends AbstractExecutor {
     private static final GgInternalLogger logger = GgInternalLoggerFactory
             .getLogger(ExecuteExecutor.class);
     private final String [] args;
+    private final String arg;
     private final GgFuture futureCompletion;
     private final long delay;
 
@@ -68,11 +69,22 @@ public class ExecuteExecutor extends AbstractExecutor {
      */
     public ExecuteExecutor(String command, long delay, GgFuture futureCompletion) {
         this.args = command.split(" ");
+        this.arg = command;
         this.futureCompletion = futureCompletion;
         this.delay = delay;
     }
 
     public void run() throws Reply421Exception {
+        // Check if the execution will be done through LocalExec daemon
+        if (AbstractExecutor.useLocalExec) {
+            LocalExecClient localExecClient = new LocalExecClient();
+            if (localExecClient.connect()) {
+                localExecClient.runOneCommand(arg, delay, futureCompletion);
+                localExecClient.disconnect();
+                return;
+            }// else continue 
+        }
+        // Execution is done internally
         File exec = new File(args[0]);
         if (exec.isAbsolute()) {
             if (! exec.canExecute()) {

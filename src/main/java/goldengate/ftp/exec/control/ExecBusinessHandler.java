@@ -27,6 +27,9 @@ import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply421Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply504Exception;
+import goldengate.common.database.DbSession;
+import goldengate.common.database.data.AbstractDbData.UpdatedInfo;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -41,14 +44,11 @@ import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.exec.config.AUTHUPDATE;
+import goldengate.ftp.exec.database.DbConstant;
 import goldengate.ftp.exec.exec.AbstractExecutor;
 import goldengate.ftp.exec.exec.R66PreparedTransferExecutor;
 import goldengate.ftp.exec.file.FileBasedAuth;
 import goldengate.ftp.exec.file.FileBasedDir;
-
-import openr66.database.DbConstant;
-import openr66.database.DbSession;
-import openr66.database.exception.OpenR66DatabaseNoConnectionError;
 
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ExceptionEvent;
@@ -68,9 +68,13 @@ public class ExecBusinessHandler extends BusinessHandler {
             .getLogger(ExecBusinessHandler.class);
 
     /**
-     * Associated DbSession
+     * Associated DbFtpSession
      */
-    public DbSession dbSession = null;
+    public DbSession dbFtpSession = null;
+    /**
+     * Associated DbR66Session
+     */
+    public DbSession dbR66Session = null;
     private boolean internalDb = false;
 
 
@@ -88,9 +92,13 @@ public class ExecBusinessHandler extends BusinessHandler {
         if (getFtpSession().getAuth().isAdmin()) {
             return;
         }
+        long specialId =
+            ((FileBasedAuth)getFtpSession().getAuth()).getSpecialId();
         if (getFtpSession().getReplyCode() != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY) {
             // Do nothing
-            logger.debug("Transfer done with code: "+getFtpSession().getReplyCode().getMesg());
+            String message = "Transfer done with code: "+getFtpSession().getReplyCode().getMesg();
+            GoldenGateActionLogger.logErrorAction(dbFtpSession, 
+                    specialId, transfer, message, getFtpSession().getReplyCode(), this);
             return;
         }
         // if STOR like: get file (can be STOU) and execute external action
@@ -112,37 +120,51 @@ public class ExecBusinessHandler extends BusinessHandler {
                     file = transfer.getFtpFile();
                 } catch (FtpNoFileException e1) {
                     // File cannot be sent
-                    logger.error("PostExecution in Error for Transfer since No File found: {} " +
-                            transfer.getStatus() + " {}",
-                            transfer.getCommand(), transfer.getPath());
-                    throw new Reply421Exception(
+                    String message = 
+                        "PostExecution in Error for Transfer since No File found: " +
+                        transfer.getCommand()+" "+
+                        transfer.getStatus() + " "+transfer.getPath();
+                    CommandAbstractException exc = new Reply421Exception(
                             "PostExecution in Error for Transfer since No File found");
+                    GoldenGateActionLogger.logErrorAction(dbFtpSession, 
+                            specialId, transfer, message, exc.code, this);
+                    throw exc;
                 }
                 try {
                     args[3] = file.getFile();
                     File newfile = new File(args[2]+args[3]);
                     if (! newfile.canRead()) {
                         // File cannot be sent
-                        logger.error("PostExecution in Error for Transfer since File is not readable: {} " +
-                                newfile.getAbsolutePath()+":"+newfile.canRead()+
-                                " "+transfer.getStatus() + " {}",
-                                transfer.getCommand(), transfer.getPath());
-                        throw new Reply421Exception(
-                                "Transfer done but force disconnection since an error occurs on PostOperation");
+                        String message = 
+                            "PostExecution in Error for Transfer since File is not readable: " +
+                            transfer.getCommand()+" "+
+                            newfile.getAbsolutePath()+":"+newfile.canRead()+
+                            " "+transfer.getStatus() + " "+transfer.getPath();
+                        CommandAbstractException exc =
+                            new Reply421Exception(
+                            "Transfer done but force disconnection since an error occurs on PostOperation");
+                        GoldenGateActionLogger.logErrorAction(dbFtpSession, 
+                                specialId, transfer, message, exc.code, this);
+                        throw exc;
                     }
                 } catch (CommandAbstractException e1) {
                     // File cannot be sent
-                    logger.error("PostExecution in Error for Transfer since No File found: {} " +
-                            transfer.getStatus() + " {}",
-                            transfer.getCommand(), transfer.getPath());
-                    throw new Reply421Exception(
-                            "Transfer done but force disconnection since an error occurs on PostOperation");
+                    String message = 
+                        "PostExecution in Error for Transfer since No File found: " +
+                        transfer.getCommand()+" "+
+                        transfer.getStatus() + " "+ transfer.getPath();
+                    CommandAbstractException exc =
+                        new Reply421Exception(
+                        "Transfer done but force disconnection since an error occurs on PostOperation");
+                    GoldenGateActionLogger.logErrorAction(dbFtpSession, 
+                            specialId, transfer, message, exc.code, this);
+                    throw exc;
                 }
                 args[4] = transfer.getCommand().toString();
                 AbstractExecutor executor =
                     AbstractExecutor.createAbstractExecutor(args, true, futureCompletion);
                 if (executor instanceof R66PreparedTransferExecutor){
-                    ((R66PreparedTransferExecutor)executor).setDbsession(dbSession);
+                    ((R66PreparedTransferExecutor)executor).setDbsession(dbR66Session);
                 }
                 executor.run();
                 try {
@@ -153,12 +175,18 @@ public class ExecBusinessHandler extends BusinessHandler {
                     // All done
                 } else {
                     // File cannot be sent
-                    logger.error("PostExecution in Error for Transfer: {} " +
-                            transfer.getStatus() + " {} \n   "+(futureCompletion.getCause() != null?
-                                    futureCompletion.getCause().getMessage():"Internal error of PostExecution"),
-                            transfer.getCommand(), transfer.getPath());
-                    throw new Reply421Exception(
-                            "Transfer done but force disconnection since an error occurs on PostOperation");
+                    String message = 
+                        "PostExecution in Error for Transfer: " +
+                        transfer.getCommand()+" "+
+                        transfer.getStatus() + " "+transfer.getPath()
+                        +"\n   "+(futureCompletion.getCause() != null?
+                                futureCompletion.getCause().getMessage():"Internal error of PostExecution");
+                    CommandAbstractException exc =
+                        new Reply421Exception(
+                        "Transfer done but force disconnection since an error occurs on PostOperation");
+                    GoldenGateActionLogger.logErrorAction(dbFtpSession, 
+                            specialId, transfer, message, exc.code, this);
+                    throw exc;
                 }
                 break;
             default:
@@ -169,12 +197,16 @@ public class ExecBusinessHandler extends BusinessHandler {
     @Override
     public void afterTransferDone(FtpTransfer transfer) {
         // Do nothing
-        GoldenGateActionLogger.logAction("ExecHandler: TRSF OK:", this);
+        ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(DbConstant.ILLEGALVALUE);
     }
 
     @Override
     public void afterRunCommandKo(CommandAbstractException e) {
-        logger.warn("ExecHandler: KO: {} {}", getFtpSession(), e.getMessage());
+        String message = "ExecHandler: KO: "+getFtpSession()+" "+e.getMessage();
+        long specialId =
+            ((FileBasedAuth)getFtpSession().getAuth()).getSpecialId();
+        GoldenGateActionLogger.logErrorAction(dbFtpSession, 
+                specialId, null, message, e.code, this);
     }
 
     @Override
@@ -182,16 +214,21 @@ public class ExecBusinessHandler extends BusinessHandler {
         // nothing to do since it is only Command and not transfer
         // except if QUIT due to database error
         if (this.getFtpSession().getCurrentCommand() instanceof QUIT
-                && this.dbSession == null) {
+                && this.dbR66Session == null) {
             throw new Reply421Exception(
                     "Post operations cannot be done so force disconnection... Try again later on");
         } else {
-            GoldenGateActionLogger.logAction("ExecHandler: OK:", this);
+            long specialId =
+                ((FileBasedAuth)getFtpSession().getAuth()).getSpecialId();
+            GoldenGateActionLogger.logAction(dbFtpSession, specialId,
+                    "ExecHandler: OK:", this, getFtpSession().getReplyCode(),
+                    UpdatedInfo.DONE);
         }
     }
 
     @Override
     public void beforeRunCommand() throws CommandAbstractException {
+        long specialId = DbConstant.ILLEGALVALUE;
         // if Admin, do nothing
         if (getFtpSession() == null || getFtpSession().getAuth() == null) {
             return;
@@ -204,15 +241,29 @@ public class ExecBusinessHandler extends BusinessHandler {
             case APPE:
             case STOR:
             case STOU:
+                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
                 if (!AbstractExecutor.isValidOperation(true)) {
                     throw new Reply504Exception("STORe like operations are not allowed");
                 }
+                // create entry in log
+                specialId = GoldenGateActionLogger.logCreate(dbFtpSession, 
+                        "PrepareTransfer: OK",
+                        getFtpSession().getCurrentCommand().getArg(),
+                        this);
+                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
                 // nothing to do now
                 break;
             case RETR:
+                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
                 if (!AbstractExecutor.isValidOperation(false)) {
                     throw new Reply504Exception("RETRieve like operations are not allowed");
                 }
+                // create entry in log
+                specialId = GoldenGateActionLogger.logCreate(dbFtpSession, 
+                        "PrepareTransfer: OK",
+                        getFtpSession().getCurrentCommand().getArg(),
+                        this);
+                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
                 // execute the external retrieve command before the execution of RETR
                 GgFuture futureCompletion = new GgFuture(true);
                 String []args = new String[5];
@@ -226,7 +277,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                 AbstractExecutor executor =
                     AbstractExecutor.createAbstractExecutor(args, false, futureCompletion);
                 if (executor instanceof R66PreparedTransferExecutor){
-                    ((R66PreparedTransferExecutor)executor).setDbsession(dbSession);
+                    ((R66PreparedTransferExecutor)executor).setDbsession(dbR66Session);
                 }
                 executor.run();
                 try {
@@ -274,10 +325,14 @@ public class ExecBusinessHandler extends BusinessHandler {
     public void executeChannelClosed() {
         if (AbstractExecutor.useDatabase){
             if (! internalDb) {
-                if (dbSession != null) {
-                    dbSession.disconnect();
-                    dbSession = null;
+                if (dbR66Session != null) {
+                    dbR66Session.disconnect();
+                    dbR66Session = null;
                 }
+            }
+            if (dbFtpSession != null) {
+                dbFtpSession.disconnect();
+                dbFtpSession = null;
             }
         }
     }
@@ -285,15 +340,29 @@ public class ExecBusinessHandler extends BusinessHandler {
     @Override
     public void executeChannelConnected(Channel channel) {
         if (AbstractExecutor.useDatabase) {
-            try {
-                dbSession = new DbSession(DbConstant.admin, false);
-            } catch (OpenR66DatabaseNoConnectionError e1) {
-                logger.warn("Database not ready due to {}", e1.getMessage());
-                QUIT command = (QUIT)
-                    FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
-                this.getFtpSession().setNextCommand(command);
-                dbSession = null;
-                internalDb = true;
+            if (openr66.database.DbConstant.admin != null && 
+                    openr66.database.DbConstant.admin.isConnected) {
+                try {
+                    dbR66Session = new DbSession(openr66.database.DbConstant.admin, false);
+                } catch (GoldenGateDatabaseNoConnectionError e1) {
+                    logger.warn("Database not ready due to {}", e1.getMessage());
+                    QUIT command = (QUIT)
+                        FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
+                    this.getFtpSession().setNextCommand(command);
+                    dbR66Session = null;
+                    internalDb = true;
+                }
+            }
+            if (DbConstant.admin.isConnected) {
+                try {
+                    dbFtpSession = new DbSession(DbConstant.admin, false);
+                } catch (GoldenGateDatabaseNoConnectionError e1) {
+                    logger.warn("Database not ready due to {}", e1.getMessage());
+                    QUIT command = (QUIT)
+                        FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
+                    this.getFtpSession().setNextCommand(command);
+                    dbFtpSession = null;
+                }
             }
         }
     }

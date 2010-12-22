@@ -31,6 +31,7 @@ import goldengate.ftp.core.file.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
+import goldengate.ftp.exec.database.DbConstant;
 
 import java.io.File;
 
@@ -53,6 +54,11 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
      */
     private SimpleAuth currentAuth = null;
 
+    /**
+     * Special Id for the current transfer
+     */
+    private long specialId = DbConstant.ILLEGALVALUE;
+    
     /**
      * @param session
      */
@@ -176,4 +182,37 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
             return false;
         return currentAuth.isAdmin;
     }
+    /**
+     * Special Authentication for local execution
+     * @param hostid
+     */
+    public void specialNoSessionAuth(String hostid) {
+        this.isIdentified = true;
+        SimpleAuth auth = new SimpleAuth(hostid, hostid, null, null, 0, null, 0);
+        currentAuth = auth;
+        setIsIdentified(true);
+        user = auth.user;
+        account = auth.user;
+        try {
+            setBusinessRootFromAuth();
+        } catch (Reply421Exception e) {
+        }
+        getSession().getDir().initAfterIdentification();
+        currentAuth.setAdmin(true);
+    }
+
+    /**
+     * @return the specialId
+     */
+    public long getSpecialId() {
+        return specialId;
+    }
+
+    /**
+     * @param specialId the specialId to set
+     */
+    public void setSpecialId(long specialId) {
+        this.specialId = specialId;
+    }
+    
 }

@@ -3,7 +3,7 @@
   <groupId>GoldenGate</groupId>
   <artifactId>GoldenGateFtpExec</artifactId>
   <name>GoldenGate Ftp Exec</name>
-  <version>1.0.4</version>
+  <version>2.0.0</version>
   <description>Full GoldenGate FTP Server with Exec support as GoldenGate Project:
   this is an extension of GoldenGate FTP server with execution support at the end of
   a transfer.</description>
@@ -59,7 +59,7 @@
   </mailingLists>
   <licenses>
   	<license>
-  		<name>LGPL 3.0</name>
+  		<name>GPL 3.0</name>
   		<url>LICENSE.txt</url>
   	</license>
   </licenses>
@@ -125,12 +125,30 @@
   	<dependency>
   		<groupId>GoldenGate</groupId>
   		<artifactId>GoldenGateR66</artifactId>
-  		<version>1.0.7</version>
+  		<version>2.0.1</version>
+  		<exclusions>
+  			<exclusion>
+  				<artifactId>xom</artifactId>
+  				<groupId>xom</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>jdom</artifactId>
+  				<groupId>jdom</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>xml-apis</artifactId>
+  				<groupId>xml-apis</groupId>
+  			</exclusion>
+  			<exclusion>
+  				<artifactId>xercesImpl</artifactId>
+  				<groupId>xerces</groupId>
+  			</exclusion>
+  		</exclusions>
   	</dependency>
     <dependency>
     	<groupId>NettyExtension</groupId>
     	<artifactId>NettyExtension</artifactId>
-    	<version>1.1.6</version>
+    	<version>1.1.7</version>
     	<scope>compile</scope>
     </dependency>
     <dependency>
@@ -142,7 +160,7 @@
     <dependency>
       <groupId>GoldenGate</groupId>
       <artifactId>GoldenGateCommon</artifactId>
-      <version>1.0.9</version>
+      <version>1.1.0</version>
       <scope>compile</scope>
     </dependency>
   	<dependency>
@@ -155,6 +173,32 @@
   		<artifactId>GoldenGateFtp-Filesystem</artifactId>
   		<version>1.0.8</version>
   	</dependency>
+    <dependency>
+    	<groupId>Oracle</groupId>
+    	<artifactId>ojdbc5</artifactId>
+    	<version>5</version>
+    	<scope>system</scope>
+    	<systemPath>D:/NEWJARS/ojdbc5.jar</systemPath>
+	    <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>1.2.145</version>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+    	<groupId>postgresql</groupId>
+    	<artifactId>postgresql</artifactId>
+    	<version>8.4-702.jdbc4</version>
+    	<optional>true</optional>
+    </dependency>
+    <dependency>
+    	<groupId>mysql</groupId>
+    	<artifactId>mysql-connector-java</artifactId>
+    	<version>5.1.13</version>
+    	<optional>true</optional>
+    </dependency>
   </dependencies>
   <properties>
   	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
