@@ -784,7 +784,7 @@ public class DbTransferLog extends AbstractDbData {
     public String toString() {
         return "Transfer: on " +
                 filename + " SpecialId: " +
-                specialId + " isSender: " + isSender +
+                specialId+" Mode: "+mode + " isSender: " + isSender +
                 " User: "+user+" Account: "+account+
                 " Start: " + start + " Stop: " + stop +
                 " Internal: " + UpdatedInfo.values()[updatedInfo].name()+

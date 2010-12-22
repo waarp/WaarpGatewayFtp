@@ -76,7 +76,7 @@ public class GoldenGateActionLogger {
                             isSender, file,
                             code.name(), 
                             ReplyCode.REPLY_000_SPECIAL_NOSTATUS, message,
-                            UpdatedInfo.RUNNING);
+                            UpdatedInfo.TOSUBMIT);
                     logger.warn("Create FS: "+log.toString());
                     return log.getSpecialId();
                 } catch (GoldenGateDatabaseException e1) {
