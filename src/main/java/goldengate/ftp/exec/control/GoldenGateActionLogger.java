@@ -62,8 +62,7 @@ public class GoldenGateActionLogger {
         logger.warn(message+" "+sessionContexte);
         if (ftpSession != null) {
             FtpCommandCode code = session.getCurrentCommand().getCode();
-            if (FtpCommandCode.isRetrLikeCommand(code) ||
-                    FtpCommandCode.isStoreLikeCommand(code)) {
+            if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
                 boolean isSender = 
                     FtpCommandCode.isRetrLikeCommand(code);
                 try {
@@ -77,7 +76,7 @@ public class GoldenGateActionLogger {
                             code.name(), 
                             ReplyCode.REPLY_000_SPECIAL_NOSTATUS, message,
                             UpdatedInfo.TOSUBMIT);
-                    logger.warn("Create FS: "+log.toString());
+                    logger.debug("Create FS: "+log.toString());
                     return log.getSpecialId();
                 } catch (GoldenGateDatabaseException e1) {
                     // Do nothing
@@ -103,10 +102,7 @@ public class GoldenGateActionLogger {
         logger.warn(message+" "+sessionContexte);
         if (ftpSession != null && specialId != DbConstant.ILLEGALVALUE) {
             FtpCommandCode code = session.getCurrentCommand().getCode();
-            if (FtpCommandCode.isRetrLikeCommand(code) ||
-                    FtpCommandCode.isStoreLikeCommand(code)) {
-                boolean isSender = 
-                    FtpCommandCode.isRetrLikeCommand(code);
+            if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
                 try {
                     // Try load
                     DbTransferLog log = 
@@ -117,24 +113,10 @@ public class GoldenGateActionLogger {
                     log.setInfotransf(message);
                     log.setReplyCodeExecutionStatus(rcode);
                     log.update();
-                    logger.warn("Update FS: "+log.toString());
+                    logger.debug("Update FS: "+log.toString());
                     return log.getSpecialId();
                 } catch (GoldenGateDatabaseException e) {
-                    try {
-                        // Insert new one
-                        DbTransferLog log = 
-                            new DbTransferLog(ftpSession, 
-                                session.getAuth().getUser(), 
-                                session.getAuth().getAccount(), specialId,
-                                isSender, null,
-                                code.name(), 
-                                rcode, message,
-                                info);
-                        logger.warn("Create FS: "+log.toString());
-                        return log.getSpecialId();
-                    } catch (GoldenGateDatabaseException e1) {
-                        // Do nothing
-                    }
+                    // Do nothing
                 }
             }
         }
@@ -155,12 +137,11 @@ public class GoldenGateActionLogger {
         FtpSession session = handler.getFtpSession();
         String sessionContexte = session.toString();
         logger.error(rcode.getCode()+":"+message+" "+sessionContexte);
+        logger.debug("Log",
+                new Exception("Log"));
         if (ftpSession != null && specialId != DbConstant.ILLEGALVALUE) {
             FtpCommandCode code = session.getCurrentCommand().getCode();
-            if (FtpCommandCode.isRetrLikeCommand(code) ||
-                    FtpCommandCode.isStoreLikeCommand(code)) {
-                boolean isSender = false;
-                isSender = FtpCommandCode.isRetrLikeCommand(code);
+            if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
                 String file = null;
                 if (transfer != null) {
                     try {
@@ -180,27 +161,18 @@ public class GoldenGateActionLogger {
                                 session.getAuth().getAccount(), specialId);
                     log.changeUpdatedInfo(info);
                     log.setInfotransf(message);
-                    log.setReplyCodeExecutionStatus(rcode);
+                    if (rcode.getCode() < 400) {
+                        log.setReplyCodeExecutionStatus(ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED);
+                    } else {
+                        log.setReplyCodeExecutionStatus(rcode);
+                    }
                     if (file != null) {
                         log.setFilename(file);
                     }
                     log.update();
-                    logger.warn("Update FS: "+log.toString());
+                    logger.debug("Update FS: "+log.toString());
                 } catch (GoldenGateDatabaseException e) {
-                    try {
-                        // Insert new one
-                        DbTransferLog log = 
-                            new DbTransferLog(ftpSession, 
-                                session.getAuth().getUser(), 
-                                session.getAuth().getAccount(), specialId,
-                                isSender, file,
-                                code.name(), 
-                                rcode, message,
-                                info);
-                        logger.warn("Create FS: "+log.toString());
-                    } catch (GoldenGateDatabaseException e1) {
-                        // Do nothing
-                    }
+                    // Do nothing
                 }
             }
         }
