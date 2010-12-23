@@ -9,17 +9,29 @@ GoldenGateFtp Exec Configuration
 
   The first one (config.xml) specifies the general behavior:
 
-  * server password (for admin functions)
+  * server names, ports, home directory and subdirectories, ssl key
 
-  * server port, home directory, bandwidth limitation
+  * server admin name and password (for administrator access and shutdown function)
 
   * server special configuration like threads number, timeout of connection, deleteOnAbort,
     usenio, fastmd5, blocksize, rangeport and the localization of the authentfile (second file)
+
+  * server database configuration
 
   []
 
   The second one (authent.xml) is a simple authentication file containing user definition
   (user name, password, account, admin status).
+
+*Steps
+
+  *Create keys for SSH and Passwords (see {{{./sslconfig.html}Config GoldenGate OpenSSL and GoldengatePassword GUI project}})
+
+  *Create configurations files (server configuration file, authentication configuration file)
+  
+  *Create the database using the ServerInitDatabase
+  
+  *Make some tests using a standard FTP client
 
 *How to run GoldenGate Ftp Exec
 

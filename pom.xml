@@ -434,11 +434,13 @@
 	            -link http://java.sun.com/javase/6/docs/api/
 	            -link http://jboss.org/file-access/default/members/netty/freezone/api/3.1/
 
-				-group "GoldenGate Ftp Exec Server package" "goldengate.ftp.exec.ExecGatewayFtpServer*"
+				-group "GoldenGate Ftp Exec Server package" "goldengate.ftp.exec.ExecGatewayFtpServer*:goldengate.ftp.exec.ServerInitDatabase*"
 				-group "GoldenGate Ftp Exec Configuration file based loaders package" "goldengate.ftp.exec.config*"
+				-group "GoldenGate Ftp Exec Database package" "goldengate.ftp.exec.database*"
 				-group "GoldenGate Ftp Exec ControlHandler package" "goldengate.ftp.exec.control*"
 				-group "GoldenGate Ftp Exec Executor package" "goldengate.ftp.exec.exec*"
 				-group "GoldenGate Ftp Exec DataHandler package" "goldengate.ftp.exec.data*"
+				-group "GoldenGate Ftp Exec Administrator package" "goldengate.ftp.exec.adminssl*"
 				-group "GoldenGate Ftp Exec File package" "goldengate.ftp.exec.file*"
 				-group "GoldenGate Ftp Exec Utils package" "goldengate.ftp.exec.utils*"
 

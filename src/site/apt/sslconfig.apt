@@ -1,0 +1,27 @@
+GoldenGate SSL configuration
+
+*How to configure GoldenGate SSL
+
+	To generate the stores for GoldenGate, you need to create 1 JKS keyStore. 
+	To generate those files, you can use the "keytool" command from the JDK or using 
+	the free tool KeyTool IUI (last known version in 2.4.1).
+
+*Using Keytool IUI:
+
+**For SSL connection for Administration HTTPS:
+
+		Create one jks KeyStore (server.jks) with one Private Key Version 3 using 
+		RSA algorithm. Use this KeyStore as KeyStore for the Server.
+		To do that, suing KeyTool IUI:
+
+			1) Create an empty KeyStore
+			
+			2) Create a Private Key Version 3 with RSA algorithm added to this KeyStore
+
+*Password Keys
+
+	For Host passwords, admin passwords, GoldenGate uses encrypted password using private DES key.
+	We provide a GUI to generate the DES key (*.des file) and those passwords in files (*.ggp files).
+	
+	It can be found in the subproject GoldenGatePassword Gui project.
+	
