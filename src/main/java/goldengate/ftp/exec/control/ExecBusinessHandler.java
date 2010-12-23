@@ -195,31 +195,13 @@ public class ExecBusinessHandler extends BusinessHandler {
     }
 
     @Override
-    public void afterTransferDone(FtpTransfer transfer) {
-        // Do nothing except logging
-        long specialId =
-            ((FileBasedAuth)getFtpSession().getAuth()).getSpecialId();
-        if (getFtpSession().getReplyCode() != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY) {
-            // Log error
-            String message = "Transfer in ERROR with code: "+getFtpSession().getReplyCode().getMesg();
-            GoldenGateActionLogger.logErrorAction(dbFtpSession, 
-                    specialId, transfer, message, getFtpSession().getReplyCode(), this);
-        } else {
-            // Log ok
-            GoldenGateActionLogger.logAction(dbFtpSession, specialId,
-                    "Transfer Done: OK", this, getFtpSession().getReplyCode(),
-                    UpdatedInfo.DONE);
-        }
-        ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(DbConstant.ILLEGALVALUE);
-    }
-
-    @Override
     public void afterRunCommandKo(CommandAbstractException e) {
         String message = "ExecHandler: KO: "+getFtpSession()+" "+e.getMessage();
         long specialId =
             ((FileBasedAuth)getFtpSession().getAuth()).getSpecialId();
         GoldenGateActionLogger.logErrorAction(dbFtpSession, 
                 specialId, null, message, e.code, this);
+        ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(DbConstant.ILLEGALVALUE);
     }
 
     @Override
@@ -234,8 +216,9 @@ public class ExecBusinessHandler extends BusinessHandler {
             long specialId =
                 ((FileBasedAuth)getFtpSession().getAuth()).getSpecialId();
             GoldenGateActionLogger.logAction(dbFtpSession, specialId,
-                    "Transfer Command executed: OK", this, getFtpSession().getReplyCode(),
-                    UpdatedInfo.RUNNING);
+                    "Transfer Command fully executed: OK", this, getFtpSession().getReplyCode(),
+                    UpdatedInfo.DONE);
+            ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(DbConstant.ILLEGALVALUE);
         }
     }
 
