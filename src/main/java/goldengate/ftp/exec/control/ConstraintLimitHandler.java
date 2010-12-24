@@ -71,7 +71,7 @@ public class ConstraintLimitHandler {
     }
     /**
      * 
-     * @return True if one of the limit is exceeded. Always False if not a server mode
+     * @return True if one of the limit is exceeded.
      */
     public boolean checkConstraints() {
         if (cpuLimit < 1 && cpuLimit > 0) {
@@ -109,7 +109,7 @@ public class ConstraintLimitHandler {
      * Same as checkConstraints except that the thread will sleep some time proportionally to
      * the current Load (if CPU related)
      * @param step the current step in retry
-     * @return True if one of the limit is exceeded. Always False if not a server mode
+     * @return True if one of the limit is exceeded.
      */
     public boolean checkConstraintsSleep(int step) {
         long delay = FtpInternalConfiguration.WAITFORNETOP/2;

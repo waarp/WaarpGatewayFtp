@@ -199,6 +199,12 @@
     	<version>5.1.13</version>
     	<optional>true</optional>
     </dependency>
+    <dependency>
+    	<groupId>javasysmon</groupId>
+    	<artifactId>javasysmon</artifactId>
+    	<version>0.3.3</version>
+      <optional>true</optional>
+    </dependency>
   </dependencies>
   <properties>
   	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

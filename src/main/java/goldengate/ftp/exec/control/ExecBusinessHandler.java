@@ -25,6 +25,7 @@ import java.io.File;
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.command.exception.Reply421Exception;
+import goldengate.common.command.exception.Reply451Exception;
 import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply504Exception;
 import goldengate.common.database.DbSession;
@@ -44,6 +45,7 @@ import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.exec.config.AUTHUPDATE;
+import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.database.DbConstant;
 import goldengate.ftp.exec.exec.AbstractExecutor;
 import goldengate.ftp.exec.exec.R66PreparedTransferExecutor;
@@ -231,6 +233,27 @@ public class ExecBusinessHandler extends BusinessHandler {
         }
         if (getFtpSession().getAuth().isAdmin()) {
             return;
+        }
+        // Test limits
+        ConstraintLimitHandler constraints =
+            ((FileBasedConfiguration) getFtpSession().getConfiguration())
+            .constraintLimitHandler;
+        if (constraints != null) {
+            if (!getFtpSession().getAuth().isIdentified()) {
+                // ignore test since it can be an Admin connection
+            } else if (getFtpSession().getAuth().isAdmin()) {
+                // ignore test since it is an Admin connection (always valid)
+            } else if (!FtpCommandCode.isSpecialCommand(
+                    getFtpSession().getCurrentCommand().getCode())) {
+                // Authenticated, not Admin and not Special Command
+                if (constraints.checkConstraintsSleep(1)) {
+                    if (constraints.checkConstraints()) {
+                        // Really overload so refuse the command
+                        logger.warn("Server overloaded. Try later... \n"+getFtpSession().toString());
+                        throw new Reply451Exception("Server overloaded. Try later...");
+                    }
+                }
+            }
         }
         FtpCommandCode code = getFtpSession().getCurrentCommand().getCode();
         switch (code) {

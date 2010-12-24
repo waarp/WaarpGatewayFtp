@@ -170,12 +170,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     private static final XmlDecl [] configServerParamDecls = {
         // server
-        new XmlDecl(XmlType.BOOLEAN, XML_USEHTTPCOMP),
         new XmlDecl(XmlType.BOOLEAN, XML_USELOCALEXEC), 
         new XmlDecl(XmlType.STRING, XML_LEXECADDR), 
         new XmlDecl(XmlType.INTEGER, XML_LEXECPORT),
         new XmlDecl(XmlType.STRING, XML_SERVER_ADMIN), 
         new XmlDecl(XmlType.STRING, XML_SERVER_PASSWD),
+        new XmlDecl(XmlType.BOOLEAN, XML_USEHTTPCOMP),
         new XmlDecl(XmlType.STRING, XML_HTTPADMINPATH),
         new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYPATH), 
         new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYSTOREPASS), 
@@ -690,69 +690,72 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         String path = value.getString();
         if (path == null || path.length() == 0) {
-            logger.error("Unable to set correct Http Admin Base in Config file");
-            return false;
-        }
-        File file = new File(path);
-        if (!file.isDirectory()) {
-            logger.error("Http Admin is not a directory in Config file");
-            return false;
-        }
-        try {
-            httpBasePath =
-                FilesystemBasedDirImpl.normalizePath(file.getCanonicalPath())+ 
-                DirInterface.SEPARATOR;
-        } catch (IOException e1) {
-            logger.error("Unable to set Http Admin Path in Config file");
-            return false;
+            logger.warn("Unable to set correct Http Admin Base in Config file. No HTTPS support will be used.");
+            httpBasePath = null;
+        } else {
+            File file = new File(path);
+            if (!file.isDirectory()) {
+                logger.error("Http Admin is not a directory in Config file");
+                return false;
+            }
+            try {
+                httpBasePath =
+                    FilesystemBasedDirImpl.normalizePath(file.getCanonicalPath())+ 
+                    DirInterface.SEPARATOR;
+            } catch (IOException e1) {
+                logger.error("Unable to set Http Admin Path in Config file");
+                return false;
+            }
         }
         httpChannelGroup = new DefaultChannelGroup("HttpOpenR66");
-        // Key for HTTPS
-        value = hashConfig.get(XML_PATH_ADMIN_KEYPATH);
-        if (value != null && (!value.isEmpty())) {
-            String keypath = value.getString();
-            if ((keypath == null) || (keypath.length() == 0)) {
-                logger.error("Bad Key Path");
-                return false;
+        if (httpBasePath != null) {
+            // Key for HTTPS
+            value = hashConfig.get(XML_PATH_ADMIN_KEYPATH);
+            if (value != null && (!value.isEmpty())) {
+                String keypath = value.getString();
+                if ((keypath == null) || (keypath.length() == 0)) {
+                    logger.error("Bad Key Path");
+                    return false;
+                }
+                value = hashConfig.get(XML_PATH_ADMIN_KEYSTOREPASS);
+                if (value == null || (value.isEmpty())) {
+                    logger.error("Unable to find KeyStore Passwd");
+                    return false;
+                }
+                String keystorepass = value.getString();
+                if ((keystorepass == null) || (keystorepass.length() == 0)) {
+                    logger.error("Bad KeyStore Passwd");
+                    return false;
+                }
+                value = hashConfig.get(XML_PATH_ADMIN_KEYPASS);
+                if (value == null || (value.isEmpty())) {
+                    logger.error("Unable to find Key Passwd");
+                    return false;
+                }
+                String keypass = value.getString();
+                if ((keypass == null) || (keypass.length() == 0)) {
+                    logger.error("Bad Key Passwd");
+                    return false;
+                }
+                try {
+                    HttpSslPipelineFactory.ggSecureKeyStore =
+                        new GgSecureKeyStore(keypath, keystorepass,
+                                keypass);
+                } catch (CryptoException e) {
+                    logger.error("Bad SecureKeyStore construction for AdminSsl");
+                    return false;
+                }
+                // No client authentication
+                try {
+                    HttpSslPipelineFactory.ggSecureKeyStore.initEmptyTrustStore();
+                } catch (CryptoException e) {
+                    logger.error("Bad TrustKeyStore construction");
+                    return false;
+                }
+                HttpSslPipelineFactory.ggSslContextFactory =
+                    new GgSslContextFactory(
+                            HttpSslPipelineFactory.ggSecureKeyStore, true);
             }
-            value = hashConfig.get(XML_PATH_ADMIN_KEYSTOREPASS);
-            if (value == null || (value.isEmpty())) {
-                logger.error("Unable to find KeyStore Passwd");
-                return false;
-            }
-            String keystorepass = value.getString();
-            if ((keystorepass == null) || (keystorepass.length() == 0)) {
-                logger.error("Bad KeyStore Passwd");
-                return false;
-            }
-            value = hashConfig.get(XML_PATH_ADMIN_KEYPASS);
-            if (value == null || (value.isEmpty())) {
-                logger.error("Unable to find Key Passwd");
-                return false;
-            }
-            String keypass = value.getString();
-            if ((keypass == null) || (keypass.length() == 0)) {
-                logger.error("Bad Key Passwd");
-                return false;
-            }
-            try {
-                HttpSslPipelineFactory.ggSecureKeyStore =
-                    new GgSecureKeyStore(keypath, keystorepass,
-                            keypass);
-            } catch (CryptoException e) {
-                logger.error("Bad SecureKeyStore construction for AdminSsl");
-                return false;
-            }
-            // No client authentication
-            try {
-                HttpSslPipelineFactory.ggSecureKeyStore.initEmptyTrustStore();
-            } catch (CryptoException e) {
-                logger.error("Bad TrustKeyStore construction");
-                return false;
-            }
-            HttpSslPipelineFactory.ggSslContextFactory =
-                new GgSslContextFactory(
-                        HttpSslPipelineFactory.ggSecureKeyStore, true);
         }
         return true;
     }
