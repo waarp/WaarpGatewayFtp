@@ -22,6 +22,7 @@ package goldengate.ftp.exec.file;
 
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.ftp.exec.exec.AbstractExecutor.CommandExecutor;
 
 /**
  * Simple Authentication based on a previously load XML file.
@@ -73,6 +74,8 @@ public class SimpleAuth {
      */
     public long retrDelay = 0;
     
+    public CommandExecutor commandExecutor = null;
+    
     /**
      * @param user
      * @param password
@@ -91,6 +94,12 @@ public class SimpleAuth {
         this.storDelay = storDelay;
         this.retrCmd = retrCmd;
         this.retrDelay = retrDelay;
+        this.commandExecutor = new CommandExecutor(retrCmd, retrDelay, storCmd, storDelay);
+        logger.warn("Executor for "+user+" configured as [RETR: "+
+                commandExecutor.pretrCMD+":"+commandExecutor.pretrDelay+":"+
+                commandExecutor.pretrRefused+
+                "] [STOR: "+commandExecutor.pstorCMD+":"+
+                commandExecutor.pstorDelay+":"+commandExecutor.pstorRefused+"]");
     }
 
     /**

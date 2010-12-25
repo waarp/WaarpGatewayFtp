@@ -42,7 +42,6 @@ import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.file.FtpFile;
 import goldengate.ftp.core.session.FtpSession;
-import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.exec.config.AUTHUPDATE;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
@@ -91,11 +90,11 @@ public class ExecBusinessHandler extends BusinessHandler {
         if (getFtpSession() == null || getFtpSession().getAuth() == null) {
             return;
         }
-        if (getFtpSession().getAuth().isAdmin()) {
+        FileBasedAuth auth = (FileBasedAuth)getFtpSession().getAuth();
+        if (auth.isAdmin()) {
             return;
         }
-        long specialId =
-            ((FileBasedAuth)getFtpSession().getAuth()).getSpecialId();
+        long specialId = auth.getSpecialId();
         if (getFtpSession().getReplyCode() != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY) {
             // Do nothing
             String message = "Transfer done with code: "+getFtpSession().getReplyCode().getMesg();
@@ -114,9 +113,9 @@ public class ExecBusinessHandler extends BusinessHandler {
                 // execute the store command
                 GgFuture futureCompletion = new GgFuture(true);
                 String []args = new String[5];
-                args[0] = getFtpSession().getAuth().getUser();
-                args[1] = getFtpSession().getAuth().getAccount();
-                args[2] = ((FilesystemBasedFtpAuth) getFtpSession().getAuth()).getBaseDirectory();
+                args[0] = auth.getUser();
+                args[1] = auth.getAccount();
+                args[2] = auth.getBaseDirectory();
                 FtpFile file;
                 try {
                     file = transfer.getFtpFile();
@@ -164,7 +163,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                 }
                 args[4] = transfer.getCommand().toString();
                 AbstractExecutor executor =
-                    AbstractExecutor.createAbstractExecutor(args, true, futureCompletion);
+                    AbstractExecutor.createAbstractExecutor(auth, args, true, futureCompletion);
                 if (executor instanceof R66PreparedTransferExecutor){
                     ((R66PreparedTransferExecutor)executor).setDbsession(dbR66Session);
                 }
@@ -231,7 +230,8 @@ public class ExecBusinessHandler extends BusinessHandler {
         if (getFtpSession() == null || getFtpSession().getAuth() == null) {
             return;
         }
-        if (getFtpSession().getAuth().isAdmin()) {
+        FileBasedAuth auth = (FileBasedAuth)getFtpSession().getAuth();
+        if (auth.isAdmin()) {
             return;
         }
         // Test limits
@@ -239,9 +239,9 @@ public class ExecBusinessHandler extends BusinessHandler {
             ((FileBasedConfiguration) getFtpSession().getConfiguration())
             .constraintLimitHandler;
         if (constraints != null) {
-            if (!getFtpSession().getAuth().isIdentified()) {
+            if (!auth.isIdentified()) {
                 // ignore test since it can be an Admin connection
-            } else if (getFtpSession().getAuth().isAdmin()) {
+            } else if (auth.isAdmin()) {
                 // ignore test since it is an Admin connection (always valid)
             } else if (!FtpCommandCode.isSpecialCommand(
                     getFtpSession().getCurrentCommand().getCode())) {
@@ -260,7 +260,7 @@ public class ExecBusinessHandler extends BusinessHandler {
             case APPE:
             case STOR:
             case STOU:
-                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
+                auth.setSpecialId(specialId);
                 if (!AbstractExecutor.isValidOperation(true)) {
                     throw new Reply504Exception("STORe like operations are not allowed");
                 }
@@ -269,11 +269,11 @@ public class ExecBusinessHandler extends BusinessHandler {
                         "PrepareTransfer: OK",
                         getFtpSession().getCurrentCommand().getArg(),
                         this);
-                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
+                auth.setSpecialId(specialId);
                 // nothing to do now
                 break;
             case RETR:
-                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
+                auth.setSpecialId(specialId);
                 if (!AbstractExecutor.isValidOperation(false)) {
                     throw new Reply504Exception("RETRieve like operations are not allowed");
                 }
@@ -282,19 +282,19 @@ public class ExecBusinessHandler extends BusinessHandler {
                         "PrepareTransfer: OK",
                         getFtpSession().getCurrentCommand().getArg(),
                         this);
-                ((FileBasedAuth)getFtpSession().getAuth()).setSpecialId(specialId);
+                auth.setSpecialId(specialId);
                 // execute the external retrieve command before the execution of RETR
                 GgFuture futureCompletion = new GgFuture(true);
                 String []args = new String[5];
-                args[0] = getFtpSession().getAuth().getUser();
-                args[1] = getFtpSession().getAuth().getAccount();
-                args[2] = ((FilesystemBasedFtpAuth) getFtpSession().getAuth()).getBaseDirectory();
+                args[0] = auth.getUser();
+                args[1] = auth.getAccount();
+                args[2] = auth.getBaseDirectory();
                 String filename = getFtpSession().getCurrentCommand().getArg();
                 FtpFile file = getFtpSession().getDir().setFile(filename, false);
                 args[3] = file.getFile();
                 args[4] = code.toString();
                 AbstractExecutor executor =
-                    AbstractExecutor.createAbstractExecutor(args, false, futureCompletion);
+                    AbstractExecutor.createAbstractExecutor(auth, args, false, futureCompletion);
                 if (executor instanceof R66PreparedTransferExecutor){
                     ((R66PreparedTransferExecutor)executor).setDbsession(dbR66Session);
                 }

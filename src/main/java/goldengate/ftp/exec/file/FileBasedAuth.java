@@ -32,6 +32,7 @@ import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.database.DbConstant;
+import goldengate.ftp.exec.exec.AbstractExecutor.CommandExecutor;
 
 import java.io.File;
 
@@ -214,5 +215,11 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
     public void setSpecialId(long specialId) {
         this.specialId = specialId;
     }
-    
+    /**
+     * 
+     * @return the associated Command Executor
+     */
+    public CommandExecutor getCommandExecutor() {
+        return this.currentAuth.commandExecutor;
+    }
 }

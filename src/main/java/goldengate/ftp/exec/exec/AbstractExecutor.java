@@ -24,6 +24,7 @@ import goldengate.common.command.exception.CommandAbstractException;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.ftp.exec.file.FileBasedAuth;
 
 /**
  * Abstract Executor class. If the command starts with "REFUSED", the command will be refused for execution.
@@ -56,41 +57,140 @@ public abstract class AbstractExecutor {
     protected static final String COMMAND = "#COMMAND#";
 
     protected static final String REFUSED = "REFUSED";
+    protected static final String NONE = "NONE";
     protected static final String EXECUTE = "EXECUTE";
     protected static final String R66PREPARETRANSFER = "R66PREPARETRANSFER";
 
     protected static final int tREFUSED = -1;
+    protected static final int tNONE = 0;
     protected static final int tEXECUTE = 1;
     protected static final int tR66PREPARETRANSFER = 2;
+    
+    protected static CommandExecutor commandExecutor = null;
+    
     /**
-     * Retrieve External Command
+     * For OpenR66 access
      */
-    protected static String retrieveCMD;
-    protected static int retrieveType = -1;
-    protected static boolean retrieveRefused = false;
-    /**
-     * Retrieve Delay (0 = unlimited)
-     */
-    protected static long retrieveDelay = 0;
-    /**
-     * Store External Command
-     */
-    protected static String storeCMD;
-    protected static int storeType = -1;
-    protected static boolean storeRefused = false;
-    /**
-     * Store Delay (0 = unlimited)
-     */
-    protected static long storeDelay = 0;
-
     public static boolean useDatabase = false;
     
     /**
      * Local Exec Daemon is used or not for execution of external commands
      */
     public static boolean useLocalExec = false;
-
-
+    
+    public static class CommandExecutor {
+        /**
+         * Retrieve External Command
+         */
+        public String pretrCMD;
+        public int pretrType;
+        public boolean pretrRefused;
+        /**
+         * Retrieve Delay (0 = unlimited)
+         */
+        public long pretrDelay;
+        /**
+         * Store External Command
+         */
+        public String pstorCMD;
+        public int pstorType;
+        public boolean pstorRefused;
+        /**
+         * Store Delay (0 = unlimited)
+         */
+        public long pstorDelay;
+        /**
+         * 
+         * @param retrieve
+         * @param retrDelay
+         * @param store
+         * @param storDelay
+         */
+        public CommandExecutor(String retrieve, long retrDelay,
+            String store, long storDelay) {
+            if (retrieve == null || retrieve.trim().length() == 0) {
+                pretrCMD = NONE;
+                pretrType = tNONE;
+                pretrRefused = false;
+            } else if (isRefused(retrieve)) {
+                pretrCMD = REFUSED;
+                pretrType = tREFUSED;
+                pretrRefused = true;
+            } else {
+                if (isExecute(retrieve)) {
+                    pretrCMD = getExecuteCmd(retrieve);
+                    pretrType = tEXECUTE;
+                } else if (isR66PrepareTransfer(retrieve)) {
+                    pretrCMD = getR66PrepareTransferCmd(retrieve);
+                    pretrType = tR66PREPARETRANSFER;
+                    useDatabase = true;
+                } else {
+                    // Default EXECUTE
+                    pretrCMD = getDefault(retrieve);
+                    pretrType = tEXECUTE;
+                }
+            }
+            pretrDelay = retrDelay;
+            if (store == null || store.trim().length() == 0) {
+                pstorCMD = NONE;
+                pstorRefused = false;
+                pstorType = tNONE;
+            } else if (isRefused(store)) {
+                pstorCMD = REFUSED;
+                pstorRefused = true;
+                pstorType = tREFUSED;
+            } else {
+                if (isExecute(store)) {
+                    pstorCMD = getExecuteCmd(store);
+                    pstorType = tEXECUTE;
+                } else if (isR66PrepareTransfer(store)) {
+                    pstorCMD = getR66PrepareTransferCmd(store);
+                    pstorType = tR66PREPARETRANSFER;
+                    useDatabase = true;
+                } else {
+                    // Default EXECUTE
+                    pstorCMD = getDefault(store);
+                    pstorType = tEXECUTE;
+                }
+            }
+            pstorDelay = storDelay;
+        }
+        /**
+         * Check if the given operation is allowed
+         * @param isStore
+         * @return True if allowed, else False
+         */
+        public boolean isValidOperation(boolean isStore) {
+            if (isStore && pstorRefused) {
+                logger.info("STORe like operations REFUSED");
+                return false;
+            } else if ((!isStore) && pretrRefused) {
+                logger.info("RETRieve operations REFUSED");
+                return false;
+            }
+            return true;
+        }
+    }
+    
+    
+    private static String getDefault(String cmd) {
+        return cmd.trim();
+    }
+    private static String getExecuteCmd(String cmd) {
+        return cmd.substring(EXECUTE.length()).trim();
+    }
+    private static String getR66PrepareTransferCmd(String cmd) {
+        return cmd.substring(R66PREPARETRANSFER.length()).trim();
+    }
+    private static boolean isRefused(String cmd) {
+        return cmd.startsWith(REFUSED);
+    }
+    private static boolean isExecute(String cmd) {
+        return cmd.startsWith(EXECUTE);
+    }
+    private static boolean isR66PrepareTransfer(String cmd) {
+        return cmd.startsWith(R66PREPARETRANSFER);
+    }
     /**
      * Initialize the Executor with the correct command and delay
      * @param retrieve
@@ -100,46 +200,13 @@ public abstract class AbstractExecutor {
      */
     public static void initializeExecutor(String retrieve, long retrDelay,
             String store, long storDelay) {
-        if (retrieve.startsWith(REFUSED)) {
-            retrieveCMD = REFUSED;
-            retrieveType = tREFUSED;
-            retrieveRefused = true;
-        } else {
-            if (retrieve.startsWith(EXECUTE)) {
-                retrieveCMD = retrieve.substring(EXECUTE.length()).trim();
-                retrieveType = tEXECUTE;
-            } else if (retrieve.startsWith(R66PREPARETRANSFER)) {
-                retrieveCMD = retrieve.substring(R66PREPARETRANSFER.length()).trim();
-                retrieveType = tR66PREPARETRANSFER;
-                useDatabase = true;
-            } else {
-                // Default EXECUTE
-                retrieveCMD = retrieve.trim();
-                retrieveType = tEXECUTE;
-            }
-        }
-        retrieveDelay = retrDelay;
-        if (store.startsWith(REFUSED)) {
-            storeCMD = REFUSED;
-            storeRefused = true;
-            storeType = tREFUSED;
-        } else {
-            if (store.startsWith(EXECUTE)) {
-                storeCMD = store.substring(EXECUTE.length()).trim();
-                storeType = tEXECUTE;
-            } else if (store.startsWith(R66PREPARETRANSFER)) {
-                storeCMD = store.substring(R66PREPARETRANSFER.length()).trim();
-                storeType = tR66PREPARETRANSFER;
-                useDatabase = true;
-            } else {
-                // Default EXECUTE
-                storeCMD = store.trim();
-                storeType = tEXECUTE;
-            }
-        }
-        storeDelay = storDelay;
-        logger.warn("Executor configured as [RETR: "+retrieveCMD+":"+retrieveDelay+":"+retrieveRefused+
-                "] [STOR: "+storeCMD+":"+storeDelay+":"+storeRefused+"]");
+        commandExecutor = 
+            new CommandExecutor(retrieve, retrDelay, store, storDelay);
+        logger.warn("Executor configured as [RETR: "+
+                commandExecutor.pretrCMD+":"+commandExecutor.pretrDelay+":"+
+                commandExecutor.pretrRefused+
+                "] [STOR: "+commandExecutor.pstorCMD+":"+
+                commandExecutor.pstorDelay+":"+commandExecutor.pstorRefused+"]");
     }
     /**
      * Check if the given operation is allowed
@@ -147,60 +214,66 @@ public abstract class AbstractExecutor {
      * @return True if allowed, else False
      */
     public static boolean isValidOperation(boolean isStore) {
-        if (isStore && storeRefused) {
-            logger.info("STORe like operations REFUSED");
-            return false;
-        } else if ((!isStore) && retrieveRefused) {
-            logger.info("RETRieve operations REFUSED");
-            return false;
-        }
-        return true;
+        return commandExecutor.isValidOperation(isStore);
     }
     /**
-    *
+    * @param auth the current Authentication
     * @param args containing in that order
     *          "User Account BaseDir FilePath(relative to BaseDir) Command"
     * @param isStore True for a STORE like operation, else False
     * @param futureCompletion
     */
-    public static AbstractExecutor createAbstractExecutor(String []args, boolean isStore, GgFuture futureCompletion) {
+    public static AbstractExecutor createAbstractExecutor(FileBasedAuth auth,
+            String []args, boolean isStore, GgFuture futureCompletion) {
         if (isStore) {
-            if (storeRefused)  {
+            CommandExecutor executor = auth.getCommandExecutor();
+            if (executor == null) {
+                executor = commandExecutor;
+            } else if (executor.pstorType == tNONE) {
+                executor = commandExecutor;
+            }
+            if (executor.pstorRefused)  {
                 logger.error("STORe like operation REFUSED");
                 futureCompletion.cancel();
                 return null;
             }
-            String replaced = getPreparedCommand(storeCMD, args);
-            switch (storeType) {
+            String replaced = getPreparedCommand(executor.pstorCMD, args);
+            switch (executor.pstorType) {
                 case tREFUSED:
                     logger.error("STORe like operation REFUSED");
                     futureCompletion.cancel();
                     return null;
                 case tEXECUTE:
-                    return new ExecuteExecutor(replaced, storeDelay, futureCompletion);
+                    return new ExecuteExecutor(replaced, executor.pstorDelay, futureCompletion);
                 case tR66PREPARETRANSFER:
-                    return new R66PreparedTransferExecutor(replaced, storeDelay, futureCompletion);
+                    return new R66PreparedTransferExecutor(replaced, executor.pstorDelay, futureCompletion);
                 default:
-                    return new ExecuteExecutor(replaced, storeDelay, futureCompletion);
+                    return new NoTaskExecutor(replaced, executor.pstorDelay, futureCompletion);
             }
         } else {
-            if (retrieveRefused)  {
+            CommandExecutor executor = auth.getCommandExecutor();
+            if (executor == null) {
+                executor = commandExecutor;
+            } else if (executor.pretrType == tNONE) {
+                executor = commandExecutor;
+            }
+            if (executor.pretrRefused)  {
                 logger.error("RETRieve operation REFUSED");
                 futureCompletion.cancel();
                 return null;
             }
-            String replaced = getPreparedCommand(retrieveCMD, args);
-            switch (retrieveType) {
+            String replaced = getPreparedCommand(executor.pretrCMD, args);
+            switch (executor.pretrType) {
                 case tREFUSED:
                     logger.error("RETRieve operation REFUSED");
                     futureCompletion.cancel();
                     return null;
                 case tEXECUTE:
-                    return new ExecuteExecutor(replaced, retrieveDelay, futureCompletion);
+                    return new ExecuteExecutor(replaced, executor.pretrDelay, futureCompletion);
                 case tR66PREPARETRANSFER:
-                    return new R66PreparedTransferExecutor(replaced, retrieveDelay, futureCompletion);
+                    return new R66PreparedTransferExecutor(replaced, executor.pretrDelay, futureCompletion);
                 default:
-                    return new ExecuteExecutor(replaced, retrieveDelay, futureCompletion);
+                    return new NoTaskExecutor(replaced, executor.pretrDelay, futureCompletion);
             }
         }
     }
