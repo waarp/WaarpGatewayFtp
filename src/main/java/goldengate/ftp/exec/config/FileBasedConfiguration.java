@@ -24,7 +24,9 @@ import goldengate.common.crypto.Des;
 import goldengate.common.crypto.ssl.GgSecureKeyStore;
 import goldengate.common.crypto.ssl.GgSslContextFactory;
 import goldengate.common.database.DbAdmin;
+import goldengate.common.database.DbPreparedStatement;
 import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
+import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
 import goldengate.common.digest.FilesystemBasedDigest;
 import goldengate.common.digest.MD5;
 import goldengate.common.exception.CryptoException;
@@ -49,6 +51,7 @@ import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.exec.adminssl.HttpSslPipelineFactory;
 import goldengate.ftp.exec.control.ConstraintLimitHandler;
 import goldengate.ftp.exec.database.DbConstant;
+import goldengate.ftp.exec.database.data.DbTransferLog;
 import goldengate.ftp.exec.database.model.DbModelFactory;
 import goldengate.ftp.exec.exec.AbstractExecutor;
 import goldengate.ftp.exec.exec.LocalExecClient;
@@ -1390,7 +1393,91 @@ public class FileBasedConfiguration extends FtpConfiguration {
     public SimpleAuth getSimpleAuth(String user) {
         return authentications.get(user);
     }
-
+    /**
+     * @param format Format in HTML to use as ouput format
+     * @return the Html String containing the table of all Authentication entries
+     */
+    public String getHtmlAuth(String format) {
+        String result;
+        StringBuilder builder = new StringBuilder();
+        /*
+            XXXUSERXXX XXXPWDXXX XXXACTSXXX XXXADMXXX XXXSTCXXX XXXSTDXXX XXXRTCXXX XXXRTDXXX
+         */
+        Enumeration<SimpleAuth> simpleAuths = authentications.elements();
+        SimpleAuth auth = null;
+        while (simpleAuths.hasMoreElements()) {
+            auth = simpleAuths.nextElement();
+            String newElt = format.replace("XXXUSERXXX", auth.user);
+            newElt = newElt.replace("XXXPWDXXX", auth.password);
+            newElt = newElt.replace("XXXSTCXXX", auth.storCmd);
+            newElt = newElt.replace("XXXRTCXXX", auth.retrCmd);
+            newElt = newElt.replace("XXXSTDXXX", Long.toString(auth.storDelay));
+            newElt = newElt.replace("XXXRTDXXX", Long.toString(auth.retrDelay));
+            newElt = newElt.replace("XXXADMXXX", Boolean.toString(auth.isAdmin));
+            if (auth.accounts != null) {
+                StringBuilder accts = new StringBuilder();
+                for (int i = 0; i < auth.accounts.length-1; i++) {
+                    accts.append(auth.accounts[i]);
+                    accts.append(", ");
+                }
+                accts.append(auth.accounts[auth.accounts.length-1]);
+                newElt = newElt.replace("XXXACTSXXX", accts.toString());
+            } else {
+                newElt = newElt.replace("XXXACTSXXX", "No Account");
+            }
+            builder.append(newElt);
+        }
+        result = builder.toString();
+        return result;
+    }
+    /**
+     * Only available with Database support for GoldenGate
+     * @param format Format in HTML to use as ouput format
+     * @param limit number of TransferLog to populate
+     * @return the Html String containing the table of all Transfer entries
+     */
+    public String getHtmlTransfer(String format, int limit) {
+        String result;
+        StringBuilder builder = new StringBuilder();
+        /*
+            XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX 
+            XXXUPINFXXX XXXSTARTXXX XXXSTOPXXX
+         */
+        if (! DbConstant.admin.isConnected) {
+            return "";
+        }
+        DbPreparedStatement preparedStatement = null;
+        try {
+            preparedStatement = 
+                DbTransferLog.getStatusPrepareStament(DbConstant.admin.session, null, limit);
+        } catch (GoldenGateDatabaseNoConnectionError e) {
+            return "";
+        } catch (GoldenGateDatabaseSqlError e) {
+            return "";
+        }
+        try {
+            while (preparedStatement.getNext()) {
+                DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
+                String newElt = format.replaceAll("XXXIDXXX", Long.toString(log.getSpecialId()));
+                newElt = newElt.replaceAll("XXXUSERXXX", log.getUser());
+                newElt = newElt.replaceAll("XXXACCTXXX", log.getAccount());
+                newElt = newElt.replace("XXXFILEXXX", log.getFilename());
+                newElt = newElt.replace("XXXMODEXXX", log.getMode());
+                newElt = newElt.replace("XXXSTATUSXXX", log.getErrorInfo().getMesg());
+                newElt = newElt.replace("XXXINFOXXX", log.getInfotransf());
+                newElt = newElt.replace("XXXUPINFXXX", log.getUpdatedInfo().name());
+                newElt = newElt.replace("XXXSTARTXXX", log.getStart().toString());
+                newElt = newElt.replace("XXXSTOPXXX", log.getStop().toString());
+                builder.append(newElt);
+            }
+        } catch (GoldenGateDatabaseNoConnectionError e) {
+            return "";
+        } catch (GoldenGateDatabaseSqlError e) {
+            return "";
+        }
+        result = builder.toString();
+        return result;
+    }
     /**
      * @see goldengate.ftp.core.config.FtpConfiguration#getNextRangePort()
      */

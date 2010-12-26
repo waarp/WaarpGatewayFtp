@@ -170,6 +170,34 @@ public abstract class AbstractExecutor {
             }
             return true;
         }
+        public String getRetrType() {
+            switch (pretrType) {
+                case tREFUSED:
+                    return REFUSED;
+                case tNONE:
+                    return NONE;
+                case tEXECUTE:
+                    return EXECUTE;
+                case tR66PREPARETRANSFER:
+                    return R66PREPARETRANSFER;
+                default:
+                    return NONE;
+            }
+        }
+        public String getStorType() {
+            switch (pstorType) {
+                case tREFUSED:
+                    return REFUSED;
+                case tNONE:
+                    return NONE;
+                case tEXECUTE:
+                    return EXECUTE;
+                case tR66PREPARETRANSFER:
+                    return R66PREPARETRANSFER;
+                default:
+                    return NONE;
+            }
+        }
     }
     
     
@@ -319,6 +347,10 @@ public abstract class AbstractExecutor {
     public static void replaceAll(StringBuilder builder, String find, String replace) {
         while (replace(builder, find, replace)) {
         }
+    }
+    
+    public static CommandExecutor getCommandExecutor() {
+        return commandExecutor;
     }
 
     public abstract void run() throws CommandAbstractException;

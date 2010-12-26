@@ -9,7 +9,7 @@
 <meta http-equiv="Cache-Control" content="no-cache" />
 <meta http-equiv="imagetoolbar" content="no" />
 <meta http-equiv="pragma" content="no-cache" />
-<link rel="stylesheet" href="GgAdmin.css" type="text/css" />
+<link rel="stylesheet" href="res/GgAdmin.css" type="text/css" />
 <style type="text/css">
 a {
 	color:#0000FF;
@@ -80,23 +80,54 @@ a img {
 </div></div></td>
 <td style="padding-right:5px;padding-left:5px;padding-bottom:5px;vertical-align:top;width:100%;padding-top:5px;">
 <h1 class="h1">System</h1>
-<div id="Comp1_sys_doctext"><p>Limit: Session Bandwidth: XXXSESBXXX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Global Bandwidth: XXXGLBBXXX</p>
-<p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; CPU Limit: XXXCPUXXX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Connection Limit: XXXCONXXX</p>
+<div id="Comp1_sys_doctext"><p>You can edit System configuration from here, disconnect from the Administrator or even shutdown the GoldenGate server.</p>
 <p>&nbsp;</p>
-<p>Ports: MIN:&nbsp; XXXMINXXX&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; MAX: XXXMAXXXX</p>
+  <form method="post" name="SYSTEM" action="/System.html">
+    Bandwidth Global Limit (B/s):&nbsp;&nbsp;
+    <input type="text" name="BGLOBR" size="20" value="XXXXCHANNELLIMITRXXX">
+    <img id="glrhelp" alt="help for Global Limit field"  class="help" width="16" height="16" src="img/help_small.gif" />
+	<div id="containerglrhelp"><p class="cshelp">
+	The value (in Byte per second) specifies the limit of bandwidth globally (cumulative). 0 means no limit. Must be greater than 1KBs.
+	</p></div><br>
+    CPU Limit (0 to 1):&nbsp;&nbsp;
+    <input type="text" name="CPUL" size="20" value="XXXXCPULXXX">
+    <img id="dchelp" alt="help for CPU Limit field"  class="help" width="16" height="16" src="img/help_small.gif" />
+	<div id="containerdchelp"><p class="cshelp">
+	CPU Limit as % between 0 and 1. 0 or 1 means no limit.
+	</p></div><br>
+    Connection Limit:&nbsp;&nbsp;
+    <input type="text" name="CONL" size="20" value="XXXXCONLXXX">
+    <img id="drhelp" alt="help for Connection Limit field"  class="help" width="16" height="16" src="img/help_small.gif" />
+	<div id="containerdrhelp"><p class="cshelp">
+	Connection limit (number of concurrent connections). 0 means no limit.
+	</p></div>
+    <p>&nbsp;</p>
+    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="submit" value="Validate" name="ACTION"></p>
+  </form>
 <p>&nbsp;</p>
-<p>Update</p>
 <p>&nbsp;</p>
-<p>Logout</p>
+  <form method="post" name="SYSTEM" action="/System.html">
+    Disconnect from GoldenGate Administrator&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="submit" value="Disconnect" name="ACTION">
+    <img id="dischelp" alt="help for Disconnection"  class="help" width="16" height="16" src="img/help_small.gif" />
+	<div id="containerdischelp"><p class="cshelp">
+	You can disconnect from this administrator by clicking on this button.
+	</p></div>
+  </form>
 <p>&nbsp;</p>
-<p>Shutdown</p>
+<p>&nbsp;</p>
+  <form method="post" name="SYSTEM" action="/System.html">
+    Shutdown GoldenGate Server&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input type="submit" value="Shutdown" name="ACTION">
+    <img id="shutdchelp" alt="help for Shutdown"  class="help" width="16" height="16" src="img/help_small.gif" />
+	<div id="containershutdchelp"><p class="cshelp">
+	By clicking on this button will result in the Shutdown process of the full GoldenGate Server (all active transfers
+	will be aborted)..
+	</p></div>
+  </form>
 <p>&nbsp;</p></div></td></tr></tbody></table>
-<div id="Comp7_CodeRelayer"><script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-1693657-4";
-urchinTracker();
-</script>
-</div></div>
+<div style="height:36px;background-color:#EF6D00;text-align:left;">
+<p>&nbsp;</p></div>
 </body>
 </html>

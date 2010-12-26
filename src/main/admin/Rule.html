@@ -9,7 +9,7 @@
 <meta name="generator" content="Site Studio 6 (www.effectivestudios.com)" />
 <meta name="description" content="GoldenGate Administration Interface" />
 <meta name="robots" content="index,follow" />
-<link rel="stylesheet" href="GgAdmin.css" type="text/css" />
+<link rel="stylesheet" href="res/GgAdmin.css" type="text/css" />
 <style type="text/css">
 a {
 	color:#0000FF;
@@ -80,39 +80,46 @@ a img {
 </div></div></td>
 <td style="padding-right:5px;padding-left:5px;padding-bottom:5px;vertical-align:top;width:100%;padding-top:5px;">
 <h1 class="h1">Rule</h1>
-<div id="Comp1_sys_doctext"><p>Default Rule</p>
+<div id="Comp1_sys_doctext"><p>Default Rule: You can modify the default rule here</p>
+<p>A command starts with EXECUTE fullPathCommand Args/R66PREPARETRANSFER Args/REFUSED/NONE</p>
+<p>&nbsp;</p>
+<p>The following replacement are done dynamically before the command is executed:<br>
+  - #BASEPATH# is replaced by the full path for the root of FTP Directory<br>
+  - #FILE# is replaced by the current file path relative to FTP Directory (so #BASEPATH##FILE# is the full path of the file)<br>
+  - #USER# is replaced by the username<br>
+  - #ACCOUNT# is replaced by the account<br>
+  - #COMMAND# is replaced by the command issued for the file<br></p>
+<p>&nbsp;</p>
+<p>For R66PREPARETRANSFER, format is like r66send command in any order except "-info" which should be the last item:<br>
+  "-to Host -file FILE -rule RULE [-md5] [-nolog] [-info INFO]"</p>
 <p>&nbsp;</p>
 <p>
-</p><table style="border:none;" cellspacing="0" cellpadding="0">
+</p><form method="post" name="UPDATE" action="/Rule.html">
+<table style="border:none;" cellspacing="0" cellpadding="0">
 <tbody>
 <tr>
 <td style="border:1px solid #000000;width:100px;" valign="top">
-<p style="text-align:center;">StoreCmd</p></td>
+<p style="text-align:center;">Store Command</p></td>
 <td style="border-top:1px solid #000000;border-right:1px solid #000000;border-bottom:1px solid #000000;width:100px;" valign="top">
-<p style="text-align:center;">StoreDelay</p></td>
+<p style="text-align:center;">StoreDelay (ms)</p></td>
 <td style="border-top:1px solid #000000;border-right:1px solid #000000;border-bottom:1px solid #000000;width:100px;" valign="top">
 <p style="text-align:center;">RetrCmd</p></td>
 <td style="border-top:1px solid #000000;border-right:1px solid #000000;border-bottom:1px solid #000000;width:100px;" valign="top">
-<p style="text-align:center;">RetrDelay</p></td>
+<p style="text-align:center;">RetrDelay (ms)</p></td>
 <td style="border-top:1px solid #000000;border-right:1px solid #000000;border-bottom:1px solid #000000;width:100px;" valign="top">
-<p style="text-align:center;">Action&nbsp;</p></td></tr>
+<p style="text-align:center;">Action</p></td></tr>
 <tr>
 <td style="border-left:1px solid #000000;border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;">XXXSTCXXX</p></td>
+<p style="text-align:center;"><input type="text" name="stc" size="20" value="XXXSTCXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;">XXXSTDXXX</p></td>
+<p style="text-align:center;"><input type="text" name="std" size="20" value="XXXSTDXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;">XXXRTCXXX</p></td>
+<p style="text-align:center;"><input type="text" name="rtc" size="20" value="XXXRTCXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;">XXXRTDXXX</p></td>
+<p style="text-align:center;"><input type="text" name="rtd" size="20" value="XXXRTDXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;">Update</p></td></tr></tbody></table></div></td></tr></tbody></table>
-<div id="Comp7_CodeRelayer"><script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
-</script>
-<script type="text/javascript">
-_uacct = "UA-1693657-4";
-urchinTracker();
-</script>
-</div></div>
+<p style="text-align:center;"><input type="submit" value="Update" name="ACTION"></p></td>
+</tr></tbody></table></form></div></td></tr></tbody></table>
+</div>
 </body>
 </html>

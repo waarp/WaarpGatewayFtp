@@ -20,20 +20,26 @@
  */
 package goldengate.ftp.exec.adminssl;
 
+import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
-import goldengate.common.database.DbAdmin;
+import goldengate.common.database.DbPreparedStatement;
 import goldengate.common.database.DbSession;
+import goldengate.common.database.exception.GoldenGateDatabaseException;
 import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
-import goldengate.common.exception.FileTransferException;
-import goldengate.common.exception.InvalidArgumentException;
+import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.common.utility.GgStringUtils;
+import goldengate.ftp.core.file.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.core.utils.FtpChannelUtils;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
+import goldengate.ftp.exec.control.ConstraintLimitHandler;
 import goldengate.ftp.exec.database.DbConstant;
+import goldengate.ftp.exec.database.data.DbTransferLog;
+import goldengate.ftp.exec.exec.AbstractExecutor;
+import goldengate.ftp.exec.exec.AbstractExecutor.CommandExecutor;
 import goldengate.ftp.exec.file.FileBasedAuth;
 import goldengate.ftp.exec.utils.Version;
 
@@ -114,18 +120,13 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
         Logon("Logon.html"), 
         index("index.html"),
         error("error.html"),
-        Transfers("Transfers.html"), 
-        Listing("Listing_head.html","Listing_body0.html","Listing_body.html","Listing_body1.html","Listing_end.html"), 
-        CancelRestart("CancelRestart_head.html","CancelRestart_body0.html","CancelRestart_body.html","CancelRestart_body1.html","CancelRestart_end.html"), 
-        Export("Export.html"),
-        Hosts("Hosts_head.html","Hosts_body0.html","Hosts_body.html","Hosts_body1.html","Hosts_end.html"), 
-        Rules("Rules_head.html","Rules_body0.html","Rules_body.html","Rules_body1.html","Rules_end.html"), 
+        Transfer("Transfer_head.html","Transfer_body.html","Transfer_end.html"), 
+        Rule("Rule.html"),
+        User("User_head.html","User_body.html","User_end.html"), 
         System("System.html");
         
         private String header;
-        private String headerBody;
         private String body;
-        private String endBody;
         private String end;
         /**
          * Constructor for a unique file
@@ -133,24 +134,17 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
          */
         private REQUEST(String uniquefile) {
             this.header = uniquefile;
-            this.headerBody = null;
             this.body = null;
-            this.endBody = null;
             this.end = null;
         }
         /**
          * @param header
-         * @param headerBody
          * @param body
-         * @param endBody
          * @param end
          */
-        private REQUEST(String header, String headerBody, String body,
-                String endBody, String end) {
+        private REQUEST(String header, String body, String end) {
             this.header = header;
-            this.headerBody = headerBody;
             this.body = body;
-            this.endBody = endBody;
             this.end = end;
         }
         
@@ -158,34 +152,19 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
          * Reader for a unique file
          * @return the content of the unique file
          */
-        public String readFileUnique(HttpSslHandler handler) {
-            return handler.readFileHeader(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.header);
+        public String readFileUnique() {
+            return GgStringUtils.readFile(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.header);
         }
         
-        public String readHeader(HttpSslHandler handler) {
-            return handler.readFileHeader(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.header);
-        }
-        public String readBodyHeader() {
-            return GgStringUtils.readFile(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.headerBody);
+        public String readHeader() {
+            return GgStringUtils.readFile(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.header);
         }
         public String readBody() {
             return GgStringUtils.readFile(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.body);
         }
-        public String readBodyEnd() {
-            return GgStringUtils.readFile(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.endBody);
-        }
         public String readEnd() {
             return GgStringUtils.readFile(FileBasedConfiguration.fileBasedConfiguration.httpBasePath+this.end);
         }
-    }
-    
-    private static enum REPLACEMENT {
-        XXXHOSTIDXXX, XXXADMINXXX, XXXVERSIONXXX, XXXBANDWIDTHXXX,
-        XXXXSESSIONLIMITRXXX, XXXXSESSIONLIMITWXXX,
-        XXXXCHANNELLIMITRXXX, XXXXCHANNELLIMITWXXX,
-        XXXXDELAYCOMMDXXX, XXXXDELAYRETRYXXX,
-        XXXLOCALXXX, XXXNETWORKXXX,
-        XXXERRORMESGXXX;
     }
     public static final int LIMITROW = 48;// better if it can be divided by 4
 
@@ -209,54 +188,12 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
         }
     };
 
-    private String readFileHeader(String filename) {
-        String value;
-        try {
-            value = GgStringUtils.readFileException(filename);
-        } catch (InvalidArgumentException e) {
-            logger.error("Error while trying to open: "+filename,e);
-            return "";
-        } catch (FileTransferException e) {
-            logger.error("Error while trying to read: "+filename,e);
-            return "";
-        }
-        StringBuilder builder = new StringBuilder(value);
-        GgStringUtils.replace(builder, REPLACEMENT.XXXLOCALXXX.toString(),
-                Integer.toString(
-                        FileBasedConfiguration.fileBasedConfiguration.
-                        getFtpInternalConfiguration().getNumberSessions())
-                        +" "+Thread.activeCount());
-        GgStringUtils.replace(builder, REPLACEMENT.XXXNETWORKXXX.toString(),
-                Integer.toString(
-                        DbAdmin.getNbConnection()));
-        GgStringUtils.replace(builder, REPLACEMENT.XXXHOSTIDXXX.toString(),
-                FileBasedConfiguration.fileBasedConfiguration.HOST_ID);
-        if (((FileBasedAuth)authentHttp.getAuth()).isIdentified()) {
-            GgStringUtils.replace(builder, REPLACEMENT.XXXADMINXXX.toString(),
-                "Connected");
-        } else {
-            GgStringUtils.replace(builder, REPLACEMENT.XXXADMINXXX.toString(),
-                    "Not authenticated");
-        }
-        TrafficCounter trafficCounter =
-            FileBasedConfiguration.fileBasedConfiguration.getFtpInternalConfiguration()
-            .getGlobalTrafficShapingHandler().getTrafficCounter();
-        GgStringUtils.replace(builder, REPLACEMENT.XXXBANDWIDTHXXX.toString(),
-                "IN:"+(trafficCounter.getLastReadThroughput()/131072)+
-                "Mbits&nbsp;<br>&nbsp;OUT:"+
-                (trafficCounter.getLastWriteThroughput()/131072)+"Mbits");
-        return builder.toString();
-    }
-
     private String getTrimValue(String varname) {
         String value = params.get(varname).get(0).trim();
         if (value.length() == 0) {
             value = null;
         }
         return value;
-    }
-    private String getValue(String varname) {
-        return params.get(varname).get(0);
     }
     /**
      * Add the Channel as SSL handshake is over
@@ -299,55 +236,48 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
     
 
     private String index() {
-        String index = REQUEST.index.readFileUnique(this);
+        String index = REQUEST.index.readFileUnique();
         StringBuilder builder = new StringBuilder(index);
-        GgStringUtils.replaceAll(builder, REPLACEMENT.XXXHOSTIDXXX.toString(),
+        GgStringUtils.replace(builder, "XXXLOCALXXX",
+                Integer.toString(
+                        FileBasedConfiguration.fileBasedConfiguration.
+                        getFtpInternalConfiguration().getNumberSessions())
+                        +" "+Thread.activeCount());
+        TrafficCounter trafficCounter =
+            FileBasedConfiguration.fileBasedConfiguration.getFtpInternalConfiguration()
+            .getGlobalTrafficShapingHandler().getTrafficCounter();
+        GgStringUtils.replace(builder, "XXXBANDWIDTHXXX",
+                "IN:"+(trafficCounter.getLastReadThroughput()/131072)+
+                "Mbits&nbsp;<br>&nbsp;OUT:"+
+                (trafficCounter.getLastWriteThroughput()/131072)+"Mbits");
+        GgStringUtils.replaceAll(builder, "XXXHOSTIDXXX",
                 FileBasedConfiguration.fileBasedConfiguration.HOST_ID);
-        GgStringUtils.replaceAll(builder, REPLACEMENT.XXXADMINXXX.toString(),
+        GgStringUtils.replaceAll(builder, "XXXADMINXXX",
                 "Administrator Connected");
-        GgStringUtils.replace(builder, REPLACEMENT.XXXVERSIONXXX.toString(),
+        GgStringUtils.replace(builder, "XXXVERSIONXXX",
                 Version.ID);
         return builder.toString();
     }
     private String error(String mesg) {
-        String index = REQUEST.error.readFileUnique(this);
-        return index.replaceAll(REPLACEMENT.XXXERRORMESGXXX.toString(),
+        String index = REQUEST.error.readFileUnique();
+        return index.replaceAll("XXXERRORMESGXXX",
                 mesg);
     }
     private String Logon() {
-        return REQUEST.Logon.readFileUnique(this);
-    }
-    private String Transfers() {
-        return REQUEST.Transfers.readFileUnique(this);
-    }
-
-    private String resetOptionTransfer(String header, String startid, String stopid,
-            String start, String stop, String rule, String req,
-            boolean pending, boolean transfer, boolean error, boolean done, boolean all) {
-        StringBuilder builder = new StringBuilder(header);
-        GgStringUtils.replace(builder, "XXXSTARTIDXXX", startid);
-        GgStringUtils.replace(builder, "XXXSTOPIDXXX", stopid);
-        GgStringUtils.replace(builder, "XXXSTARTXXX", start);
-        GgStringUtils.replace(builder, "XXXSTOPXXX", stop);
-        GgStringUtils.replace(builder, "XXXRULEXXX", rule);
-        GgStringUtils.replace(builder, "XXXREQXXX", req);
-        GgStringUtils.replace(builder, "XXXPENDXXX", pending ? "checked":"");
-        GgStringUtils.replace(builder, "XXXTRANSXXX", transfer ? "checked":"");
-        GgStringUtils.replace(builder, "XXXERRXXX", error ? "checked":"");
-        GgStringUtils.replace(builder, "XXXDONEXXX", done ? "checked":"");
-        GgStringUtils.replace(builder, "XXXALLXXX", all ? "checked":"");
-        return builder.toString();
+        return REQUEST.Logon.readFileUnique();
     }
 
     private String System() {
         getParams();
         if (params == null) {
-            String system = REQUEST.System.readFileUnique(this);
+            String system = REQUEST.System.readFileUnique();
             StringBuilder builder = new StringBuilder(system);
-            GgStringUtils.replace(builder, REPLACEMENT.XXXXCHANNELLIMITWXXX.toString(),
-                    Long.toString(FileBasedConfiguration.fileBasedConfiguration.getServerGlobalWriteLimit()));
-            GgStringUtils.replace(builder, REPLACEMENT.XXXXCHANNELLIMITRXXX.toString(),
+            GgStringUtils.replace(builder, "XXXXCHANNELLIMITRXXX",
                     Long.toString(FileBasedConfiguration.fileBasedConfiguration.getServerGlobalReadLimit()));
+            GgStringUtils.replace(builder, "XXXXCPULXXX",
+                    Double.toString(ConstraintLimitHandler.getCpuLimit()));
+            GgStringUtils.replace(builder, "XXXXCONLXXX",
+                    Integer.toString(ConstraintLimitHandler.getChannelLimit()));
             return builder.toString();
         }
         String extraInformation = null;
@@ -369,32 +299,261 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     return error;
                 } else if (act.equalsIgnoreCase("Validate")) {
                     String bglobalr = getTrimValue("BGLOBR");
-                    long lglobalr = FileBasedConfiguration.fileBasedConfiguration.getServerGlobalReadLimit();
+                    long lglobal = FileBasedConfiguration.fileBasedConfiguration.getServerGlobalReadLimit();
                     if (bglobalr != null) {
-                        lglobalr = Long.parseLong(bglobalr);
+                        lglobal = Long.parseLong(bglobalr);
                     }
-                    String bglobalw = getTrimValue("BGLOBW");
-                    long lglobalw = FileBasedConfiguration.fileBasedConfiguration.getServerGlobalWriteLimit();
-                    if (bglobalw != null) {
-                        lglobalw = Long.parseLong(bglobalw);
+                    FileBasedConfiguration.fileBasedConfiguration.changeNetworkLimit(lglobal, lglobal);
+                    bglobalr = getTrimValue("CPUL");
+                    double dcpu = ConstraintLimitHandler.getCpuLimit();
+                    if (bglobalr != null) {
+                        dcpu = Double.parseDouble(bglobalr);
                     }
-                    FileBasedConfiguration.fileBasedConfiguration.changeNetworkLimit(lglobalw, lglobalr);
+                    ConstraintLimitHandler.setCpuLimit(dcpu);
+                    bglobalr = getTrimValue("CONL");
+                    int iconn = ConstraintLimitHandler.getChannelLimit();
+                    if (bglobalr != null) {
+                        iconn = Integer.parseInt(bglobalr);
+                    }
+                    ConstraintLimitHandler.setChannelLimit(iconn);
                     extraInformation = "Configuration Saved";
                 }
             }
         }
-        String system = REQUEST.System.readFileUnique(this);
+        String system = REQUEST.System.readFileUnique();
         StringBuilder builder = new StringBuilder(system);
-        GgStringUtils.replace(builder, REPLACEMENT.XXXXCHANNELLIMITWXXX.toString(),
-                Long.toString(FileBasedConfiguration.fileBasedConfiguration.getServerGlobalWriteLimit()));
-        GgStringUtils.replace(builder, REPLACEMENT.XXXXCHANNELLIMITRXXX.toString(),
+        GgStringUtils.replace(builder, "XXXXCHANNELLIMITRXXX",
                 Long.toString(FileBasedConfiguration.fileBasedConfiguration.getServerGlobalReadLimit()));
+        GgStringUtils.replace(builder, "XXXXCPULXXX",
+                Double.toString(ConstraintLimitHandler.getCpuLimit()));
+        GgStringUtils.replace(builder, "XXXXCONLXXX",
+                Integer.toString(ConstraintLimitHandler.getChannelLimit()));
         if (extraInformation != null) {
             builder.append(extraInformation);
         }
         return builder.toString();
     }
 
+    private String Rule() {
+        getParams();
+        if (params == null) {
+            String system = REQUEST.Rule.readFileUnique();
+            StringBuilder builder = new StringBuilder(system);
+            CommandExecutor exec = AbstractExecutor.getCommandExecutor();
+            GgStringUtils.replace(builder, "XXXSTCXXX",
+                    exec.getStorType()+" "+exec.pstorCMD);
+            GgStringUtils.replace(builder, "XXXSTDXXX",
+                    Long.toString(exec.pstorDelay));
+            GgStringUtils.replace(builder, "XXXRTCXXX",
+                    exec.getRetrType()+" "+exec.pretrCMD);
+            GgStringUtils.replace(builder, "XXXRTDXXX",
+                    Long.toString(exec.pretrDelay));
+            return builder.toString();
+        }
+        String extraInformation = null;
+        if (params.containsKey("ACTION")) {
+            List<String> action = params.get("ACTION");
+            for (String act : action) {
+                if (act.equalsIgnoreCase("Update")) {
+                    CommandExecutor exec = AbstractExecutor.getCommandExecutor();
+                    String bglobalr = getTrimValue("std");
+                    long lglobal = exec.pstorDelay;
+                    if (bglobalr != null) {
+                        lglobal = Long.parseLong(bglobalr);
+                    }
+                    exec.pstorDelay = lglobal;
+                    bglobalr = getTrimValue("rtd");
+                    lglobal = exec.pretrDelay;
+                    if (bglobalr != null) {
+                        lglobal = Long.parseLong(bglobalr);
+                    }
+                    exec.pretrDelay = lglobal;
+                    bglobalr = getTrimValue("stc");
+                    String store = exec.getStorType()+" "+exec.pstorCMD;
+                    if (bglobalr != null) {
+                        store = bglobalr;
+                    }
+                    bglobalr = getTrimValue("rtc");
+                    String retr = exec.getRetrType()+" "+exec.pretrCMD;
+                    if (bglobalr != null) {
+                        retr = bglobalr;
+                    }
+                    AbstractExecutor.initializeExecutor(retr, exec.pretrDelay, 
+                            store, exec.pstorDelay);
+                    extraInformation = "Configuration Saved";
+                }
+            }
+        }
+        String system = REQUEST.Rule.readFileUnique();
+        StringBuilder builder = new StringBuilder(system);
+        CommandExecutor exec = AbstractExecutor.getCommandExecutor();
+        GgStringUtils.replace(builder, "XXXSTCXXX",
+                exec.getStorType()+" "+exec.pstorCMD);
+        GgStringUtils.replace(builder, "XXXSTDXXX",
+                Long.toString(exec.pstorDelay));
+        GgStringUtils.replace(builder, "XXXRTCXXX",
+                exec.getRetrType()+" "+exec.pretrCMD);
+        GgStringUtils.replace(builder, "XXXRTDXXX",
+                Long.toString(exec.pretrDelay));
+        if (extraInformation != null) {
+            builder.append(extraInformation);
+        }
+        return builder.toString();
+    }
+
+    private String Transfer() {
+        getParams();
+        String head = REQUEST.Transfer.readHeader();
+        String end = REQUEST.Transfer.readEnd();
+        String body = REQUEST.Transfer.readBody();
+        if (params == null || (!DbConstant.admin.isConnected)) {
+            end = end.replace("XXXRESULTXXX", "");
+            body = FileBasedConfiguration.fileBasedConfiguration.getHtmlTransfer(body, LIMITROW);
+            return head+body+end;
+        }
+        String message = "";
+        List<String> parms = params.get("ACTION");
+        if (parms != null) {
+            String parm = parms.get(0);
+            boolean purgeAll = false;
+            boolean purgeCorrect = false;
+            boolean delete = false;
+            if ("PurgeCorrectTransferLogs".equalsIgnoreCase(parm)) {
+                purgeCorrect = true;
+            } else if ("PurgeAllTransferLogs".equalsIgnoreCase(parm)) {
+                purgeAll = true;
+            } else if ("Delete".equalsIgnoreCase(parm)) {
+                delete = true;
+            }
+            if (purgeCorrect) {
+                DbPreparedStatement preparedStatement = null;
+                try {
+                    preparedStatement = 
+                        DbTransferLog.getStatusPrepareStament(dbSession, 
+                                ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY, 0);
+                } catch (GoldenGateDatabaseNoConnectionError e) {
+                    message = "Error during purge";
+                } catch (GoldenGateDatabaseSqlError e) {
+                    message = "Error during purge";
+                }
+                if (preparedStatement != null) {
+                    try {
+                        while (preparedStatement.getNext()) {
+                            DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
+                            log.delete();
+                        }
+                        message = "Purge Correct Logs successful";
+                    } catch (GoldenGateDatabaseNoConnectionError e) {
+                        message = "Error during purge";
+                    } catch (GoldenGateDatabaseSqlError e) {
+                        message = "Error during purge";
+                    } catch (GoldenGateDatabaseException e) {
+                        message = "Error during purge";
+                    }
+                }
+            } else if (purgeAll) {
+                DbPreparedStatement preparedStatement = null;
+                try {
+                    preparedStatement = 
+                        DbTransferLog.getStatusPrepareStament(dbSession, 
+                                null, 0);
+                } catch (GoldenGateDatabaseNoConnectionError e) {
+                    message = "Error during purgeAll";
+                } catch (GoldenGateDatabaseSqlError e) {
+                    message = "Error during purgeAll";
+                }
+                if (preparedStatement != null) {
+                    try {
+                        while (preparedStatement.getNext()) {
+                            DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
+                            log.delete();
+                        }
+                        message = "Purge All Logs successful";
+                    } catch (GoldenGateDatabaseNoConnectionError e) {
+                        message = "Error during purgeAll";
+                    } catch (GoldenGateDatabaseSqlError e) {
+                        message = "Error during purgeAll";
+                    } catch (GoldenGateDatabaseException e) {
+                        message = "Error during purgeAll";
+                    }
+                }
+            } else if (delete) {
+                String user = getTrimValue("user");
+                String acct = getTrimValue("account");
+                String specid = getTrimValue("specialid");
+                long specialId = Long.parseLong(specid);
+                try {
+                    DbTransferLog log = new DbTransferLog(dbSession, user, acct, specialId);
+                    log.delete();
+                    message = "Delete 1 log successful";
+                } catch (GoldenGateDatabaseException e) {
+                    message = "Error during delete 1 Log";
+                }
+            } else {
+                message = "No Action";
+            }
+            end = end.replace("XXXRESULTXXX", message);
+        }
+        end = end.replace("XXXRESULTXXX", "");
+        body = FileBasedConfiguration.fileBasedConfiguration.getHtmlTransfer(body, LIMITROW);
+        return head+body+end;
+    }
+    private String User() {
+        getParams();
+        String head = REQUEST.User.readHeader();
+        String end = REQUEST.User.readEnd();
+        String body = REQUEST.User.readBody();
+        if (params == null) {
+            end = end.replace("XXXRESULTXXX", "");
+            body = FileBasedConfiguration.fileBasedConfiguration.getHtmlAuth(body);
+            return head+body+end;
+        }
+        List<String> parms = params.get("ACTION");
+        if (parms != null) {
+            String parm = parms.get(0);
+            if ("ImportExport".equalsIgnoreCase(parm)) {
+                String file = getTrimValue("file");
+                String exportImport = getTrimValue("export");
+                String message = "";
+                boolean purge = false;
+                purge = params.containsKey("purge");
+                boolean replace = false;
+                replace = params.containsKey("replace");
+                FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
+                if (file == null) {
+                    file = config.getBaseDirectory()+
+                        FtpDir.SEPARATOR+config.ADMINNAME+
+                        FtpDir.SEPARATOR+"authentication.xml";
+                }
+                if (exportImport.equalsIgnoreCase("import")) {
+                    if (! config.initializeAuthent(file, purge)) {
+                        message += "Cannot initialize Authentication from "+file;
+                    } else {
+                        message += "Initialization of Authentication OK from "+file;
+                        if (replace) {
+                            if (! config.saveAuthenticationFile(
+                                    config.authenticationFile)) {
+                                message += " but cannot replace server authenticationFile";
+                            } else {
+                                message += " and replacement done";
+                            }
+                        }
+                    }
+                } else {
+                    // export
+                    if (! config.saveAuthenticationFile(file)) {
+                        message += "Authentications CANNOT be saved into "+file;
+                    } else {
+                        message += "Authentications saved into "+file;
+                    }
+                }
+                end = end.replace("XXXRESULTXXX", message);
+            }
+        }
+        end = end.replace("XXXRESULTXXX", "");
+        body = FileBasedConfiguration.fileBasedConfiguration.getHtmlAuth(body);
+        return head+body+end;
+    }
     private void getParams() {
         if (request.getMethod() == HttpMethod.GET) {
             params = null;
@@ -563,6 +722,15 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     break;
                 case System:
                     responseContent.append(System());
+                    break;
+                case Rule:
+                    responseContent.append(Rule());
+                    break;
+                case User:
+                    responseContent.append(User());
+                    break;
+                case Transfer:
+                    responseContent.append(Transfer());
                     break;
                 default:
                     responseContent.append(index());
