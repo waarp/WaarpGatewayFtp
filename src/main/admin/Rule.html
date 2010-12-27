@@ -6,7 +6,6 @@
 <meta http-equiv="expires" content="MON, 1 SEP 2003 12:00:00 GMT" />
 <meta http-equiv="Cache-Control" content="no-cache" />
 <meta http-equiv="Content-type" content="text/html; charset=iso-8859-1" />
-<meta name="generator" content="Site Studio 6 (www.effectivestudios.com)" />
 <meta name="description" content="GoldenGate Administration Interface" />
 <meta name="robots" content="index,follow" />
 <link rel="stylesheet" href="res/GgAdmin.css" type="text/css" />
@@ -23,6 +22,14 @@ a:hover {
 }
 a img {
 	border:#000000 0px none;
+}
+.cshelp
+{
+    margin: 0em;
+    padding: 0.2em 0em 0.2em 0.2em;
+    background: #cee1ff;
+    color: #000;
+    width: 100%;
 }
 </style>
 <title>GoldenGate - Rule</title>
@@ -51,6 +58,7 @@ a img {
 	function mvgSwitchImage(strId, strFileName)	{ var obj = mvgGetRef(strId); if(obj != null && typeof(obj) != "undefined") obj.src = strFileName; }
 //]]>
 </script>
+	<script type="text/javascript" src="res/fieldhelp.js"></script>
 </head>
 <body class="normal" style="margin:0px;padding:0px;background-color:#E8E8E8;background-image:url(gre/gre476.png);background-position:left top;background-repeat:repeat-y;">
 <div style="text-align:left;">
@@ -110,16 +118,18 @@ a img {
 <p style="text-align:center;">Action</p></td></tr>
 <tr>
 <td style="border-left:1px solid #000000;border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;"><input type="text" name="stc" size="20" value="XXXSTCXXX"></p></td>
+<p style="text-align:center;"><input type="text" name="stc" size="50" value="XXXSTCXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;"><input type="text" name="std" size="20" value="XXXSTDXXX"></p></td>
+<p style="text-align:center;"><input type="text" name="std" size="10" value="XXXSTDXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;"><input type="text" name="rtc" size="20" value="XXXRTCXXX"></p></td>
+<p style="text-align:center;"><input type="text" name="rtc" size="50" value="XXXRTCXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
-<p style="text-align:center;"><input type="text" name="rtd" size="20" value="XXXRTDXXX"></p></td>
+<p style="text-align:center;"><input type="text" name="rtd" size="10" value="XXXRTDXXX"></p></td>
 <td style="border-right:1px solid #000000;border-bottom:1px solid #000000;" valign="top">
 <p style="text-align:center;"><input type="submit" value="Update" name="ACTION"></p></td>
 </tr></tbody></table></form></div></td></tr></tbody></table>
+<div style="height:36px;background-color:#EF6D00;text-align:left;">
+<p>&nbsp;<center><B>XXXRESULTXXX</B></center></p></div>
 </div>
 </body>
 </html>

@@ -1338,7 +1338,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 values[i] = new XmlValue(configAuthenticationDecls[i]);
             }
             values[0].setFromString(auth.user);
-            //values[1].setFromString();
+            //PasswdFile: none values[1].setFromString();
             values[2].setFromString(auth.password);
             // Accounts
             String []accts = auth.accounts;
@@ -1409,8 +1409,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
             auth = simpleAuths.nextElement();
             String newElt = format.replace("XXXUSERXXX", auth.user);
             newElt = newElt.replace("XXXPWDXXX", auth.password);
-            newElt = newElt.replace("XXXSTCXXX", auth.storCmd);
-            newElt = newElt.replace("XXXRTCXXX", auth.retrCmd);
+            if (auth.storCmd != null)
+                newElt = newElt.replace("XXXSTCXXX", auth.storCmd);
+            else
+                newElt = newElt.replace("XXXSTCXXX", "");
+            if (auth.retrCmd != null)
+                newElt = newElt.replace("XXXRTCXXX", auth.retrCmd);
+            else
+                newElt = newElt.replace("XXXRTCXXX", "");
             newElt = newElt.replace("XXXSTDXXX", Long.toString(auth.storDelay));
             newElt = newElt.replace("XXXRTDXXX", Long.toString(auth.retrDelay));
             newElt = newElt.replace("XXXADMXXX", Boolean.toString(auth.isAdmin));
@@ -1448,35 +1454,42 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         DbPreparedStatement preparedStatement = null;
         try {
-            preparedStatement = 
-                DbTransferLog.getStatusPrepareStament(DbConstant.admin.session, null, limit);
-        } catch (GoldenGateDatabaseNoConnectionError e) {
-            return "";
-        } catch (GoldenGateDatabaseSqlError e) {
-            return "";
-        }
-        try {
-            while (preparedStatement.getNext()) {
-                DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
-                String newElt = format.replaceAll("XXXIDXXX", Long.toString(log.getSpecialId()));
-                newElt = newElt.replaceAll("XXXUSERXXX", log.getUser());
-                newElt = newElt.replaceAll("XXXACCTXXX", log.getAccount());
-                newElt = newElt.replace("XXXFILEXXX", log.getFilename());
-                newElt = newElt.replace("XXXMODEXXX", log.getMode());
-                newElt = newElt.replace("XXXSTATUSXXX", log.getErrorInfo().getMesg());
-                newElt = newElt.replace("XXXINFOXXX", log.getInfotransf());
-                newElt = newElt.replace("XXXUPINFXXX", log.getUpdatedInfo().name());
-                newElt = newElt.replace("XXXSTARTXXX", log.getStart().toString());
-                newElt = newElt.replace("XXXSTOPXXX", log.getStop().toString());
-                builder.append(newElt);
+            try {
+                preparedStatement = 
+                    DbTransferLog.getStatusPrepareStament(DbConstant.admin.session, null, limit);
+                preparedStatement.executeQuery();
+            } catch (GoldenGateDatabaseNoConnectionError e) {
+                return "";
+            } catch (GoldenGateDatabaseSqlError e) {
+                return "";
             }
-        } catch (GoldenGateDatabaseNoConnectionError e) {
-            return "";
-        } catch (GoldenGateDatabaseSqlError e) {
-            return "";
+            try {
+                while (preparedStatement.getNext()) {
+                    DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
+                    String newElt = format.replaceAll("XXXIDXXX", Long.toString(log.getSpecialId()));
+                    newElt = newElt.replaceAll("XXXUSERXXX", log.getUser());
+                    newElt = newElt.replaceAll("XXXACCTXXX", log.getAccount());
+                    newElt = newElt.replace("XXXFILEXXX", log.getFilename());
+                    newElt = newElt.replace("XXXMODEXXX", log.getMode());
+                    newElt = newElt.replace("XXXSTATUSXXX", log.getErrorInfo().getMesg());
+                    newElt = newElt.replace("XXXINFOXXX", log.getInfotransf());
+                    newElt = newElt.replace("XXXUPINFXXX", log.getUpdatedInfo().name());
+                    newElt = newElt.replace("XXXSTARTXXX", log.getStart().toString());
+                    newElt = newElt.replace("XXXSTOPXXX", log.getStop().toString());
+                    builder.append(newElt);
+                }
+            } catch (GoldenGateDatabaseNoConnectionError e) {
+                return "";
+            } catch (GoldenGateDatabaseSqlError e) {
+                return "";
+            }
+            result = builder.toString();
+            return result;
+        } finally {
+            if (preparedStatement != null) {
+                preparedStatement.realClose();
+            }
         }
-        result = builder.toString();
-        return result;
     }
     /**
      * @see goldengate.ftp.core.config.FtpConfiguration#getNextRangePort()

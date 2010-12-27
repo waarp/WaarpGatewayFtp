@@ -32,14 +32,22 @@ import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
 import goldengate.common.exception.InvalidArgumentException;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.common.xml.XmlDecl;
+import goldengate.common.xml.XmlType;
+import goldengate.common.xml.XmlUtil;
+import goldengate.common.xml.XmlValue;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.database.DbConstant;
 import goldengate.ftp.exec.database.model.DbModelFactory;
 
+import java.io.IOException;
+import java.io.InvalidObjectException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.TreeSet;
+
+import org.dom4j.Document;
 
 /**
  * Transfer Log for FtpExec
@@ -805,5 +813,145 @@ public class DbTransferLog extends AbstractDbData {
      */
     public Timestamp getStop() {
         return stop;
+    }
+    /*
+        XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX 
+        XXXUPINFXXX XXXSTARTXXX XXXSTOPXXX
+     */
+    private static final String XML_IDX = "IDX";
+    private static final String XML_USER = "USER";
+    private static final String XML_ACCT = "ACCT";
+    private static final String XML_FILE = "FILE";
+    private static final String XML_MODE = "MODE";
+    private static final String XML_STATUS = "STATUS";
+    private static final String XML_INFO = "INFO";
+    private static final String XML_UPDINFO = "UPDINFO";
+    private static final String XML_START = "START";
+    private static final String XML_STOP = "STOP";
+    private static final String XML_ROOT = "LOGS";
+    private static final String XML_ENTRY = "LOG";
+    /**
+     * Structure of the Configuration file
+     *
+     */
+    private static final XmlDecl [] logDecls = {
+        // identity
+        new XmlDecl(XmlType.STRING, XML_IDX), 
+        new XmlDecl(XmlType.STRING, XML_USER),
+        new XmlDecl(XmlType.STRING, XML_ACCT),
+        new XmlDecl(XmlType.STRING, XML_FILE),
+        new XmlDecl(XmlType.STRING, XML_MODE),
+        new XmlDecl(XmlType.STRING, XML_STATUS),
+        new XmlDecl(XmlType.STRING, XML_INFO),
+        new XmlDecl(XmlType.STRING, XML_UPDINFO),
+        new XmlDecl(XmlType.STRING, XML_START),
+        new XmlDecl(XmlType.STRING, XML_STOP),
+    };
+    /**
+     * Global Structure for Server Configuration
+     */
+    private static final XmlDecl[] logsElements = {
+        new XmlDecl(XML_ENTRY, XmlType.XVAL, XML_ROOT+"/"+XML_ENTRY, 
+                logDecls, true)
+    };
+    /**
+     * 
+     * @return the associated XmlValue
+     */
+    private XmlValue[] saveIntoXmlValue() {
+        XmlValue []values = new XmlValue[logDecls.length];
+        for (int i = 0; i < logDecls.length; i++) {
+            values[i] = new XmlValue(logDecls[i]);
+        }
+        values[0].setFromString(Long.toString(specialId));
+        values[1].setFromString(user);
+        values[2].setFromString(account);
+        values[3].setFromString(filename);
+        values[4].setFromString(mode);
+        values[5].setFromString(getErrorInfo().getMesg());
+        values[6].setFromString(infotransf);
+        values[7].setFromString(getUpdatedInfo().name());
+        values[8].setFromString(start.toString());
+        values[9].setFromString(stop.toString());
+        return values;
+    }
+    /**
+     * Save the current DbTransferLog to a file
+     * @param filename
+     * @return The message for the HTTPS interface
+     */
+    public String saveDbTransferLog(String filename) {
+        Document document = XmlUtil.createEmptyDocument();
+        XmlValue [] roots = new XmlValue[1];
+        XmlValue root = new XmlValue(logsElements[0]);
+        roots[0] = root;
+        String message = null;
+        XmlValue []values = saveIntoXmlValue();
+        try {
+            root.addValue(values);
+        } catch (InvalidObjectException e) {
+            logger.error("Error during Write DbTransferLog file", e);
+            return "Error during purge";
+        }
+        try {
+            delete();
+        } catch (GoldenGateDatabaseException e) {
+            message = "Error during purge";
+        }
+        message = "Purge Correct Logs successful";
+        XmlUtil.write(document, roots);
+        try {
+            XmlUtil.saveDocument(filename, document);
+        } catch (IOException e1) {
+            logger.error("Cannot write to file: "+filename+" since {}", e1.getMessage());
+            return message+" but cannot save file as export";
+        }
+        return message;
+    }
+    /**
+     * Export DbTransferLogs to a file and purge the corresponding DbTransferLogs
+     * @param preparedStatement the DbTransferLog as SELECT command to export (and purge)
+     * @param filename the filename where the DbLogs will be exported
+     * @return The message for the HTTPS interface
+     */
+    public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement, String filename) {
+        Document document = XmlUtil.createEmptyDocument();
+        XmlValue [] roots = new XmlValue[1];
+        XmlValue root = new XmlValue(logsElements[0]);
+        roots[0] = root;
+        String message = null;
+        try {
+            try {
+                preparedStatement.executeQuery();
+                while (preparedStatement.getNext()) {
+                    DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
+                    XmlValue []values = log.saveIntoXmlValue();
+                    try {
+                        root.addValue(values);
+                    } catch (InvalidObjectException e) {
+                        logger.error("Error during Write DbTransferLog file", e);
+                        return "Error during purge";
+                    }
+                    log.delete();
+                }
+                message = "Purge Correct Logs successful";
+            } catch (GoldenGateDatabaseNoConnectionError e) {
+                message = "Error during purge";
+            } catch (GoldenGateDatabaseSqlError e) {
+                message = "Error during purge";
+            } catch (GoldenGateDatabaseException e) {
+                message = "Error during purge";
+            }
+        } finally {
+            preparedStatement.realClose();
+        }
+        XmlUtil.write(document, roots);
+        try {
+            XmlUtil.saveDocument(filename, document);
+        } catch (IOException e1) {
+            logger.error("Cannot write to file: "+filename+" since {}", e1.getMessage());
+            return message+" but cannot save file as export";
+        }
+        return message;
     }
 }

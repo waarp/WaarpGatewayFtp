@@ -125,9 +125,9 @@ public abstract class AbstractExecutor {
                     pretrType = tR66PREPARETRANSFER;
                     useDatabase = true;
                 } else {
-                    // Default EXECUTE
-                    pretrCMD = getDefault(retrieve);
-                    pretrType = tEXECUTE;
+                    // Default NONE
+                    pretrCMD = getNone(retrieve);
+                    pretrType = tNONE;
                 }
             }
             pretrDelay = retrDelay;
@@ -148,9 +148,9 @@ public abstract class AbstractExecutor {
                     pstorType = tR66PREPARETRANSFER;
                     useDatabase = true;
                 } else {
-                    // Default EXECUTE
-                    pstorCMD = getDefault(store);
-                    pstorType = tEXECUTE;
+                    // Default NONE
+                    pstorCMD = getNone(store);
+                    pstorType = tNONE;
                 }
             }
             pstorDelay = storDelay;
@@ -201,8 +201,8 @@ public abstract class AbstractExecutor {
     }
     
     
-    private static String getDefault(String cmd) {
-        return cmd.trim();
+    private static String getNone(String cmd) {
+        return cmd.substring(NONE.length()).trim();
     }
     private static String getExecuteCmd(String cmd) {
         return cmd.substring(EXECUTE.length()).trim();

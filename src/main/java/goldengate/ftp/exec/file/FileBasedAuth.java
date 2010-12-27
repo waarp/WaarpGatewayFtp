@@ -30,6 +30,7 @@ import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.core.file.FtpDir;
 import goldengate.ftp.core.session.FtpSession;
 import goldengate.ftp.filesystembased.FilesystemBasedFtpAuth;
+import goldengate.ftp.filesystembased.FilesystemBasedFtpRestart;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.database.DbConstant;
 import goldengate.ftp.exec.exec.AbstractExecutor.CommandExecutor;
@@ -194,6 +195,9 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth {
         setIsIdentified(true);
         user = auth.user;
         account = auth.user;
+        ((FtpSession) getSession()).setSpecialInit(this, 
+                new FileBasedDir(((FtpSession) getSession())), 
+                new FilesystemBasedFtpRestart(((FtpSession) getSession())));
         try {
             setBusinessRootFromAuth();
         } catch (Reply421Exception e) {

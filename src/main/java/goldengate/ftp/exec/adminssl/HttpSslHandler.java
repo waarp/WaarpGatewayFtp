@@ -97,13 +97,15 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
     /**
      * Session Management
      */
-    private static final ConcurrentHashMap<String, FtpSession> sessions
-        = new ConcurrentHashMap<String, FtpSession>();
+    private static final ConcurrentHashMap<String, FileBasedAuth> sessions
+        = new ConcurrentHashMap<String, FileBasedAuth>();
     private static final ConcurrentHashMap<String, DbSession> dbSessions
         = new ConcurrentHashMap<String, DbSession>();
-    private volatile FtpSession authentHttp = 
+    private volatile FtpSession ftpSession =
         new FtpSession(FileBasedConfiguration.fileBasedConfiguration,
                 null);
+    private volatile FileBasedAuth authentHttp =
+        new FileBasedAuth(ftpSession);
 
     private volatile HttpRequest request;
     private volatile boolean newSession = false;
@@ -278,6 +280,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     Double.toString(ConstraintLimitHandler.getCpuLimit()));
             GgStringUtils.replace(builder, "XXXXCONLXXX",
                     Integer.toString(ConstraintLimitHandler.getChannelLimit()));
+            GgStringUtils.replace(builder, "XXXRESULTXXX", "");
             return builder.toString();
         }
         String extraInformation = null;
@@ -329,7 +332,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
         GgStringUtils.replace(builder, "XXXXCONLXXX",
                 Integer.toString(ConstraintLimitHandler.getChannelLimit()));
         if (extraInformation != null) {
-            builder.append(extraInformation);
+            GgStringUtils.replace(builder, "XXXRESULTXXX", extraInformation);
+        } else {
+            GgStringUtils.replace(builder, "XXXRESULTXXX", "");
         }
         return builder.toString();
     }
@@ -348,6 +353,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     exec.getRetrType()+" "+exec.pretrCMD);
             GgStringUtils.replace(builder, "XXXRTDXXX",
                     Long.toString(exec.pretrDelay));
+            GgStringUtils.replace(builder, "XXXRESULTXXX", "");
             return builder.toString();
         }
         String extraInformation = null;
@@ -396,7 +402,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
         GgStringUtils.replace(builder, "XXXRTDXXX",
                 Long.toString(exec.pretrDelay));
         if (extraInformation != null) {
-            builder.append(extraInformation);
+            GgStringUtils.replace(builder, "XXXRESULTXXX", extraInformation);
+        } else {
+            GgStringUtils.replace(builder, "XXXRESULTXXX", "");
         }
         return builder.toString();
     }
@@ -438,17 +446,14 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                 }
                 if (preparedStatement != null) {
                     try {
-                        while (preparedStatement.getNext()) {
-                            DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
-                            log.delete();
-                        }
-                        message = "Purge Correct Logs successful";
-                    } catch (GoldenGateDatabaseNoConnectionError e) {
-                        message = "Error during purge";
-                    } catch (GoldenGateDatabaseSqlError e) {
-                        message = "Error during purge";
-                    } catch (GoldenGateDatabaseException e) {
-                        message = "Error during purge";
+                        FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
+                        String filename =
+                            config.getBaseDirectory()+
+                            FtpDir.SEPARATOR+config.ADMINNAME+FtpDir.SEPARATOR+
+                            config.HOST_ID+"_logs_"+System.currentTimeMillis()+".xml";
+                        message = DbTransferLog.saveDbTransferLogFile(preparedStatement, filename);
+                    } finally {
+                        preparedStatement.realClose();
                     }
                 }
             } else if (purgeAll) {
@@ -464,17 +469,14 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                 }
                 if (preparedStatement != null) {
                     try {
-                        while (preparedStatement.getNext()) {
-                            DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
-                            log.delete();
-                        }
-                        message = "Purge All Logs successful";
-                    } catch (GoldenGateDatabaseNoConnectionError e) {
-                        message = "Error during purgeAll";
-                    } catch (GoldenGateDatabaseSqlError e) {
-                        message = "Error during purgeAll";
-                    } catch (GoldenGateDatabaseException e) {
-                        message = "Error during purgeAll";
+                        FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
+                        String filename =
+                            config.getBaseDirectory()+
+                            FtpDir.SEPARATOR+config.ADMINNAME+FtpDir.SEPARATOR+
+                            config.HOST_ID+"_logs_"+System.currentTimeMillis()+".xml";
+                        message = DbTransferLog.saveDbTransferLogFile(preparedStatement, filename);
+                    } finally {
+                        preparedStatement.realClose();
                     }
                 }
             } else if (delete) {
@@ -484,8 +486,12 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                 long specialId = Long.parseLong(specid);
                 try {
                     DbTransferLog log = new DbTransferLog(dbSession, user, acct, specialId);
-                    log.delete();
-                    message = "Delete 1 log successful";
+                    FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
+                    String filename =
+                        config.getBaseDirectory()+
+                        FtpDir.SEPARATOR+config.ADMINNAME+FtpDir.SEPARATOR+
+                        config.HOST_ID+"_log_"+System.currentTimeMillis()+".xml";
+                    message = log.saveDbTransferLog(filename);
                 } catch (GoldenGateDatabaseException e) {
                     message = "Error during delete 1 Log";
                 }
@@ -503,8 +509,13 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
         String head = REQUEST.User.readHeader();
         String end = REQUEST.User.readEnd();
         String body = REQUEST.User.readBody();
+        FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
+        String filedefault = config.getBaseDirectory()+
+                FtpDir.SEPARATOR+config.ADMINNAME+
+                FtpDir.SEPARATOR+"authentication.xml";
         if (params == null) {
             end = end.replace("XXXRESULTXXX", "");
+            end = end.replace("XXXFILEXXX", filedefault);
             body = FileBasedConfiguration.fileBasedConfiguration.getHtmlAuth(body);
             return head+body+end;
         }
@@ -519,12 +530,10 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                 purge = params.containsKey("purge");
                 boolean replace = false;
                 replace = params.containsKey("replace");
-                FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
                 if (file == null) {
-                    file = config.getBaseDirectory()+
-                        FtpDir.SEPARATOR+config.ADMINNAME+
-                        FtpDir.SEPARATOR+"authentication.xml";
+                    file = filedefault;
                 }
+                end = end.replace("XXXFILEXXX", file);
                 if (exportImport.equalsIgnoreCase("import")) {
                     if (! config.initializeAuthent(file, purge)) {
                         message += "Cannot initialize Authentication from "+file;
@@ -548,6 +557,8 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     }
                 }
                 end = end.replace("XXXRESULTXXX", message);
+            } else {
+                end = end.replace("XXXFILEXXX", filedefault);
             }
         }
         end = end.replace("XXXRESULTXXX", "");
@@ -570,11 +581,11 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
     }
     private void clearSession() {
         if (admin != null) {
-            FtpSession lsession = sessions.remove(admin.getValue());
+            FileBasedAuth auth = sessions.remove(admin.getValue());
             DbSession ldbsession = dbSessions.remove(admin.getValue());
             admin = null;
-            if (lsession != null) {
-                lsession.clear();
+            if (auth != null) {
+                auth.clear();
             }
             if (ldbsession != null) {
                 ldbsession.disconnect();
@@ -641,11 +652,11 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                                 FileBasedConfiguration.fileBasedConfiguration.checkPassword(password));
                 if (name.equals(FileBasedConfiguration.fileBasedConfiguration.ADMINNAME) &&
                         FileBasedConfiguration.fileBasedConfiguration.checkPassword(password)) {
-                    ((FileBasedAuth) authentHttp.getAuth()).specialNoSessionAuth(FileBasedConfiguration.fileBasedConfiguration.HOST_ID);
+                    authentHttp.specialNoSessionAuth(FileBasedConfiguration.fileBasedConfiguration.HOST_ID);
                 } else {
                     getMenu = true;
                 }
-                if (! ((FileBasedAuth)authentHttp.getAuth()).isIdentified()) {
+                if (! authentHttp.isIdentified()) {
                     logger.debug("Still not authenticated: {}",authentHttp);
                     getMenu = true;
                 }
@@ -696,7 +707,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                 return;
             }
             checkSession(e.getChannel());
-            if (! ((FileBasedAuth)authentHttp.getAuth()).isIdentified()) {
+            if (! authentHttp.isIdentified()) {
                 logger.info("Not Authent: "+uriRequest+":{}",authentHttp);
                 checkAuthent(e);
                 return;
@@ -791,9 +802,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             }
         }
         if (admin != null) {
-            FtpSession session = sessions.get(admin.getValue());
-            if (session != null) {
-                authentHttp = session;
+            FileBasedAuth auth = sessions.get(admin.getValue());
+            if (auth != null) {
+                authentHttp = auth;
             }
             DbSession dbSession = dbSessions.get(admin.getValue());
             if (dbSession != null) {
@@ -883,13 +894,20 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             future.addListener(ChannelFutureListener.CLOSE);
         }
         if (shutdown) {
-            Thread thread = 
+            /*
+              Thread thread = 
+             
                 new Thread(
                         new FtpChannelUtils(
                                 FileBasedConfiguration.fileBasedConfiguration));
             thread.setDaemon(true);
             thread.setName("Shutdown Thread");
             thread.start();
+            */
+            FtpChannelUtils.teminateServer(FileBasedConfiguration.fileBasedConfiguration);
+            if (! close){
+                future.addListener(ChannelFutureListener.CLOSE);
+            }
         }
     }
     /**
@@ -919,7 +937,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                 // Nothing to do
                 return;
             }
-            logger.warn("Exception in HttpSslHandler {}", e1.getMessage());
+            logger.warn("Exception in HttpSslHandler", e1);
         }
         if (e.getChannel().isConnected()) {
             sendError(ctx, HttpResponseStatus.BAD_REQUEST);

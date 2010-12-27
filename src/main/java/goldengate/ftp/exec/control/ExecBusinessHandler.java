@@ -106,6 +106,9 @@ public class ExecBusinessHandler extends BusinessHandler {
         switch (transfer.getCommand()) {
             case RETR:
                 // nothing to do since All done
+                GoldenGateActionLogger.logAction(dbFtpSession, specialId,
+                        "Retrieve executed: OK", this, getFtpSession().getReplyCode(),
+                        UpdatedInfo.RUNNING);
                 break;
             case APPE:
             case STOR:
@@ -174,6 +177,9 @@ public class ExecBusinessHandler extends BusinessHandler {
                 }
                 if (futureCompletion.isSuccess()) {
                     // All done
+                    GoldenGateActionLogger.logAction(dbFtpSession, specialId,
+                            "Post-Command executed: OK", this, getFtpSession().getReplyCode(),
+                            UpdatedInfo.RUNNING);
                 } else {
                     // File cannot be sent
                     String message = 
@@ -315,6 +321,9 @@ public class ExecBusinessHandler extends BusinessHandler {
                         throw new Reply421Exception(
                             "File downloaded but not ready to be retrieved");
                     }
+                    GoldenGateActionLogger.logAction(dbFtpSession, specialId,
+                            "Pre-Command executed: OK", this, getFtpSession().getReplyCode(),
+                            UpdatedInfo.RUNNING);
                 } else {
                     // File cannot be retrieved
                     logger.error("PreExecution in Error for Transfer since " +
