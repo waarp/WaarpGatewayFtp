@@ -76,18 +76,18 @@ public class DbTransferLog extends AbstractDbData {
         SPECIALID;
     }
 
-    public static int[] dbTypes = {
+    public static final int[] dbTypes = {
             Types.VARCHAR,
             Types.VARCHAR, 
             Types.TIMESTAMP, Types.TIMESTAMP, 
             Types.LONGVARCHAR, Types.INTEGER, Types.INTEGER,
             Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT };
 
-    public static String table = " TRANSFLOG ";
+    public static final String table = " TRANSFLOG ";
 
-    public static String fieldseq = "TRANSSEQ";
+    public static final String fieldseq = "TRANSSEQ";
 
-    public static Columns [] indexes = {
+    public static final Columns [] indexes = {
         Columns.STARTTRANS, Columns.UPDATEDINFO
     };
 
@@ -131,36 +131,13 @@ public class DbTransferLog extends AbstractDbData {
      */
     private int updatedInfo = UpdatedInfo.UNKNOWN.ordinal();
 
-    private boolean isSaved = false;
-
     /**
      * Special For DbTransferLog
      */
     public static final int NBPRKEY = 4;
     // ALL TABLE SHOULD IMPLEMENT THIS
-    private final DbValue primaryKey[] = {
-            new DbValue(user, Columns.USERID.name()),
-            new DbValue(account, Columns.ACCOUNTID.name()),
-            new DbValue(hostid, Columns.HOSTID.name()),
-            new DbValue(specialId, Columns.SPECIALID.name()) };
-    private final DbValue[] otherFields = {
-            // FILENAME, MODETRANS,
-            // STARTTRANS, STOPTRANS, TRANSINFO
-            // INFOSTATUS, UPDATEDINFO
-            new DbValue(filename, Columns.FILENAME.name()),
-            new DbValue(mode, Columns.MODETRANS.name()),
-            new DbValue(start, Columns.STARTTRANS.name()),
-            new DbValue(stop, Columns.STOPTRANS.name()),
-            new DbValue(infotransf, Columns.TRANSINFO.name()),
-            new DbValue(infostatus.getCode(), Columns.INFOSTATUS.name()),
-            new DbValue(updatedInfo, Columns.UPDATEDINFO.name()) };
 
-    private final DbValue[] allFields = {
-            otherFields[0], otherFields[1], otherFields[2], otherFields[3],
-            otherFields[4], otherFields[5], otherFields[6],  
-            primaryKey[0], primaryKey[1], primaryKey[2], primaryKey[3] };
-
-    public static final String selectAllFields = Columns.FILENAME.name() + "," +
+    protected static final String selectAllFields = Columns.FILENAME.name() + "," +
             Columns.MODETRANS.name() + "," +
             Columns.STARTTRANS.name() + "," + Columns.STOPTRANS.name() + "," +
             Columns.TRANSINFO.name() + "," +
@@ -168,14 +145,14 @@ public class DbTransferLog extends AbstractDbData {
             Columns.USERID.name() + "," + Columns.ACCOUNTID.name() + "," +
             Columns.HOSTID.name() + "," +Columns.SPECIALID.name();
 
-    private static final String updateAllFields = 
+    protected static final String updateAllFields = 
             Columns.FILENAME.name() + "=?," + 
             Columns.MODETRANS.name() + "=?," +
             Columns.STARTTRANS.name() + "=?," + Columns.STOPTRANS.name() + "=?," + 
             Columns.TRANSINFO.name() + "=?," +
             Columns.INFOSTATUS.name() + "=?," + Columns.UPDATEDINFO.name() + "=?";
 
-    private static final String insertAllValues = " (?,?,?,?,?,?,?,?,?,?,?) ";
+    protected static final String insertAllValues = " (?,?,?,?,?,?,?,?,?,?,?) ";
 
     private static final TreeSet<Long> clientNoDbSpecialId = new TreeSet<Long>();
     
@@ -233,6 +210,64 @@ public class DbTransferLog extends AbstractDbData {
         select();
     }
 
+    /* (non-Javadoc)
+     * @see goldengate.common.database.data.AbstractDbData#initObject()
+     */
+    @Override
+    protected void initObject() {
+        primaryKey = new DbValue[]{
+                new DbValue(user, Columns.USERID.name()),
+                new DbValue(account, Columns.ACCOUNTID.name()),
+                new DbValue(hostid, Columns.HOSTID.name()),
+                new DbValue(specialId, Columns.SPECIALID.name()) };
+        otherFields = new DbValue[]{
+                // FILENAME, MODETRANS,
+                // STARTTRANS, STOPTRANS, TRANSINFO
+                // INFOSTATUS, UPDATEDINFO
+                new DbValue(filename, Columns.FILENAME.name()),
+                new DbValue(mode, Columns.MODETRANS.name()),
+                new DbValue(start, Columns.STARTTRANS.name()),
+                new DbValue(stop, Columns.STOPTRANS.name()),
+                new DbValue(infotransf, Columns.TRANSINFO.name()),
+                new DbValue(ReplyCode.REPLY_000_SPECIAL_NOSTATUS.getCode(), Columns.INFOSTATUS.name()), // infostatus.getCode()
+                new DbValue(updatedInfo, Columns.UPDATEDINFO.name()) };
+        allFields = new DbValue[]{
+                otherFields[0], otherFields[1], otherFields[2], otherFields[3],
+                otherFields[4], otherFields[5], otherFields[6],  
+                primaryKey[0], primaryKey[1], primaryKey[2], primaryKey[3] };
+    }
+    /* (non-Javadoc)
+     * @see goldengate.common.database.data.AbstractDbData#getSelectAllFields()
+     */
+    @Override
+    protected String getSelectAllFields() {
+        return selectAllFields;
+    }
+
+    /* (non-Javadoc)
+     * @see goldengate.common.database.data.AbstractDbData#getTable()
+     */
+    @Override
+    protected String getTable() {
+        return table;
+    }
+
+    /* (non-Javadoc)
+     * @see goldengate.common.database.data.AbstractDbData#getInsertAllValues()
+     */
+    @Override
+    protected String getInsertAllValues() {
+        return insertAllValues;
+    }
+
+    /* (non-Javadoc)
+     * @see goldengate.common.database.data.AbstractDbData#getUpdateAllFields()
+     */
+    @Override
+    protected String getUpdateAllFields() {
+        return updateAllFields;
+    }
+
     @Override
     protected void setToArray() {
         // FILENAME, MODETRANS,
@@ -281,7 +316,7 @@ public class DbTransferLog extends AbstractDbData {
      *
      * @return The Where condition on Primary Key
      */
-    private String getWherePrimaryKey() {
+    protected String getWherePrimaryKey() {
         return primaryKey[0].column + " = ? AND " +
             primaryKey[1].column + " = ? AND " +
             primaryKey[2].column + " = ? AND " +
@@ -290,7 +325,7 @@ public class DbTransferLog extends AbstractDbData {
     /**
      * Set the primary Key as current value
      */
-    private void setPrimaryKey() {
+    protected void setPrimaryKey() {
         primaryKey[0].setValue(user);
         primaryKey[1].setValue(account);
         primaryKey[2].setValue(hostid);
