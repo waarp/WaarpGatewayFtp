@@ -373,21 +373,7 @@ public class DbTransferLog extends AbstractDbData {
             removeNoDbSpecialId();
             return;
         }
-        DbPreparedStatement preparedStatement = new DbPreparedStatement(
-                dbSession);
-        try {
-            preparedStatement.createPrepareStatement("DELETE FROM " + table +
-                    " WHERE " + getWherePrimaryKey());
-            setPrimaryKey();
-            setValues(preparedStatement, primaryKey);
-            int count = preparedStatement.executeUpdate();
-            if (count <= 0) {
-                throw new GoldenGateDatabaseNoDataException("No row found");
-            }
-            isSaved = false;
-        } finally {
-            preparedStatement.realClose();
-        }
+        super.delete();
     }
 
     /*
@@ -415,21 +401,7 @@ public class DbTransferLog extends AbstractDbData {
                     specialId);
             setPrimaryKey();
         }
-        setToArray();
-        DbPreparedStatement preparedStatement = new DbPreparedStatement(
-                dbSession);
-        try {
-            preparedStatement.createPrepareStatement("INSERT INTO " + table +
-                    " (" + selectAllFields + ") VALUES " + insertAllValues);
-            setValues(preparedStatement, allFields);
-            int count = preparedStatement.executeUpdate();
-            if (count <= 0) {
-                throw new GoldenGateDatabaseNoDataException("No row found");
-            }
-            isSaved = true;
-        } finally {
-            preparedStatement.realClose();
-        }
+        super.insert();
     }
 
     /**
@@ -517,22 +489,7 @@ public class DbTransferLog extends AbstractDbData {
      */
     @Override
     public boolean exist() throws GoldenGateDatabaseException {
-        if (dbSession == null) {
-            return false;
-        }
-        DbPreparedStatement preparedStatement = new DbPreparedStatement(
-                dbSession);
-        try {
-            preparedStatement.createPrepareStatement("SELECT " +
-                    primaryKey[3].column + " FROM " + table + " WHERE " +
-                    getWherePrimaryKey());
-            setPrimaryKey();
-            setValues(preparedStatement, primaryKey);
-            preparedStatement.executeQuery();
-            return preparedStatement.getNext();
-        } finally {
-            preparedStatement.realClose();
-        }
+        return super.exist();
     }
 
     /*
@@ -542,31 +499,7 @@ public class DbTransferLog extends AbstractDbData {
      */
     @Override
     public void select() throws GoldenGateDatabaseException {
-        if (dbSession == null) {
-            throw new GoldenGateDatabaseNoDataException("No row found");
-        }
-        DbPreparedStatement preparedStatement = new DbPreparedStatement(
-                dbSession);
-        try {
-            preparedStatement.createPrepareStatement("SELECT " + selectAllFields +
-                    " FROM " + table + " WHERE " +
-                    getWherePrimaryKey());
-            setPrimaryKey();
-            setValues(preparedStatement, primaryKey);
-            preparedStatement.executeQuery();
-            if (preparedStatement.getNext()) {
-                getValues(preparedStatement, allFields);
-                setFromArray();
-                isSaved = true;
-            } else {
-                throw new GoldenGateDatabaseNoDataException("No row found: " +
-                        primaryKey[1].getValueAsString() + ":" +
-                        primaryKey[2].getValueAsString() + ":" +
-                        primaryKey[3].getValueAsString());
-            }
-        } finally {
-            preparedStatement.realClose();
-        }
+        super.select();
     }
 
     /*
@@ -576,29 +509,7 @@ public class DbTransferLog extends AbstractDbData {
      */
     @Override
     public void update() throws GoldenGateDatabaseException {
-        if (isSaved) {
-            return;
-        }
-        if (dbSession == null) {
-            isSaved = true;
-            return;
-        }
-        setToArray();
-        DbPreparedStatement preparedStatement = new DbPreparedStatement(
-                dbSession);
-        try {
-            preparedStatement.createPrepareStatement("UPDATE " + table +
-                    " SET " + updateAllFields + " WHERE " +
-                    getWherePrimaryKey());
-            setValues(preparedStatement, allFields);
-            int count = preparedStatement.executeUpdate();
-            if (count <= 0) {
-                throw new GoldenGateDatabaseNoDataException("No row found");
-            }
-            isSaved = true;
-        } finally {
-            preparedStatement.realClose();
-        }
+        super.update();
     }
 
     /**
