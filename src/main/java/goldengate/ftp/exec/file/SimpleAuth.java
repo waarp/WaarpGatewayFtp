@@ -95,7 +95,7 @@ public class SimpleAuth {
         this.retrCmd = retrCmd;
         this.retrDelay = retrDelay;
         this.commandExecutor = new CommandExecutor(retrCmd, retrDelay, storCmd, storDelay);
-        logger.warn("Executor for "+user+" configured as [RETR: "+
+        logger.info("Executor for "+user+" configured as [RETR: "+
                 commandExecutor.pretrCMD+":"+commandExecutor.pretrDelay+":"+
                 commandExecutor.pretrRefused+
                 "] [STOR: "+commandExecutor.pstorCMD+":"+
@@ -126,20 +126,20 @@ public class SimpleAuth {
      */
     public boolean isAccountValid(String account) {
         if (accounts == null) {
-            logger.info("No account needed");
+            logger.debug("No account needed");
             return true;
         }
         if (account == null) {
-            logger.info("No account given");
+            logger.debug("No account given");
             return false;
         }
         for (String acct: accounts) {
             if (acct.equals(account)) {
-                logger.info("Account found");
+                logger.debug("Account found");
                 return true;
             }
         }
-        logger.info("No account found");
+        logger.debug("No account found");
         return false;
     }
 

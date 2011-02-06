@@ -255,7 +255,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                 if (constraints.checkConstraintsSleep(1)) {
                     if (constraints.checkConstraints()) {
                         // Really overload so refuse the command
-                        logger.warn("Server overloaded. Try later... \n"+getFtpSession().toString());
+                        logger.info("Server overloaded. Try later... \n"+getFtpSession().toString());
                         throw new Reply451Exception("Server overloaded. Try later...");
                     }
                 }

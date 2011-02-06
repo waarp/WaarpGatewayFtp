@@ -230,7 +230,7 @@ public abstract class AbstractExecutor {
             String store, long storDelay) {
         commandExecutor = 
             new CommandExecutor(retrieve, retrDelay, store, storDelay);
-        logger.warn("Executor configured as [RETR: "+
+        logger.info("Executor configured as [RETR: "+
                 commandExecutor.pretrCMD+":"+commandExecutor.pretrDelay+":"+
                 commandExecutor.pretrRefused+
                 "] [STOR: "+commandExecutor.pstorCMD+":"+

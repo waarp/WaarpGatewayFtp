@@ -424,7 +424,7 @@ public class DbTransferLog extends AbstractDbData {
         // First need to find a new id if id is not ok
         if (specialId == DbConstant.ILLEGALVALUE) {
             specialId = DbModelFactory.dbModel.nextSequence(dbSession);
-            logger.info("Try Insert create a new Id from sequence: " +
+            logger.debug("Try Insert create a new Id from sequence: " +
                     specialId);
             setPrimaryKey();
         }
