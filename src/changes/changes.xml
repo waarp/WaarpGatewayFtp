@@ -5,6 +5,12 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="2.0.1" date="2011-02-15" description="Fix version">
+			<action dev="Frederic Bregier" type="add">Fix DbTaskRunner (R66) support</action>
+			<action dev="Frederic Bregier" type="add">Fix AbstractDbData support</action>
+			<action dev="Frederic Bregier" type="fix">Fix HTTPS</action>
+			<action dev="Frederic Bregier" type="fix">Fix Digest functions</action>
+		</release>
 		<release version="2.0.0" date="2010-12-25" description="New Production Release">
 			<action dev="Frederic Bregier" type="add">Add LocalExec support</action>
 			<action dev="Frederic Bregier" type="add">Add HTTPS administration support</action>

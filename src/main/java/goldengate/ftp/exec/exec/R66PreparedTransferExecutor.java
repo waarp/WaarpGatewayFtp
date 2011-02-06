@@ -20,6 +20,11 @@
  */
 package goldengate.ftp.exec.exec;
 
+import java.sql.Timestamp;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import openr66.database.DbConstant;
 import openr66.database.data.DbRule;
 import openr66.database.data.DbTaskRunner;
@@ -43,7 +48,7 @@ import goldengate.common.logging.GgInternalLoggerFactory;
  *
  * Format is like r66send command in any order except "-info" which should be
  * the last item:<br>
- * "-to Host -file FILE -rule RULE [-md5] [-nolog] [-info INFO]"<br>
+ * "-to Host -file FILE -rule RULE [-md5] [-nolog] [-start yyyyMMddHHmmss or -delay (delay or +delay)] [-info INFO]"<br>
  * <br>
  * INFO is the only one field that can contains blank character.<br>
  * <br>
@@ -56,7 +61,7 @@ import goldengate.common.logging.GgInternalLoggerFactory;
  * - #ACCOUNT# is replaced by the account<br>
  * - #COMMAND# is replaced by the command issued for the file<br>
  * <br>
- * So for instance"-to Host -file #BASEPATH##FILE# -rule RULE [-md5] [-nolog] [-info #USER# #ACCOUNT# #COMMAND# INFO]"
+ * So for instance "-to Host -file #BASEPATH##FILE# -rule RULE [-md5] [-nolog] [-delay +delay]  [-info #USER# #ACCOUNT# #COMMAND# INFO]"
  * <br>
  * will be a standard use of this function.
  *
@@ -81,6 +86,8 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
     protected boolean isMD5 = false;
 
     protected boolean nolog = false;
+    
+    protected Timestamp timestart = null;
 
     protected String remoteHost = null;
 
@@ -126,6 +133,23 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
             } else if (args[i].equalsIgnoreCase("-nolog")) {
                 nolog = true;
                 i ++;
+            } else if (args[i].equalsIgnoreCase("-start")) {
+                i++;
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+                Date date;
+                try {
+                    date = dateFormat.parse(args[i]);
+                    timestart = new Timestamp(date.getTime());
+                } catch (ParseException e) {
+                }
+            } else if (args[i].equalsIgnoreCase("-delay")) {
+                i++;
+                if (args[i].charAt(0) == '+') {
+                    timestart = new Timestamp(System.currentTimeMillis()+
+                            Long.parseLong(args[i].substring(1)));
+                } else {
+                    timestart = new Timestamp(Long.parseLong(args[i]));
+                }
             }
         }
         if (fileinfo == null) {
@@ -172,7 +196,7 @@ public class R66PreparedTransferExecutor extends AbstractExecutor {
         DbTaskRunner taskRunner;
         try {
             taskRunner = new DbTaskRunner(dbsession, rule, isRetrieve, request,
-                    remoteHost);
+                    remoteHost, timestart);
         } catch (GoldenGateDatabaseException e) {
             logger.error("Cannot get new task since {}\n    " + message, e
                     .getMessage());

@@ -37,8 +37,6 @@ import openr66.protocol.configuration.Configuration;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 
-import ch.qos.logback.classic.Level;
-
 /**
  * Exec FTP Server using simple authentication (XML FileInterface based),
  * and standard Directory and FileInterface implementation (Filesystem based).
@@ -63,8 +61,7 @@ public class ExecGatewayFtpServer {
                     ExecGatewayFtpServer.class.getName() + " <config-file> [<r66config-file>]");
             return;
         }
-        InternalLoggerFactory.setDefaultFactory(new GgSlf4JLoggerFactory(
-                Level.WARN));
+        InternalLoggerFactory.setDefaultFactory(new GgSlf4JLoggerFactory(null));
         logger = GgInternalLoggerFactory
                 .getLogger(ExecGatewayFtpServer.class);
         String config = args[0];

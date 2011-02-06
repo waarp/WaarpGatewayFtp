@@ -34,8 +34,6 @@ import goldengate.ftp.exec.database.model.DbModelFactory;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
 
-import ch.qos.logback.classic.Level;
-
 /**
  * Program to initialize the database for GoldenGate Ftp Exec
  * @author Frederic Bregier
@@ -71,8 +69,7 @@ public class ServerInitDatabase {
      *          [rules_directory host_authent limit_configuration]
      */
     public static void main(String[] args) {
-        InternalLoggerFactory.setDefaultFactory(new GgSlf4JLoggerFactory(
-                Level.WARN));
+        InternalLoggerFactory.setDefaultFactory(new GgSlf4JLoggerFactory(null));
         if (logger == null) {
             logger = GgInternalLoggerFactory.getLogger(ServerInitDatabase.class);
         }
