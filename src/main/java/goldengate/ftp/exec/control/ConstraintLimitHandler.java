@@ -92,7 +92,7 @@ public class ConstraintLimitHandler {
             }
         }
         if (channelLimit > 0) {
-            int nb = DbAdmin.getNbConnection();
+            int nb = DbAdmin.getNbConnection()-DbAdmin.nbHttpSession;
             if (channelLimit <= nb) {
                 logger.debug("NW:"+nb+" > "+channelLimit);
                 return true;

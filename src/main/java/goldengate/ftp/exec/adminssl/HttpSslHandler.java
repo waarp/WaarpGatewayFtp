@@ -22,6 +22,7 @@ package goldengate.ftp.exec.adminssl;
 
 import goldengate.common.command.ReplyCode;
 import goldengate.common.command.exception.CommandAbstractException;
+import goldengate.common.database.DbAdmin;
 import goldengate.common.database.DbPreparedStatement;
 import goldengate.common.database.DbSession;
 import goldengate.common.database.exception.GoldenGateDatabaseException;
@@ -589,6 +590,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             }
             if (ldbsession != null) {
                 ldbsession.disconnect();
+                DbAdmin.nbHttpSession--;
             }
         }
     }
@@ -665,6 +667,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     try {
                         if (DbConstant.admin.isConnected) {
                             this.dbSession = new DbSession(DbConstant.admin, false);
+                            DbAdmin.nbHttpSession++;
                             this.isPrivateDbSession = true;
                         }
                     } catch (GoldenGateDatabaseNoConnectionError e1) {
