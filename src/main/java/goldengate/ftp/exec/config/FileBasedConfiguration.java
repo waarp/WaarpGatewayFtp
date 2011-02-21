@@ -1509,7 +1509,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
 
     /**
-     * @return
+     * @return the httpPipelineExecutor
      */
     public OrderedMemoryAwareThreadPoolExecutor getHttpPipelineExecutor() {
         return httpPipelineExecutor;
