@@ -44,15 +44,14 @@ import goldengate.ftp.exec.exec.AbstractExecutor.CommandExecutor;
 import goldengate.ftp.exec.file.FileBasedAuth;
 import goldengate.ftp.exec.utils.Version;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import openr66.protocol.http.HttpWriteCacheEnable;
 
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
@@ -706,7 +705,10 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             uriRequest = queryStringDecoder.getPath();
             if (uriRequest.contains("gre/") || uriRequest.contains("img/") ||
                     uriRequest.contains("res/")) {
-                writeFile(e.getChannel(), FileBasedConfiguration.fileBasedConfiguration.httpBasePath+uriRequest);
+                HttpWriteCacheEnable.writeFile(request, 
+                        e.getChannel(), 
+                        FileBasedConfiguration.fileBasedConfiguration.httpBasePath+uriRequest,
+                        FTPSESSION);
                 return;
             }
             checkSession(e.getChannel());
@@ -751,44 +753,6 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     break;
             }
             writeResponse(e.getChannel());
-    }
-
-    /**
-     * Write a File
-     * @param e
-     */
-    private void writeFile(Channel channel, String filename) {
-        // Convert the response content to a ChannelBuffer.
-        HttpResponse response;
-        File file = new File(filename);
-        byte [] bytes = new byte[(int) file.length()];
-        FileInputStream fileInputStream;
-        try {
-            fileInputStream = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.NOT_FOUND);
-            channel.write(response);
-            return;
-        }
-        try {
-            fileInputStream.read(bytes);
-        } catch (IOException e) {
-            response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                    HttpResponseStatus.NOT_FOUND);
-            channel.write(response);
-            return;
-        }
-        ChannelBuffer buf = ChannelBuffers.copiedBuffer(bytes);
-        // Build the response object.
-        response = new DefaultHttpResponse(HttpVersion.HTTP_1_1,
-                HttpResponseStatus.OK);
-        response.setContent(buf);
-        response.setHeader(HttpHeaders.Names.CONTENT_LENGTH, String.valueOf(buf.readableBytes()));
-        checkSession(channel);
-        handleCookies(response);
-        // Write the response.
-        channel.write(response);
     }
     private void checkSession(Channel channel) {
         String cookieString = request.getHeader(HttpHeaders.Names.COOKIE);

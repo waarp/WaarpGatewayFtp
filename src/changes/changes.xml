@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="2.0.2" date="2011-02-25" description="Http improvement">
+			<action dev="Frederic Bregier" type="add">Cache compatibility added to HTTP and HTTPS</action>
+		</release>
 		<release version="2.0.1" date="2011-02-15" description="Fix version">
 			<action dev="Frederic Bregier" type="add">Fix DbTaskRunner (R66) support</action>
 			<action dev="Frederic Bregier" type="add">Fix AbstractDbData support</action>
