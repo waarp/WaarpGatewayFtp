@@ -448,6 +448,7 @@
 				-group "GoldenGate Ftp Exec DataHandler package" "goldengate.ftp.exec.data*"
 				-group "GoldenGate Ftp Exec Administrator package" "goldengate.ftp.exec.adminssl*"
 				-group "GoldenGate Ftp Exec File package" "goldengate.ftp.exec.file*"
+				-group "GoldenGate Ftp Exec SNMP package" "goldengate.ftp.exec.snmp*"
 				-group "GoldenGate Ftp Exec Utils package" "goldengate.ftp.exec.utils*"
 
 	            -sourceclasspath ${basedir}/target/classes
