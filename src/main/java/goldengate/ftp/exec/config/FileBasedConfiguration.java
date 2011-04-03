@@ -46,6 +46,7 @@ import goldengate.common.xml.XmlValue;
 import goldengate.ftp.core.config.FtpConfiguration;
 import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.handler.DataBusinessHandler;
+import goldengate.ftp.core.exception.FtpNoConnectionException;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.exec.adminssl.HttpSslPipelineFactory;
 import goldengate.ftp.exec.control.ConstraintLimitHandler;
@@ -56,6 +57,12 @@ import goldengate.ftp.exec.exec.AbstractExecutor;
 import goldengate.ftp.exec.exec.LocalExecClient;
 import goldengate.ftp.exec.file.FileBasedDir;
 import goldengate.ftp.exec.file.SimpleAuth;
+import goldengate.ftp.exec.snmp.FtpMonitoring;
+import goldengate.ftp.exec.snmp.FtpPrivateMib;
+import goldengate.ftp.exec.snmp.FtpVariableFactory;
+import goldengate.snmp.GgMOFactory;
+import goldengate.snmp.GgSnmpAgent;
+import goldengate.snmp.SnmpConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -165,6 +172,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * HTTP Admin Directory
      */
     private static final String XML_HTTPADMINPATH = "httpadmin";
+    /**
+     * Monitoring: snmp configuration file (if empty, no snmp support)
+     */
+    private static final String XML_MONITOR_SNMP_CONFIG= "snmpconfig";
 
     /**
      * Structure of the Configuration file
@@ -181,7 +192,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
         new XmlDecl(XmlType.STRING, XML_HTTPADMINPATH),
         new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYPATH), 
         new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYSTOREPASS), 
-        new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYPASS)
+        new XmlDecl(XmlType.STRING, XML_PATH_ADMIN_KEYPASS),
+        new XmlDecl(XmlType.STRING, XML_MONITOR_SNMP_CONFIG)
     };
     /**
      * SERVER PORT
@@ -566,6 +578,22 @@ public class FileBasedConfiguration extends FtpConfiguration {
      * ThreadPoolExecutor for Http and Https Server
      */
     private volatile OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
+    /**
+     * Monitoring: snmp configuration file (empty means no snmp support)
+     */
+    public String snmpConfig = null;
+    /**
+     * SNMP Agent (if any)
+     */
+    public GgSnmpAgent agentSnmp = null;
+    /**
+     * Associated MIB
+     */
+    public FtpPrivateMib ftpMib = null;
+    /**
+     * Monitoring object
+     */
+    public FtpMonitoring monitoring = null;
 
     
     /**
@@ -758,6 +786,23 @@ public class FileBasedConfiguration extends FtpConfiguration {
                     new GgSslContextFactory(
                             HttpSslPipelineFactory.ggSecureKeyStore, true);
             }
+        }
+        value = hashConfig.get(XML_MONITOR_SNMP_CONFIG);
+        if (value != null && (!value.isEmpty())) {
+            snmpConfig = value.getString();
+            logger.warn("SNMP configuration file: "+snmpConfig);
+            File snmpfile = new File(snmpConfig);
+            if (snmpfile.canRead()) {
+                if (!SnmpConfiguration.setConfigurationFromXml(snmpfile)) {
+                    logger.warn("Bad SNMP configuration file: "+snmpConfig);
+                    snmpConfig = null;
+                }
+            } else {
+                logger.warn("Cannot read SNMP configuration file: "+snmpConfig);
+                snmpConfig = null;
+            }
+        } else {
+            logger.warn("NO SNMP configuration file");
         }
         return true;
     }
@@ -1157,6 +1202,30 @@ public class FileBasedConfiguration extends FtpConfiguration {
    public void configureLExec() {
        if (useLocalExec) {
            LocalExecClient.initialize(this);
+       }
+   }
+   /**
+    * Configure the SNMP support if needed
+    * @throws FtpNoConnectionException
+    */
+   public void configureSnmp() throws FtpNoConnectionException {
+       monitoring = new FtpMonitoring(null);
+       if (snmpConfig != null) {
+           int snmpPortShow =  getServerPort();
+           ftpMib = 
+               new FtpPrivateMib(snmpPortShow);
+           GgMOFactory.factory = new FtpVariableFactory();
+           agentSnmp = new GgSnmpAgent(new File(snmpConfig), monitoring, ftpMib);
+           try {
+               agentSnmp.start();
+               logger.debug("SNMP configured");
+           } catch (IOException e) {
+               monitoring.releaseResources();
+               monitoring = null;
+               ftpMib = null;
+               agentSnmp = null;
+               throw new FtpNoConnectionException("AgentSnmp Error while starting", e);
+           }
        }
    }
     /**
@@ -1564,5 +1633,15 @@ public class FileBasedConfiguration extends FtpConfiguration {
             LocalExecClient.releaseResources();
         }
         DbAdmin.closeAllConnection();
+    }
+
+    /* (non-Javadoc)
+     * @see goldengate.ftp.core.config.FtpConfiguration#inShutdownProcess()
+     */
+    @Override
+    public void inShutdownProcess() {
+        if (ftpMib != null) {
+            ftpMib.notifyStartStop("Shutdown in progress for "+HOST_ID, "Gives extra seconds: "+TIMEOUTCON);
+        }
     }
 }

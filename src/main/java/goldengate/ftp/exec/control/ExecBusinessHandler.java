@@ -256,6 +256,11 @@ public class ExecBusinessHandler extends BusinessHandler {
                     if (constraints.checkConstraints()) {
                         // Really overload so refuse the command
                         logger.info("Server overloaded. Try later... \n"+getFtpSession().toString());
+                        if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+                            FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+                            notifyOverloaded("Server overloaded", 
+                                    getFtpSession().toString());
+                        }
                         throw new Reply451Exception("Server overloaded. Try later...");
                     }
                 }
@@ -347,6 +352,26 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public void exceptionLocalCaught(ExceptionEvent e) {
+        if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+            String mesg;
+            if (e.getCause() != null && e.getCause().getMessage() != null) {
+                mesg = e.getCause().getMessage();
+            } else {
+                if (this.getFtpSession() != null) {
+                    mesg = "Exception while "+this.getFtpSession().getReplyCode().getMesg();
+                } else {
+                    mesg = "Unknown Exception";
+                }
+            }
+            FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+            notifyError("Exception trapped", mesg);
+        }
+        if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+            if (this.getFtpSession() != null) {
+                FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                    updateCodeNoTransfer(this.getFtpSession().getReplyCode());
+            }
+        }
     }
 
     @Override

@@ -32,6 +32,7 @@ import goldengate.ftp.core.control.BusinessHandler;
 import goldengate.ftp.core.data.FtpTransfer;
 import goldengate.ftp.core.exception.FtpNoFileException;
 import goldengate.ftp.core.session.FtpSession;
+import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.database.DbConstant;
 import goldengate.ftp.exec.database.data.DbTransferLog;
 
@@ -59,7 +60,7 @@ public class GoldenGateActionLogger {
             String message, String file, BusinessHandler handler) {
         FtpSession session = handler.getFtpSession();
         String sessionContexte = session.toString();
-        logger.warn(message+" "+sessionContexte);
+        logger.info(message+" "+sessionContexte);
         if (ftpSession != null) {
             FtpCommandCode code = session.getCurrentCommand().getCode();
             if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
@@ -77,6 +78,13 @@ public class GoldenGateActionLogger {
                             ReplyCode.REPLY_000_SPECIAL_NOSTATUS, message,
                             UpdatedInfo.TOSUBMIT);
                     logger.debug("Create FS: "+log.toString());
+                    if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                        if (isSender) {
+                            FileBasedConfiguration.fileBasedConfiguration.monitoring.updateLastOutBand();
+                        } else {
+                            FileBasedConfiguration.fileBasedConfiguration.monitoring.updateLastInBound();
+                        }
+                    }
                     return log.getSpecialId();
                 } catch (GoldenGateDatabaseException e1) {
                     // Do nothing
@@ -99,7 +107,7 @@ public class GoldenGateActionLogger {
             UpdatedInfo info) {
         FtpSession session = handler.getFtpSession();
         String sessionContexte = session.toString();
-        logger.warn(message+" "+sessionContexte);
+        logger.info(message+" "+sessionContexte);
         if (ftpSession != null && specialId != DbConstant.ILLEGALVALUE) {
             FtpCommandCode code = session.getCurrentCommand().getCode();
             if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
@@ -118,6 +126,16 @@ public class GoldenGateActionLogger {
                 } catch (GoldenGateDatabaseException e) {
                     // Do nothing
                 }
+            } else {
+                if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                    FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                        updateCodeNoTransfer(rcode);
+                }
+            }
+        } else {
+            if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                    updateCodeNoTransfer(rcode);
             }
         }
         return specialId;
@@ -170,9 +188,37 @@ public class GoldenGateActionLogger {
                         log.setFilename(file);
                     }
                     log.update();
+                    if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+                        FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+                        notifyInfoTask(message, log);
+                    }
                     logger.debug("Update FS: "+log.toString());
                 } catch (GoldenGateDatabaseException e) {
                     // Do nothing
+                }
+            } else {
+                if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                    FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                        updateCodeNoTransfer(rcode);
+                }
+                if (rcode != ReplyCode.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN &&
+                        rcode != ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN) {
+                    if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+                        FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+                        notifyWarning(rcode.getMesg(),message);
+                    }
+                }
+            }
+        } else {
+            if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                    updateCodeNoTransfer(rcode);
+            }
+            if (rcode != ReplyCode.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN &&
+                    rcode != ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN) {
+                if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+                    FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+                    notifyWarning(rcode.getMesg(),message);
                 }
             }
         }

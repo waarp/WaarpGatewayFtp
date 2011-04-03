@@ -36,6 +36,7 @@ import goldengate.common.xml.XmlDecl;
 import goldengate.common.xml.XmlType;
 import goldengate.common.xml.XmlUtil;
 import goldengate.common.xml.XmlValue;
+import goldengate.ftp.core.command.FtpCommandCode;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.database.DbConstant;
 import goldengate.ftp.exec.database.model.DbModelFactory;
@@ -88,17 +89,11 @@ public class DbTransferLog extends AbstractDbData {
     public static final String fieldseq = "TRANSSEQ";
 
     public static final Columns [] indexes = {
-        Columns.STARTTRANS, Columns.UPDATEDINFO
+        Columns.STARTTRANS, Columns.UPDATEDINFO, Columns.INFOSTATUS
     };
 
     public static final String XMLRUNNERS = "transferlogs";
     public static final String XMLRUNNER = "log";
-    /**
-     * GlobalStep Value
-     */
-    public static enum TASKSTEP {
-        NOTASK, PRETASK, TRANSFERTASK, POSTTASK, ALLDONETASK, ERRORTASK;
-    }
 
     // Values
     private String user;
@@ -619,6 +614,201 @@ public class DbTransferLog extends AbstractDbData {
         }
         return preparedStatement;
     }
+    /**
+    *
+    * @param session
+    * @return the DbPreparedStatement for getting Updated Object
+    * @throws GoldenGateDatabaseNoConnectionError
+    * @throws GoldenGateDatabaseSqlError
+    */
+   public static DbPreparedStatement getCountInfoPrepareStatement(DbSession session)
+           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+       String request = "SELECT COUNT(" + Columns.SPECIALID.name()+
+               ") FROM " + table + " WHERE " + 
+               Columns.STARTTRANS.name() + " >= ? AND " +getLimitWhereCondition() +
+               " AND " + Columns.UPDATEDINFO.name() +" = ? ";
+       DbPreparedStatement pstt = new DbPreparedStatement(session, request);
+       return pstt;
+   }
+   /**
+    * 
+    * @param pstt
+    * @param info
+    * @param time
+    * @return the number of elements (COUNT) from the statement
+    */
+   public static long getResultCountPrepareStatement(DbPreparedStatement pstt, UpdatedInfo info,
+           long time) {
+       long result = 0;
+       try {
+           finishSelectOrCountPrepareStatement(pstt, time);
+           pstt.getPreparedStatement().setInt(2, info.ordinal());
+           pstt.executeQuery();
+           if (pstt.getNext()) {
+               result = pstt.getResultSet().getLong(1);
+           }
+        } catch (GoldenGateDatabaseNoConnectionError e) {
+        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (SQLException e) {
+        } finally {
+            pstt.close();
+        }
+       return result;
+   }
+   /**
+    * @param session
+    * @return the DbPreparedStatement for getting Runner according to status ordered by start
+    * @throws GoldenGateDatabaseNoConnectionError
+    * @throws GoldenGateDatabaseSqlError
+    */
+   public static DbPreparedStatement getCountStatusPrepareStatement(
+           DbSession session)
+           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+       String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+       request += " WHERE "+Columns.STARTTRANS.name() + " >= ? ";
+       request += " AND " + Columns.INFOSTATUS.name() + " = ? AND "+getLimitWhereCondition();
+       return new DbPreparedStatement(session, request);
+   }
+   /**
+    * @param session
+    * @return the DbPreparedStatement for getting All according to status ordered by start
+    * @throws GoldenGateDatabaseNoConnectionError
+    * @throws GoldenGateDatabaseSqlError
+    */
+   public static DbPreparedStatement getCountAllPrepareStatement(
+           DbSession session)
+           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+       String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+       request += " WHERE "+Columns.STARTTRANS.name() + " >= ? ";
+       request += " AND "+getLimitWhereCondition();
+       return new DbPreparedStatement(session, request);
+   }
+   /**
+    * 
+    * @param pstt
+    * @param error
+    * @param time
+    * @return the number of elements (COUNT) from the statement
+    */
+   public static long getResultCountPrepareStatement(DbPreparedStatement pstt, ReplyCode error,
+           long time) {
+       long result = 0;
+       try {
+           finishSelectOrCountPrepareStatement(pstt, time);
+           pstt.getPreparedStatement().setInt(2, error.getCode());
+           pstt.executeQuery();
+           if (pstt.getNext()) {
+               result = pstt.getResultSet().getLong(1);
+           }
+        } catch (GoldenGateDatabaseNoConnectionError e) {
+        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (SQLException e) {
+        } finally {
+            pstt.close();
+        }
+       return result;
+   }
+   /**
+    * 
+    * @param pstt
+    * @return the number of elements (COUNT) from the statement
+    */
+   public static long getResultCountPrepareStatement(DbPreparedStatement pstt) {
+       long result = 0;
+       try {
+            pstt.executeQuery();
+            if (pstt.getNext()) {
+                result = pstt.getResultSet().getLong(1);
+            }
+        } catch (GoldenGateDatabaseNoConnectionError e) {
+        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (SQLException e) {
+        } finally {
+            pstt.close();
+        }
+       return result;
+   }
+   /**
+    * Set the current time in the given updatedPreparedStatement
+    * @param pstt
+    * @throws GoldenGateDatabaseNoConnectionError
+    * @throws GoldenGateDatabaseSqlError
+    */
+   public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt) throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+       finishSelectOrCountPrepareStatement(pstt, System.currentTimeMillis());
+   }
+   /**
+    * Set the current time in the given updatedPreparedStatement
+    * @param pstt
+    * @throws GoldenGateDatabaseNoConnectionError
+    * @throws GoldenGateDatabaseSqlError
+    */
+   public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt, long time) throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+       Timestamp startlimit = new Timestamp(time);
+       try {
+           pstt.getPreparedStatement().setTimestamp(1, startlimit);
+       } catch (SQLException e) {
+           logger.error("Database SQL Error: Cannot set timestamp", e);
+           throw new GoldenGateDatabaseSqlError("Cannot set timestamp",e);
+       }
+   }
+   /**
+    * Running or not transfers are concerned
+    * @param session
+    * @param in True for Incoming, False for Outgoing
+    * @return the DbPreparedStatement for getting Runner according to in or out going way and Error
+    * @throws GoldenGateDatabaseNoConnectionError
+    * @throws GoldenGateDatabaseSqlError
+    */
+   public static DbPreparedStatement getCountInOutErrorPrepareStatement(
+           DbSession session, boolean in)
+           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+       String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+       String inCond = null;
+       if (in) {
+           inCond = " ("+Columns.MODETRANS.name()+" = '"+FtpCommandCode.APPE.name()+"' OR "+
+           Columns.MODETRANS.name()+" = '"+FtpCommandCode.STOR.name()+"' OR "+
+           Columns.MODETRANS.name()+" = '"+FtpCommandCode.STOU.name()+"') ";
+       } else {
+           inCond = " ("+Columns.MODETRANS.name()+" = '"+FtpCommandCode.RETR.name()+"') "; 
+       }
+       request += " WHERE "+inCond;
+       request += " AND "+getLimitWhereCondition()+" ";
+       request += " AND "+Columns.STARTTRANS.name() + " >= ? ";
+       request += " AND " + Columns.UPDATEDINFO.name() +" = "+UpdatedInfo.INERROR.ordinal();
+       return new DbPreparedStatement(session, request);
+   }
+
+   /**
+    * Running or not transfers are concerned
+    * @param session
+    * @param in True for Incoming, False for Outgoing
+    * @param running True for Running only, False for all
+    * @return the DbPreparedStatement for getting Runner according to in or out going way
+    * @throws GoldenGateDatabaseNoConnectionError
+    * @throws GoldenGateDatabaseSqlError
+    */
+   public static DbPreparedStatement getCountInOutRunningPrepareStatement(
+           DbSession session, boolean in, boolean running)
+           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+       String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
+       String inCond = null;
+       if (in) {
+           inCond = " ("+Columns.MODETRANS.name()+" = '"+FtpCommandCode.APPE.name()+"' OR "+
+           Columns.MODETRANS.name()+" = '"+FtpCommandCode.STOR.name()+"' OR "+
+           Columns.MODETRANS.name()+" = '"+FtpCommandCode.STOU.name()+"') ";
+       } else {
+           inCond = " ("+Columns.MODETRANS.name()+" = '"+FtpCommandCode.RETR.name()+"') "; 
+       }
+       request += " WHERE "+inCond;
+       request += " AND "+getLimitWhereCondition()+" ";
+       request += " AND "+Columns.STARTTRANS.name() + " >= ? ";
+       if (running) {
+           request += " AND "+Columns.UPDATEDINFO.name() + " = " + UpdatedInfo.RUNNING.ordinal();
+       }
+       return new DbPreparedStatement(session, request);
+   }
+
     /*
      * (non-Javadoc)
      *

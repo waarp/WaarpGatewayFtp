@@ -15,6 +15,7 @@
         <admkeypath>D:\GG\R66\certs\testsslnocert.jks</admkeypath>
         <admkeystorepass>testsslnocert</admkeystorepass>
         <admkeypass>testalias</admkeypass>
+        <snmpconfig>D:/GG/R66/conf/snmpconfig.xml</snmpconfig>
     </server>
     <network>
         <portmin>10000</portmin>
@@ -36,9 +37,9 @@
         <serverthread>4</serverthread>
         <clientthread>40</clientthread>
         <memorylimit>4000000000</memorylimit>
-        <usecpulimit>True</usecpulimit>
+        <usecpulimit>False</usecpulimit>
         <usejdkcpulimit>False</usejdkcpulimit>
-        <cpulimit>0.9</cpulimit>
+        <cpulimit>0</cpulimit>
         <connlimit>0</connlimit>
         <timeoutcon>10000</timeoutcon>
         <usenio>False</usenio>

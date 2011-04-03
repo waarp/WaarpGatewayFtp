@@ -28,6 +28,7 @@ import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.common.logging.GgSlf4JLoggerFactory;
 import goldengate.ftp.core.config.FtpConfiguration;
+import goldengate.ftp.core.exception.FtpNoConnectionException;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
 import goldengate.ftp.exec.control.ExecBusinessHandler;
 import goldengate.ftp.exec.data.FileSystemBasedDataBusinessHandler;
@@ -98,6 +99,11 @@ public class ExecGatewayFtpServer {
         configuration.configureLExec();
         configuration.serverStartup();
         configuration.configureHttps();
+        try {
+            configuration.configureSnmp();
+        } catch (FtpNoConnectionException e) {
+            System.err.println("Cannot start SNMP support: "+e.getMessage());
+        }
         logger.warn("FTP started");
     }
 
