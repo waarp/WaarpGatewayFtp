@@ -241,7 +241,7 @@ public class ExecBusinessHandler extends BusinessHandler {
             return;
         }
         // Test limits
-        ConstraintLimitHandler constraints =
+        FtpConstraintLimitHandler constraints =
             ((FileBasedConfiguration) getFtpSession().getConfiguration())
             .constraintLimitHandler;
         if (constraints != null) {

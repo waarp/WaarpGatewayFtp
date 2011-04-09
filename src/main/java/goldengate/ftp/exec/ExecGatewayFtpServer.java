@@ -99,6 +99,7 @@ public class ExecGatewayFtpServer {
         configuration.configureLExec();
         configuration.serverStartup();
         configuration.configureHttps();
+        configuration.configureConstraint();
         try {
             configuration.configureSnmp();
         } catch (FtpNoConnectionException e) {

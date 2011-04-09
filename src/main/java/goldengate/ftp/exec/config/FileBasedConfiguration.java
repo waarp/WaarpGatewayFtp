@@ -49,7 +49,7 @@ import goldengate.ftp.core.data.handler.DataBusinessHandler;
 import goldengate.ftp.core.exception.FtpNoConnectionException;
 import goldengate.ftp.core.exception.FtpUnknownFieldException;
 import goldengate.ftp.exec.adminssl.HttpSslPipelineFactory;
-import goldengate.ftp.exec.control.ConstraintLimitHandler;
+import goldengate.ftp.exec.control.FtpConstraintLimitHandler;
 import goldengate.ftp.exec.database.DbConstant;
 import goldengate.ftp.exec.database.data.DbTransferLog;
 import goldengate.ftp.exec.database.model.DbModelFactory;
@@ -341,6 +341,26 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     private static final String XML_CSTRT_CONNLIMIT = "connlimit";
     /**
+     * CPU LOW limit to apply increase of throttle
+     */
+    private static final String XML_CSTRT_LOWCPULIMIT = "lowcpulimit";
+    /**
+     * CPU HIGH limit to apply decrease of throttle, 0 meaning no throttle activated
+     */
+    private static final String XML_CSTRT_HIGHCPULIMIT = "highcpulimit";
+    /**
+     * PERCENTAGE DECREASE of Bandwidth
+     */
+    private static final String XML_CSTRT_PERCENTDECREASE = "percentdecrease";
+    /**
+     * Delay between 2 checks of throttle test
+     */
+    private static final String XML_CSTRT_DELAYTHROTTLE = "delaythrottle";
+    /**
+     * Bandwidth low limit to not got below
+     */
+    private static final String XML_CSTRT_LIMITLOWBANDWIDTH = "limitlowbandwidth";
+    /**
      * Structure of the Configuration file
      *
      */
@@ -357,6 +377,11 @@ public class FileBasedConfiguration extends FtpConfiguration {
         new XmlDecl(XmlType.BOOLEAN, XML_CSTRT_USECPUJDKLIMIT),
         new XmlDecl(XmlType.DOUBLE, XML_CSTRT_CPULIMIT),
         new XmlDecl(XmlType.INTEGER, XML_CSTRT_CONNLIMIT),
+        new XmlDecl(XmlType.DOUBLE, XML_CSTRT_LOWCPULIMIT),
+        new XmlDecl(XmlType.DOUBLE, XML_CSTRT_HIGHCPULIMIT),
+        new XmlDecl(XmlType.DOUBLE, XML_CSTRT_PERCENTDECREASE),
+        new XmlDecl(XmlType.LONG, XML_CSTRT_LIMITLOWBANDWIDTH),
+        new XmlDecl(XmlType.LONG, XML_CSTRT_DELAYTHROTTLE),
         new XmlDecl(XmlType.LONG, XML_TIMEOUTCON),
         new XmlDecl(XmlType.BOOLEAN, XML_USENIO),
         new XmlDecl(XmlType.BOOLEAN, XML_USEFASTMD5), 
@@ -559,7 +584,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * Limit on CPU and Connection
      */
-    public ConstraintLimitHandler constraintLimitHandler = null;
+    public FtpConstraintLimitHandler constraintLimitHandler = null;
     
     /**
      * List of all Http Channels to enable the close call on them using Netty
@@ -878,8 +903,43 @@ public class FileBasedConfiguration extends FtpConfiguration {
         if (value != null && (!value.isEmpty())) {
             connlimit = value.getInteger();
         }
-        constraintLimitHandler =
-            new ConstraintLimitHandler(useCpuLimit, useCpuLimitJDK, cpulimit, connlimit);
+        double lowcpuLimit = 0;
+        double highcpuLimit = 0;
+        double percentageDecrease = 0;
+        long delay = 1000000;
+        long limitLowBandwidth = 4096;
+        value = hashConfig.get(XML_CSTRT_LOWCPULIMIT);
+        if (value != null && (!value.isEmpty())) {
+            lowcpuLimit = value.getDouble();
+        }
+        value = hashConfig.get(XML_CSTRT_HIGHCPULIMIT);
+        if (value != null && (!value.isEmpty())) {
+            highcpuLimit = value.getDouble();
+        }
+        value = hashConfig.get(XML_CSTRT_PERCENTDECREASE);
+        if (value != null && (!value.isEmpty())) {
+            percentageDecrease = value.getDouble();
+        }
+        value = hashConfig.get(XML_CSTRT_DELAYTHROTTLE);
+        if (value != null && (!value.isEmpty())) {
+            delay = value.getLong();
+        }
+        value = hashConfig.get(XML_CSTRT_LIMITLOWBANDWIDTH);
+        if (value != null && (!value.isEmpty())) {
+            limitLowBandwidth = value.getLong();
+        }
+        value = hashConfig.get(XML_TIMEOUTCON);
+        if (value != null && (!value.isEmpty())) {
+            TIMEOUTCON = (int) value.getLong();
+        }
+        if (highcpuLimit > 0) {
+            constraintLimitHandler =
+                new FtpConstraintLimitHandler(TIMEOUTCON, useCpuLimit, useCpuLimitJDK, cpulimit, connlimit,
+                        lowcpuLimit, highcpuLimit, percentageDecrease, null, delay, limitLowBandwidth);
+        } else {
+            constraintLimitHandler =
+                new FtpConstraintLimitHandler(TIMEOUTCON, useCpuLimit, useCpuLimitJDK, cpulimit, connlimit);
+        }
         value = hashConfig.get(XML_SERVER_THREAD);
         if (value != null && (!value.isEmpty())) {
             SERVER_THREAD = value.getInteger();
@@ -924,10 +984,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
         value = hashConfig.get(XML_BLOCKSIZE);
         if (value != null && (!value.isEmpty())) {
             BLOCKSIZE = value.getInteger();
-        }
-        value = hashConfig.get(XML_TIMEOUTCON);
-        if (value != null && (!value.isEmpty())) {
-            TIMEOUTCON = (int) value.getLong();
         }
         value = hashConfig.get(XML_DELETEONABORT);
         if (value != null && (!value.isEmpty())) {
@@ -1195,6 +1251,13 @@ public class FileBasedConfiguration extends FtpConfiguration {
        httpsBootstrap.setOption("connectTimeoutMillis", TIMEOUTCON);
        // Bind and start to accept incoming connections.
        httpChannelGroup.add(httpsBootstrap.bind(new InetSocketAddress(SERVER_HTTPSPORT)));
+   }
+   /**
+    * Configure ConstraintLimitHandler
+    */
+   public void configureConstraint() {
+       constraintLimitHandler.setHandler(
+               this.getFtpInternalConfiguration().getGlobalTrafficShapingHandler());
    }
    /**
     * Configure LocalExec
@@ -1632,6 +1695,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         if (useLocalExec) {
             LocalExecClient.releaseResources();
         }
+        this.constraintLimitHandler.release();
         DbAdmin.closeAllConnection();
     }
 

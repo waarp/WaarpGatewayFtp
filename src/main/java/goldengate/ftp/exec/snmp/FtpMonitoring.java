@@ -23,7 +23,6 @@ package goldengate.ftp.exec.snmp;
 import org.jboss.netty.handler.traffic.TrafficCounter;
 
 import goldengate.common.command.ReplyCode;
-import goldengate.common.database.DbAdmin;
 import goldengate.common.database.DbPreparedStatement;
 import goldengate.common.database.DbSession;
 import goldengate.common.database.data.AbstractDbData.UpdatedInfo;
@@ -381,7 +380,7 @@ public class FtpMonitoring implements GgInterfaceMonitor {
                         updateGlobalValue(entry.ordinal(), nbThread);
                         return;
                     case nbNetworkConnection:
-                        nbNetworkConnection = DbAdmin.getNbConnection();
+                        nbNetworkConnection = FileBasedConfiguration.fileBasedConfiguration.getFtpInternalConfiguration().getNumberSessions();
                         updateGlobalValue(entry.ordinal(), nbNetworkConnection);
                         return;
                 }
