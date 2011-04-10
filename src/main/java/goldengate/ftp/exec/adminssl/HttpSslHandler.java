@@ -271,15 +271,17 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 
     private String System() {
         getParams();
+        FtpConstraintLimitHandler handler = 
+            FileBasedConfiguration.fileBasedConfiguration.constraintLimitHandler;
         if (params == null) {
             String system = REQUEST.System.readFileUnique();
             StringBuilder builder = new StringBuilder(system);
             GgStringUtils.replace(builder, "XXXXCHANNELLIMITRXXX",
                     Long.toString(FileBasedConfiguration.fileBasedConfiguration.getServerGlobalReadLimit()));
             GgStringUtils.replace(builder, "XXXXCPULXXX",
-                    Double.toString(FtpConstraintLimitHandler.getCpuLimit()));
+                    Double.toString(handler.getCpuLimit()));
             GgStringUtils.replace(builder, "XXXXCONLXXX",
-                    Integer.toString(FtpConstraintLimitHandler.getChannelLimit()));
+                    Integer.toString(handler.getChannelLimit()));
             GgStringUtils.replace(builder, "XXXRESULTXXX", "");
             return builder.toString();
         }
@@ -308,17 +310,17 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     }
                     FileBasedConfiguration.fileBasedConfiguration.changeNetworkLimit(lglobal, lglobal);
                     bglobalr = getTrimValue("CPUL");
-                    double dcpu = FtpConstraintLimitHandler.getCpuLimit();
+                    double dcpu = handler.getCpuLimit();
                     if (bglobalr != null) {
                         dcpu = Double.parseDouble(bglobalr);
                     }
-                    FtpConstraintLimitHandler.setCpuLimit(dcpu);
+                    handler.setCpuLimit(dcpu);
                     bglobalr = getTrimValue("CONL");
-                    int iconn = FtpConstraintLimitHandler.getChannelLimit();
+                    int iconn = handler.getChannelLimit();
                     if (bglobalr != null) {
                         iconn = Integer.parseInt(bglobalr);
                     }
-                    FtpConstraintLimitHandler.setChannelLimit(iconn);
+                    handler.setChannelLimit(iconn);
                     extraInformation = "Configuration Saved";
                 }
             }
@@ -328,9 +330,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
         GgStringUtils.replace(builder, "XXXXCHANNELLIMITRXXX",
                 Long.toString(FileBasedConfiguration.fileBasedConfiguration.getServerGlobalReadLimit()));
         GgStringUtils.replace(builder, "XXXXCPULXXX",
-                Double.toString(FtpConstraintLimitHandler.getCpuLimit()));
+                Double.toString(handler.getCpuLimit()));
         GgStringUtils.replace(builder, "XXXXCONLXXX",
-                Integer.toString(FtpConstraintLimitHandler.getChannelLimit()));
+                Integer.toString(handler.getChannelLimit()));
         if (extraInformation != null) {
             GgStringUtils.replace(builder, "XXXRESULTXXX", extraInformation);
         } else {
