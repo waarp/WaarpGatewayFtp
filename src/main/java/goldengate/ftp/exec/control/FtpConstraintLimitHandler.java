@@ -33,7 +33,7 @@ import goldengate.ftp.exec.config.FileBasedConfiguration;
 public class FtpConstraintLimitHandler extends GgConstraintLimitHandler {
 
     /**
-     * @param useJdKCpuLimit True to use JDK Cpu native or False for JavaSysMon
+     * @param useJdkCpuLimit True to use JDK Cpu native or False for JavaSysMon
      * @param lowcpuLimit for proactive cpu limitation (throttling bandwidth) (0<= x < 1 & highcpulimit) 
      * @param highcpuLimit for proactive cpu limitation (throttling bandwidth) (0<= x <= 1) 0 meaning no throttle activated
      * @param percentageDecrease for proactive cpu limitation, throttling bandwidth reduction (0 < x < 1) as 0.25 for 25% of reduction
