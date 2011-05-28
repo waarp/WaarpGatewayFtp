@@ -188,12 +188,12 @@ public class DbModelMysql extends goldengate.common.database.model.DbModelMysql 
             long result = DbConstant.ILLEGALVALUE;
             String action = "SELECT seq FROM Sequences WHERE name = '" +
                 DbTransferLog.fieldseq + "' FOR UPDATE";
+            DbPreparedStatement preparedStatement = new DbPreparedStatement(
+                    dbSession);
             try {
                 dbSession.conn.setAutoCommit(false);
             } catch (SQLException e1) {
             }
-            DbPreparedStatement preparedStatement = new DbPreparedStatement(
-                    dbSession);
             try {
                 preparedStatement.createPrepareStatement(action);
                 // Limit the search
