@@ -628,6 +628,7 @@ public class DbTransferLog extends AbstractDbData {
                Columns.STARTTRANS.name() + " >= ? AND " +getLimitWhereCondition() +
                " AND " + Columns.UPDATEDINFO.name() +" = ? ";
        DbPreparedStatement pstt = new DbPreparedStatement(session, request);
+       session.addLongTermPreparedStatement(pstt);
        return pstt;
    }
    /**
@@ -667,7 +668,9 @@ public class DbTransferLog extends AbstractDbData {
        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
        request += " WHERE "+Columns.STARTTRANS.name() + " >= ? ";
        request += " AND " + Columns.INFOSTATUS.name() + " = ? AND "+getLimitWhereCondition();
-       return new DbPreparedStatement(session, request);
+       DbPreparedStatement prep = new DbPreparedStatement(session, request);
+       session.addLongTermPreparedStatement(prep);
+       return prep;
    }
    /**
     * @param session
@@ -681,7 +684,9 @@ public class DbTransferLog extends AbstractDbData {
        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
        request += " WHERE "+Columns.STARTTRANS.name() + " >= ? ";
        request += " AND "+getLimitWhereCondition();
-       return new DbPreparedStatement(session, request);
+       DbPreparedStatement prep = new DbPreparedStatement(session, request);
+       session.addLongTermPreparedStatement(prep);
+       return prep;
    }
    /**
     * 
@@ -776,7 +781,9 @@ public class DbTransferLog extends AbstractDbData {
        request += " AND "+getLimitWhereCondition()+" ";
        request += " AND "+Columns.STARTTRANS.name() + " >= ? ";
        request += " AND " + Columns.UPDATEDINFO.name() +" = "+UpdatedInfo.INERROR.ordinal();
-       return new DbPreparedStatement(session, request);
+       DbPreparedStatement prep = new DbPreparedStatement(session, request);
+       session.addLongTermPreparedStatement(prep);
+       return prep;
    }
 
    /**
@@ -806,7 +813,9 @@ public class DbTransferLog extends AbstractDbData {
        if (running) {
            request += " AND "+Columns.UPDATEDINFO.name() + " = " + UpdatedInfo.RUNNING.ordinal();
        }
-       return new DbPreparedStatement(session, request);
+       DbPreparedStatement prep = new DbPreparedStatement(session, request);
+       session.addLongTermPreparedStatement(prep);
+       return prep;
    }
 
     /*
