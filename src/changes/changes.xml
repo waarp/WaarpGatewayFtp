@@ -5,8 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="2.0.5" date="2011-05-28" description="Clean Database model">
+		<release version="2.0.5" date="2011-07-06" description="Clean Database model">
 			<action dev="Frederic Bregier" type="fix">Clean Database model by removing double method already implemented into Commons</action>
+			<action dev="Frederic Bregier" type="fix">Update to new dependent Jars</action>
 		</release>
 		<release version="2.0.4" date="2011-04-28" description="Add new functionality">
 			<action dev="Frederic Bregier" type="add">Add proactive CPU limitation through Bandwidth throttling</action>
