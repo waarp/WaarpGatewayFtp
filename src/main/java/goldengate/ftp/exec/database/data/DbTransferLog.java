@@ -477,36 +477,6 @@ public class DbTransferLog extends AbstractDbData {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     *
-     * @see openr66.databaseold.data.AbstractDbData#exist()
-     */
-    @Override
-    public boolean exist() throws GoldenGateDatabaseException {
-        return super.exist();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see openr66.databaseold.data.AbstractDbData#select()
-     */
-    @Override
-    public void select() throws GoldenGateDatabaseException {
-        super.select();
-    }
-
-    /*
-     * (non-Javadoc)
-     *
-     * @see openr66.databaseold.data.AbstractDbData#update()
-     */
-    @Override
-    public void update() throws GoldenGateDatabaseException {
-        super.update();
-    }
-
     /**
      * Private constructor
      *
