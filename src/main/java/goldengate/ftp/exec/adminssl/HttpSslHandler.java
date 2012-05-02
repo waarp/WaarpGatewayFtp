@@ -690,7 +690,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             String index = index();
             responseContent.append(index);
             clearSession();
-            admin = new DefaultCookie(FTPSESSION, Long.toHexString(new Random().nextLong()));
+            admin = new DefaultCookie(FTPSESSION, 
+                    FileBasedConfiguration.fileBasedConfiguration.HOST_ID+
+                    Long.toHexString(new Random().nextLong()));
             sessions.put(admin.getValue(), this.authentHttp);
             if (this.isPrivateDbSession) {
                 dbSessions.put(admin.getValue(), dbSession);
