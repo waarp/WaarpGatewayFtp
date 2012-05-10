@@ -84,7 +84,8 @@ public class ExecGatewayFtpServer {
         if (AbstractExecutor.useDatabase) {
             // Use R66 module
             if (args.length > 1) {
-                if (! openr66.configuration.FileBasedConfiguration.setSubmitClientConfigurationFromXml(args[1])) {
+                if (! openr66.configuration.FileBasedConfiguration.setSubmitClientConfigurationFromXml(Configuration.configuration, 
+                        args[1])) {
                 //if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1])) {
                     System.err.println("Bad R66 configuration");
                     return;

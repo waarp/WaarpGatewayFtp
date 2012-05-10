@@ -39,29 +39,6 @@
   	</repository>
   </repositories>
   <dependencies>
-  <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-access</artifactId>
-      <version>1.0.1</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-classic</artifactId>
-      <version>1.0.1</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>ch.qos.logback</groupId>
-      <artifactId>logback-core</artifactId>
-      <version>1.0.1</version>
-      <optional>true</optional>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.commons</groupId>
-      <artifactId>commons-exec</artifactId>
-      <version>1.1</version>
-    </dependency>
   	<dependency>
   		<groupId>GoldenGate</groupId>
   		<artifactId>GoldenGateR66</artifactId>
@@ -85,24 +62,6 @@
   			</exclusion>
   		</exclusions>
   	</dependency>
-    <dependency>
-    	<groupId>NettyExtension</groupId>
-    	<artifactId>NettyExtension</artifactId>
-    	<version>1.1.13</version>
-    	<scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>GoldenGate</groupId>
-      <artifactId>GoldenGateDigest</artifactId>
-      <version>1.0.6</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>GoldenGate</groupId>
-      <artifactId>GoldenGateCommon</artifactId>
-      <version>1.1.11</version>
-      <scope>compile</scope>
-    </dependency>
   	<dependency>
   		<groupId>GoldenGate</groupId>
   		<artifactId>GoldenGateFtp-Core</artifactId>
