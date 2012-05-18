@@ -68,7 +68,6 @@ public class HttpSslPipelineFactory implements ChannelPipelineFactory {
         pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("pipelineExecutor", new ExecutionHandler(
                 FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor()));
-        // FIXME: make an option for compression on HTTP
         if (useHttpCompression) {
             pipeline.addLast("deflater", new HttpContentCompressor());
         }
