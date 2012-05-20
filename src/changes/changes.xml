@@ -5,6 +5,9 @@
 		<author email="fredbregier@free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="2.0.9" date="2012-06-01" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Fix Sleep issue and Traffic Handler</action>
+		</release>
 		<release version="2.0.8" date="2012-03-01" description="Fix release">
 			<action dev="Frederic Bregier" type="fix">Small fix on Best practices</action>
 		</release>

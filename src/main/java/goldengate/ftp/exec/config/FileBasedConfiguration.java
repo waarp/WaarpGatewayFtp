@@ -876,7 +876,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         delayLimit = AbstractTrafficShapingHandler.DEFAULT_CHECK_INTERVAL;
         value = hashConfig.get(XML_LIMITDELAY);
         if (value != null && (!value.isEmpty())) {
-            delayLimit = value.getLong();
+            delayLimit = (value.getLong()/10)*10;
             if (delayLimit <= 0) {
                 delayLimit = 0;
             }
@@ -922,7 +922,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         value = hashConfig.get(XML_CSTRT_DELAYTHROTTLE);
         if (value != null && (!value.isEmpty())) {
-            delay = value.getLong();
+            delay = (value.getLong()/10)*10;
         }
         value = hashConfig.get(XML_CSTRT_LIMITLOWBANDWIDTH);
         if (value != null && (!value.isEmpty())) {
@@ -930,7 +930,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         value = hashConfig.get(XML_TIMEOUTCON);
         if (value != null && (!value.isEmpty())) {
-            TIMEOUTCON = (int) value.getLong();
+            TIMEOUTCON = (value.getLong()/10)*10;
         }
         if (highcpuLimit > 0) {
             constraintLimitHandler =
@@ -1079,9 +1079,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         String retrieve = value.getString();
         value = hashConfig.get(XML_DELAYRETRIEVE_COMMAND);
-        int retrievedelay = 0;
+        long retrievedelay = 0;
         if (value != null && (!value.isEmpty())) {
-            retrievedelay = value.getInteger();
+            retrievedelay = (value.getLong()/10)*10;
         }
         value = hashConfig.get(XML_STORE_COMMAND);
         if (value == null || (value.isEmpty())) {
@@ -1090,9 +1090,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         String store = value.getString();
         value = hashConfig.get(XML_DELAYSTORE_COMMAND);
-        int storedelay = 0;
+        long storedelay = 0;
         if (value != null && (!value.isEmpty())) {
-            storedelay = value.getInteger();
+            storedelay = (value.getLong()/10)*10;
         }
         AbstractExecutor.initializeExecutor(retrieve, retrievedelay, store, storedelay);
         return true;
@@ -1384,7 +1384,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             }
             value = hashConfig.get(XML_DELAYRETRIEVE_COMMAND);
             if (value != null && (!value.isEmpty())) {
-                retrdelay = value.getLong();
+                retrdelay = (value.getLong()/10)*10;
             }
             value = hashConfig.get(XML_STORE_COMMAND);
             if (value != null && (!value.isEmpty())) {
@@ -1392,7 +1392,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             }
             value = hashConfig.get(XML_DELAYSTORE_COMMAND);
             if (value != null && (!value.isEmpty())) {
-                stordelay = value.getLong();
+                stordelay = (value.getLong()/10)*10;
             }
             String passwd;
             value = hashConfig.get(XML_AUTHENTICATION_PASSWDFILE);
