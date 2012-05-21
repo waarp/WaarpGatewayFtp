@@ -1232,7 +1232,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
        // Configure the server.
        httpPipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
                CLIENT_THREAD, maxGlobalMemory / 10, maxGlobalMemory, 500,
-               TimeUnit.MILLISECONDS, new GgThreadFactory("HttpExecutor"));
+               TimeUnit.MILLISECONDS, getFtpInternalConfiguration().getObjectSizeEstimator(), 
+               new GgThreadFactory("HttpExecutor"));
        httpsChannelFactory = new NioServerSocketChannelFactory(
                Executors.newCachedThreadPool(),
                Executors.newCachedThreadPool(),
