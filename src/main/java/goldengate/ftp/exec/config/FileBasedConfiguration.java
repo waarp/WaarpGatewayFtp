@@ -38,6 +38,7 @@ import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdk6;
 import goldengate.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.common.utility.GgThreadFactory;
 import goldengate.common.xml.XmlDecl;
 import goldengate.common.xml.XmlHash;
 import goldengate.common.xml.XmlType;
@@ -76,7 +77,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.dom4j.Document;
@@ -1209,21 +1209,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
        configuration = null;
        return true;
    }
-   private class GgThreadFactory implements ThreadFactory {
-       private String GlobalName;
-       public GgThreadFactory(String globalName) {
-           GlobalName = globalName;
-       }
-       /* (non-Javadoc)
-        * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
-        */
-       @Override
-       public Thread newThread(Runnable arg0) {
-           Thread thread = new Thread(arg0);
-           thread.setName(GlobalName+thread.getName());
-           return thread;
-       }
-   }
+
    /**
     * Configure HTTPS
     */
@@ -1231,7 +1217,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
        // Now start the HTTPS support
        // Configure the server.
        httpPipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-               CLIENT_THREAD, maxGlobalMemory / 10, maxGlobalMemory, 500,
+               CLIENT_THREAD, maxGlobalMemory / 10, maxGlobalMemory, 1000,
                TimeUnit.MILLISECONDS, getFtpInternalConfiguration().getObjectSizeEstimator(), 
                new GgThreadFactory("HttpExecutor"));
        httpsChannelFactory = new NioServerSocketChannelFactory(
@@ -1687,17 +1673,19 @@ public class FileBasedConfiguration extends FtpConfiguration {
     }
     @Override
     public void releaseResources() {
+        super.releaseResources();
         final int result = getHttpChannelGroup().size();
         logger.debug("HttpChannelGroup: " + result);
         getHttpChannelGroup().close().addListener(
                 new GgChannelGroupFutureListener(
                         "HttpChannelGroup",
-                        null,
+                        httpPipelineExecutor,
                         httpsChannelFactory));
         if (useLocalExec) {
             LocalExecClient.releaseResources();
         }
         this.constraintLimitHandler.release();
+        agentSnmp.stop();
         DbAdmin.closeAllConnection();
     }
 

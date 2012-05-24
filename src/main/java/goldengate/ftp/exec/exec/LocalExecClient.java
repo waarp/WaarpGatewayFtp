@@ -26,10 +26,10 @@ import goldengate.commandexec.utils.LocalExecResult;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
+import goldengate.common.utility.GgThreadFactory;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
 
 import java.net.InetSocketAddress;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 import org.jboss.netty.bootstrap.ClientBootstrap;
@@ -58,28 +58,13 @@ public class LocalExecClient {
     static private LocalExecClientPipelineFactory localExecClientPipelineFactory;
     static private OrderedMemoryAwareThreadPoolExecutor localPipelineExecutor;
     
-    private static class GgThreadFactory implements ThreadFactory {
-        private String GlobalName;
-        public GgThreadFactory(String globalName) {
-            GlobalName = globalName;
-        }
-        /* (non-Javadoc)
-         * @see java.util.concurrent.ThreadFactory#newThread(java.lang.Runnable)
-         */
-        @Override
-        public Thread newThread(Runnable arg0) {
-            Thread thread = new Thread(arg0);
-            thread.setName(GlobalName+thread.getName());
-            return thread;
-        }
-    }
     /**
      * Initialize the LocalExec Client context
      */
     public static void initialize(FileBasedConfiguration config) {
         localPipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
                 config.CLIENT_THREAD * 100, config.maxGlobalMemory / 10, config.maxGlobalMemory,
-                500, TimeUnit.MILLISECONDS,
+                1000, TimeUnit.MILLISECONDS,
                 new GgThreadFactory("LocalExecutor"));
         // Configure the client.
         bootstrapLocalExec = new ClientBootstrap(

@@ -40,10 +40,14 @@ import goldengate.ftp.exec.database.data.DbTransferLog;
 public class DbModelOracle extends goldengate.common.database.model.DbModelOracle {
     /**
      * Create the object and initialize if necessary the driver
+     * @param dbserver
+     * @param dbuser
+     * @param dbpasswd
      * @throws GoldenGateDatabaseNoConnectionError
      */
-    public DbModelOracle() throws GoldenGateDatabaseNoConnectionError {
-        super();
+    public DbModelOracle(String dbserver,
+            String dbuser, String dbpasswd) throws GoldenGateDatabaseNoConnectionError {
+        super(dbserver, dbuser, dbpasswd);
     }
 
     @Override
