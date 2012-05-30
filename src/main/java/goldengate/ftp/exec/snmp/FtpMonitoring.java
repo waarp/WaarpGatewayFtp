@@ -27,8 +27,8 @@ import goldengate.common.database.DbPreparedStatement;
 import goldengate.common.database.DbSession;
 import goldengate.common.database.data.AbstractDbData.UpdatedInfo;
 import goldengate.common.database.exception.GoldenGateDatabaseException;
-import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
-import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionException;
+import goldengate.common.database.exception.GoldenGateDatabaseSqlException;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
 import goldengate.ftp.exec.config.FileBasedConfiguration;
@@ -384,8 +384,8 @@ public class FtpMonitoring implements GgInterfaceMonitor {
                         updateGlobalValue(entry.ordinal(), nbNetworkConnection);
                         return;
                 }
-            } catch (GoldenGateDatabaseNoConnectionError e) {
-            } catch (GoldenGateDatabaseSqlError e) {
+            } catch (GoldenGateDatabaseNoConnectionException e) {
+            } catch (GoldenGateDatabaseSqlException e) {
             }
         }
     }

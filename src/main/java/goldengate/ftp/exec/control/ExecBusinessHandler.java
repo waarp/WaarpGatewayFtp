@@ -30,7 +30,7 @@ import goldengate.common.command.exception.Reply502Exception;
 import goldengate.common.command.exception.Reply504Exception;
 import goldengate.common.database.DbSession;
 import goldengate.common.database.data.AbstractDbData.UpdatedInfo;
-import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionException;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -397,7 +397,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                     openr66.database.DbConstant.admin.isConnected) {
                 try {
                     dbR66Session = new DbSession(openr66.database.DbConstant.admin, false);
-                } catch (GoldenGateDatabaseNoConnectionError e1) {
+                } catch (GoldenGateDatabaseNoConnectionException e1) {
                     logger.warn("Database not ready due to {}", e1.getMessage());
                     QUIT command = (QUIT)
                         FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
@@ -409,7 +409,7 @@ public class ExecBusinessHandler extends BusinessHandler {
             if (DbConstant.admin.isConnected) {
                 try {
                     dbFtpSession = new DbSession(DbConstant.admin, false);
-                } catch (GoldenGateDatabaseNoConnectionError e1) {
+                } catch (GoldenGateDatabaseNoConnectionException e1) {
                     logger.warn("Database not ready due to {}", e1.getMessage());
                     QUIT command = (QUIT)
                         FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());

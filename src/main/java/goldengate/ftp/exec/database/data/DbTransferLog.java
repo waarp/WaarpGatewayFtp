@@ -26,9 +26,9 @@ import goldengate.common.database.DbSession;
 import goldengate.common.database.data.AbstractDbData;
 import goldengate.common.database.data.DbValue;
 import goldengate.common.database.exception.GoldenGateDatabaseException;
-import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionException;
 import goldengate.common.database.exception.GoldenGateDatabaseNoDataException;
-import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
+import goldengate.common.database.exception.GoldenGateDatabaseSqlException;
 import goldengate.common.exception.InvalidArgumentException;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -284,7 +284,7 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     @Override
-    protected void setFromArray() throws GoldenGateDatabaseSqlError {
+    protected void setFromArray() throws GoldenGateDatabaseSqlException {
         filename = (String) allFields[Columns.FILENAME.ordinal()].getValue();
         mode = (String) allFields[Columns.MODETRANS.ordinal()].getValue();
         start = (Timestamp) allFields[Columns.STARTTRANS.ordinal()].getValue();
@@ -293,7 +293,7 @@ public class DbTransferLog extends AbstractDbData {
             infostatus = ReplyCode.getReplyCode(((Integer) allFields[Columns.INFOSTATUS
                                                               .ordinal()].getValue()));
         } catch (InvalidArgumentException e) {
-            throw new GoldenGateDatabaseSqlError("Wrong Argument", e);
+            throw new GoldenGateDatabaseSqlException("Wrong Argument", e);
         }
         infotransf = (String) allFields[Columns.TRANSINFO.ordinal()]
                                   .getValue();
@@ -435,7 +435,7 @@ public class DbTransferLog extends AbstractDbData {
                 if (count <= 0) {
                     throw new GoldenGateDatabaseNoDataException("No row found");
                 }
-            } catch (GoldenGateDatabaseSqlError e) {
+            } catch (GoldenGateDatabaseSqlException e) {
                 logger.error("Problem while inserting", e);
                 DbPreparedStatement find = new DbPreparedStatement(dbSession);
                 try {
@@ -453,7 +453,7 @@ public class DbTransferLog extends AbstractDbData {
                         try {
                             result = find.getResultSet().getLong(1);
                         } catch (SQLException e1) {
-                            throw new GoldenGateDatabaseSqlError(e1);
+                            throw new GoldenGateDatabaseSqlException(e1);
                         }
                         specialId = result + 1;
                         DbModelFactory.dbModel.resetSequence(dbSession, specialId + 1);
@@ -491,12 +491,12 @@ public class DbTransferLog extends AbstractDbData {
      *
      * @param preparedStatement
      * @return the next updated DbTaskRunner
-     * @throws GoldenGateDatabaseNoConnectionError
-     * @throws GoldenGateDatabaseSqlError
+     * @throws GoldenGateDatabaseNoConnectionException
+     * @throws GoldenGateDatabaseSqlException
      */
     public static DbTransferLog getFromStatement(
             DbPreparedStatement preparedStatement)
-            throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+            throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
         DbTransferLog dbTaskRunner = new DbTransferLog(preparedStatement
                 .getDbSession());
         dbTaskRunner.getValues(preparedStatement, dbTaskRunner.allFields);
@@ -510,12 +510,12 @@ public class DbTransferLog extends AbstractDbData {
      * @param status
      * @param limit limit the number of rows
      * @return the DbPreparedStatement for getting TransferLog according to status ordered by start
-     * @throws GoldenGateDatabaseNoConnectionError
-     * @throws GoldenGateDatabaseSqlError
+     * @throws GoldenGateDatabaseNoConnectionException
+     * @throws GoldenGateDatabaseSqlException
      */
     public static DbPreparedStatement getStatusPrepareStament(
             DbSession session, ReplyCode status, int limit)
-            throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+            throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
         String request = "SELECT " + selectAllFields + " FROM " + table;
         if (status != null) {
             request += " WHERE " + Columns.INFOSTATUS.name() + " = " +
@@ -535,12 +535,12 @@ public class DbTransferLog extends AbstractDbData {
      * @param start
      * @param stop
      * @return the DbPreparedStatement for getting Selected Object, whatever their status
-     * @throws GoldenGateDatabaseNoConnectionError
-     * @throws GoldenGateDatabaseSqlError
+     * @throws GoldenGateDatabaseNoConnectionException
+     * @throws GoldenGateDatabaseSqlException
      */
     public static DbPreparedStatement getLogPrepareStament(DbSession session,
             Timestamp start, Timestamp stop)
-            throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+            throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
         DbPreparedStatement preparedStatement = new DbPreparedStatement(session);
         String request = "SELECT " + selectAllFields + " FROM " + table;
         if (start != null & stop != null) {
@@ -553,7 +553,7 @@ public class DbTransferLog extends AbstractDbData {
                 preparedStatement.getPreparedStatement().setTimestamp(2, stop);
             } catch (SQLException e) {
                 preparedStatement.realClose();
-                throw new GoldenGateDatabaseSqlError(e);
+                throw new GoldenGateDatabaseSqlException(e);
             }
         } else if (start != null) {
             request += " WHERE " + Columns.STARTTRANS.name() +
@@ -564,7 +564,7 @@ public class DbTransferLog extends AbstractDbData {
                 preparedStatement.getPreparedStatement().setTimestamp(1, start);
             } catch (SQLException e) {
                 preparedStatement.realClose();
-                throw new GoldenGateDatabaseSqlError(e);
+                throw new GoldenGateDatabaseSqlException(e);
             }
         } else if (stop != null) {
             request += " WHERE " + Columns.STARTTRANS.name() +
@@ -575,7 +575,7 @@ public class DbTransferLog extends AbstractDbData {
                 preparedStatement.getPreparedStatement().setTimestamp(1, stop);
             } catch (SQLException e) {
                 preparedStatement.realClose();
-                throw new GoldenGateDatabaseSqlError(e);
+                throw new GoldenGateDatabaseSqlException(e);
             }
         } else {
             request += " WHERE "+getLimitWhereCondition()+
@@ -588,11 +588,11 @@ public class DbTransferLog extends AbstractDbData {
     *
     * @param session
     * @return the DbPreparedStatement for getting Updated Object
-    * @throws GoldenGateDatabaseNoConnectionError
-    * @throws GoldenGateDatabaseSqlError
+    * @throws GoldenGateDatabaseNoConnectionException
+    * @throws GoldenGateDatabaseSqlException
     */
    public static DbPreparedStatement getCountInfoPrepareStatement(DbSession session)
-           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+           throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
        String request = "SELECT COUNT(" + Columns.SPECIALID.name()+
                ") FROM " + table + " WHERE " + 
                Columns.STARTTRANS.name() + " >= ? AND " +getLimitWhereCondition() +
@@ -618,8 +618,8 @@ public class DbTransferLog extends AbstractDbData {
            if (pstt.getNext()) {
                result = pstt.getResultSet().getLong(1);
            }
-        } catch (GoldenGateDatabaseNoConnectionError e) {
-        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (GoldenGateDatabaseNoConnectionException e) {
+        } catch (GoldenGateDatabaseSqlException e) {
         } catch (SQLException e) {
         } finally {
             pstt.close();
@@ -629,12 +629,12 @@ public class DbTransferLog extends AbstractDbData {
    /**
     * @param session
     * @return the DbPreparedStatement for getting Runner according to status ordered by start
-    * @throws GoldenGateDatabaseNoConnectionError
-    * @throws GoldenGateDatabaseSqlError
+    * @throws GoldenGateDatabaseNoConnectionException
+    * @throws GoldenGateDatabaseSqlException
     */
    public static DbPreparedStatement getCountStatusPrepareStatement(
            DbSession session)
-           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+           throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
        request += " WHERE "+Columns.STARTTRANS.name() + " >= ? ";
        request += " AND " + Columns.INFOSTATUS.name() + " = ? AND "+getLimitWhereCondition();
@@ -645,12 +645,12 @@ public class DbTransferLog extends AbstractDbData {
    /**
     * @param session
     * @return the DbPreparedStatement for getting All according to status ordered by start
-    * @throws GoldenGateDatabaseNoConnectionError
-    * @throws GoldenGateDatabaseSqlError
+    * @throws GoldenGateDatabaseNoConnectionException
+    * @throws GoldenGateDatabaseSqlException
     */
    public static DbPreparedStatement getCountAllPrepareStatement(
            DbSession session)
-           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+           throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
        request += " WHERE "+Columns.STARTTRANS.name() + " >= ? ";
        request += " AND "+getLimitWhereCondition();
@@ -675,8 +675,8 @@ public class DbTransferLog extends AbstractDbData {
            if (pstt.getNext()) {
                result = pstt.getResultSet().getLong(1);
            }
-        } catch (GoldenGateDatabaseNoConnectionError e) {
-        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (GoldenGateDatabaseNoConnectionException e) {
+        } catch (GoldenGateDatabaseSqlException e) {
         } catch (SQLException e) {
         } finally {
             pstt.close();
@@ -695,8 +695,8 @@ public class DbTransferLog extends AbstractDbData {
             if (pstt.getNext()) {
                 result = pstt.getResultSet().getLong(1);
             }
-        } catch (GoldenGateDatabaseNoConnectionError e) {
-        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (GoldenGateDatabaseNoConnectionException e) {
+        } catch (GoldenGateDatabaseSqlException e) {
         } catch (SQLException e) {
         } finally {
             pstt.close();
@@ -706,25 +706,25 @@ public class DbTransferLog extends AbstractDbData {
    /**
     * Set the current time in the given updatedPreparedStatement
     * @param pstt
-    * @throws GoldenGateDatabaseNoConnectionError
-    * @throws GoldenGateDatabaseSqlError
+    * @throws GoldenGateDatabaseNoConnectionException
+    * @throws GoldenGateDatabaseSqlException
     */
-   public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt) throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+   public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt) throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
        finishSelectOrCountPrepareStatement(pstt, System.currentTimeMillis());
    }
    /**
     * Set the current time in the given updatedPreparedStatement
     * @param pstt
-    * @throws GoldenGateDatabaseNoConnectionError
-    * @throws GoldenGateDatabaseSqlError
+    * @throws GoldenGateDatabaseNoConnectionException
+    * @throws GoldenGateDatabaseSqlException
     */
-   public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt, long time) throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+   public static void finishSelectOrCountPrepareStatement(DbPreparedStatement pstt, long time) throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
        Timestamp startlimit = new Timestamp(time);
        try {
            pstt.getPreparedStatement().setTimestamp(1, startlimit);
        } catch (SQLException e) {
            logger.error("Database SQL Error: Cannot set timestamp", e);
-           throw new GoldenGateDatabaseSqlError("Cannot set timestamp",e);
+           throw new GoldenGateDatabaseSqlException("Cannot set timestamp",e);
        }
    }
    /**
@@ -732,12 +732,12 @@ public class DbTransferLog extends AbstractDbData {
     * @param session
     * @param in True for Incoming, False for Outgoing
     * @return the DbPreparedStatement for getting Runner according to in or out going way and Error
-    * @throws GoldenGateDatabaseNoConnectionError
-    * @throws GoldenGateDatabaseSqlError
+    * @throws GoldenGateDatabaseNoConnectionException
+    * @throws GoldenGateDatabaseSqlException
     */
    public static DbPreparedStatement getCountInOutErrorPrepareStatement(
            DbSession session, boolean in)
-           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+           throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
        String inCond = null;
        if (in) {
@@ -762,12 +762,12 @@ public class DbTransferLog extends AbstractDbData {
     * @param in True for Incoming, False for Outgoing
     * @param running True for Running only, False for all
     * @return the DbPreparedStatement for getting Runner according to in or out going way
-    * @throws GoldenGateDatabaseNoConnectionError
-    * @throws GoldenGateDatabaseSqlError
+    * @throws GoldenGateDatabaseNoConnectionException
+    * @throws GoldenGateDatabaseSqlException
     */
    public static DbPreparedStatement getCountInOutRunningPrepareStatement(
            DbSession session, boolean in, boolean running)
-           throws GoldenGateDatabaseNoConnectionError, GoldenGateDatabaseSqlError {
+           throws GoldenGateDatabaseNoConnectionException, GoldenGateDatabaseSqlException {
        String request = "SELECT COUNT(" + Columns.SPECIALID.name() + ") FROM " + table;
        String inCond = null;
        if (in) {
@@ -1050,9 +1050,9 @@ public class DbTransferLog extends AbstractDbData {
                     log.delete();
                 }
                 message = "Purge Correct Logs successful";
-            } catch (GoldenGateDatabaseNoConnectionError e) {
+            } catch (GoldenGateDatabaseNoConnectionException e) {
                 message = "Error during purge";
-            } catch (GoldenGateDatabaseSqlError e) {
+            } catch (GoldenGateDatabaseSqlException e) {
                 message = "Error during purge";
             } catch (GoldenGateDatabaseException e) {
                 message = "Error during purge";

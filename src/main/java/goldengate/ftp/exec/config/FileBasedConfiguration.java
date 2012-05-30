@@ -25,8 +25,8 @@ import goldengate.common.crypto.ssl.GgSecureKeyStore;
 import goldengate.common.crypto.ssl.GgSslContextFactory;
 import goldengate.common.database.DbAdmin;
 import goldengate.common.database.DbPreparedStatement;
-import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
-import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionException;
+import goldengate.common.database.exception.GoldenGateDatabaseSqlException;
 import goldengate.common.digest.FilesystemBasedDigest;
 import goldengate.common.exception.CryptoException;
 import goldengate.common.file.DirInterface;
@@ -801,12 +801,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                     return false;
                 }
                 // No client authentication
-                try {
-                    HttpSslPipelineFactory.ggSecureKeyStore.initEmptyTrustStore();
-                } catch (CryptoException e) {
-                    logger.error("Bad TrustKeyStore construction");
-                    return false;
-                }
+                HttpSslPipelineFactory.ggSecureKeyStore.initEmptyTrustStore();
                 HttpSslPipelineFactory.ggSslContextFactory =
                     new GgSslContextFactory(
                             HttpSslPipelineFactory.ggSecureKeyStore, true);
@@ -1139,7 +1134,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 DbConstant.admin = 
                     DbModelFactory.initialize(dbdriver, dbserver, dbuser, dbpasswd,
                         true);
-            } catch (GoldenGateDatabaseNoConnectionError e2) {
+            } catch (GoldenGateDatabaseNoConnectionException e2) {
                 logger.error("Unable to Connect to DB", e2);
                 return false;
             }
@@ -1574,9 +1569,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 preparedStatement = 
                     DbTransferLog.getStatusPrepareStament(DbConstant.admin.session, null, limit);
                 preparedStatement.executeQuery();
-            } catch (GoldenGateDatabaseNoConnectionError e) {
+            } catch (GoldenGateDatabaseNoConnectionException e) {
                 return "";
-            } catch (GoldenGateDatabaseSqlError e) {
+            } catch (GoldenGateDatabaseSqlException e) {
                 return "";
             }
             try {
@@ -1594,9 +1589,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
                     newElt = newElt.replace("XXXSTOPXXX", log.getStop().toString());
                     builder.append(newElt);
                 }
-            } catch (GoldenGateDatabaseNoConnectionError e) {
+            } catch (GoldenGateDatabaseNoConnectionException e) {
                 return "";
-            } catch (GoldenGateDatabaseSqlError e) {
+            } catch (GoldenGateDatabaseSqlException e) {
                 return "";
             }
             result = builder.toString();

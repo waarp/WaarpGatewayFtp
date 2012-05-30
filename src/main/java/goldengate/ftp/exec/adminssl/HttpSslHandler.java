@@ -26,8 +26,8 @@ import goldengate.common.database.DbAdmin;
 import goldengate.common.database.DbPreparedStatement;
 import goldengate.common.database.DbSession;
 import goldengate.common.database.exception.GoldenGateDatabaseException;
-import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
-import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionException;
+import goldengate.common.database.exception.GoldenGateDatabaseSqlException;
 import goldengate.common.future.GgFuture;
 import goldengate.common.logging.GgInternalLogger;
 import goldengate.common.logging.GgInternalLoggerFactory;
@@ -441,9 +441,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     preparedStatement = 
                         DbTransferLog.getStatusPrepareStament(dbSession, 
                                 ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY, 0);
-                } catch (GoldenGateDatabaseNoConnectionError e) {
+                } catch (GoldenGateDatabaseNoConnectionException e) {
                     message = "Error during purge";
-                } catch (GoldenGateDatabaseSqlError e) {
+                } catch (GoldenGateDatabaseSqlException e) {
                     message = "Error during purge";
                 }
                 if (preparedStatement != null) {
@@ -464,9 +464,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                     preparedStatement = 
                         DbTransferLog.getStatusPrepareStament(dbSession, 
                                 null, 0);
-                } catch (GoldenGateDatabaseNoConnectionError e) {
+                } catch (GoldenGateDatabaseNoConnectionException e) {
                     message = "Error during purgeAll";
-                } catch (GoldenGateDatabaseSqlError e) {
+                } catch (GoldenGateDatabaseSqlException e) {
                     message = "Error during purgeAll";
                 }
                 if (preparedStatement != null) {
@@ -671,7 +671,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
                             DbAdmin.nbHttpSession++;
                             this.isPrivateDbSession = true;
                         }
-                    } catch (GoldenGateDatabaseNoConnectionError e1) {
+                    } catch (GoldenGateDatabaseNoConnectionException e1) {
                         // Cannot connect so use default connection
                         logger.warn("Use default database connection");
                         this.dbSession = DbConstant.admin.session;

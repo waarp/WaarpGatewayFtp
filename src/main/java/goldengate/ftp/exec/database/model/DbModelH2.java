@@ -23,9 +23,9 @@ package goldengate.ftp.exec.database.model;
 import goldengate.common.database.DbPreparedStatement;
 import goldengate.common.database.DbRequest;
 import goldengate.common.database.DbSession;
-import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionError;
+import goldengate.common.database.exception.GoldenGateDatabaseNoConnectionException;
 import goldengate.common.database.exception.GoldenGateDatabaseNoDataException;
-import goldengate.common.database.exception.GoldenGateDatabaseSqlError;
+import goldengate.common.database.exception.GoldenGateDatabaseSqlException;
 
 import java.sql.SQLException;
 
@@ -43,14 +43,14 @@ public class DbModelH2 extends goldengate.common.database.model.DbModelH2 {
      * @param dbserver
      * @param dbuser
      * @param dbpasswd
-     * @throws GoldenGateDatabaseNoConnectionError
+     * @throws GoldenGateDatabaseNoConnectionException
      */
     public DbModelH2(String dbserver,
-            String dbuser, String dbpasswd) throws GoldenGateDatabaseNoConnectionError {
+            String dbuser, String dbpasswd) throws GoldenGateDatabaseNoConnectionException {
         super(dbserver, dbuser, dbpasswd);
     }
     @Override
-    public void createTables(DbSession session) throws GoldenGateDatabaseNoConnectionError {
+    public void createTables(DbSession session) throws GoldenGateDatabaseNoConnectionException {
         // Create tables: configuration, hosts, rules, runner, cptrunner
         String createTableH2 = "CREATE TABLE IF NOT EXISTS ";
         String primaryKey = " PRIMARY KEY ";
@@ -73,10 +73,10 @@ public class DbModelH2 extends goldengate.common.database.model.DbModelH2 {
         DbRequest request = new DbRequest(session);
         try {
             request.query(action);
-        } catch (GoldenGateDatabaseNoConnectionError e) {
+        } catch (GoldenGateDatabaseNoConnectionException e) {
             e.printStackTrace();
             return;
-        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (GoldenGateDatabaseSqlException e) {
             e.printStackTrace();
             return;
         } finally {
@@ -92,10 +92,10 @@ public class DbModelH2 extends goldengate.common.database.model.DbModelH2 {
         System.out.println(action);
         try {
             request.query(action);
-        } catch (GoldenGateDatabaseNoConnectionError e) {
+        } catch (GoldenGateDatabaseNoConnectionException e) {
             e.printStackTrace();
             return;
-        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (GoldenGateDatabaseSqlException e) {
             return;
         } finally {
             request.close();
@@ -107,10 +107,10 @@ public class DbModelH2 extends goldengate.common.database.model.DbModelH2 {
         System.out.println(action);
         try {
             request.query(action);
-        } catch (GoldenGateDatabaseNoConnectionError e) {
+        } catch (GoldenGateDatabaseNoConnectionException e) {
             e.printStackTrace();
             return;
-        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (GoldenGateDatabaseSqlException e) {
             e.printStackTrace();
             return;
         } finally {
@@ -124,16 +124,16 @@ public class DbModelH2 extends goldengate.common.database.model.DbModelH2 {
      * @see openr66.databaseold.model.DbModel#resetSequence()
      */
     @Override
-    public void resetSequence(DbSession session, long newvalue) throws GoldenGateDatabaseNoConnectionError {
+    public void resetSequence(DbSession session, long newvalue) throws GoldenGateDatabaseNoConnectionException {
         String action = "ALTER SEQUENCE " + DbTransferLog.fieldseq +
                 " RESTART WITH " + newvalue;
         DbRequest request = new DbRequest(session);
         try {
             request.query(action);
-        } catch (GoldenGateDatabaseNoConnectionError e) {
+        } catch (GoldenGateDatabaseNoConnectionException e) {
             e.printStackTrace();
             return;
-        } catch (GoldenGateDatabaseSqlError e) {
+        } catch (GoldenGateDatabaseSqlException e) {
             e.printStackTrace();
             return;
         } finally {
@@ -149,8 +149,8 @@ public class DbModelH2 extends goldengate.common.database.model.DbModelH2 {
      */
     @Override
     public long nextSequence(DbSession dbSession)
-        throws GoldenGateDatabaseNoConnectionError,
-            GoldenGateDatabaseSqlError, GoldenGateDatabaseNoDataException {
+        throws GoldenGateDatabaseNoConnectionException,
+            GoldenGateDatabaseSqlException, GoldenGateDatabaseNoDataException {
         long result = DbConstant.ILLEGALVALUE;
         String action = "SELECT NEXTVAL('" + DbTransferLog.fieldseq + "')";
         DbPreparedStatement preparedStatement = new DbPreparedStatement(
@@ -163,7 +163,7 @@ public class DbModelH2 extends goldengate.common.database.model.DbModelH2 {
                 try {
                     result = preparedStatement.getResultSet().getLong(1);
                 } catch (SQLException e) {
-                    throw new GoldenGateDatabaseSqlError(e);
+                    throw new GoldenGateDatabaseSqlException(e);
                 }
                 return result;
             } else {
