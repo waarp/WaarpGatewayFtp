@@ -1223,7 +1223,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                httpsChannelFactory);
        // Set up the event pipeline factory.
        httpsBootstrap.setPipelineFactory(new HttpSslPipelineFactory(useHttpCompression,
-               true, getHttpPipelineExecutor()));
+               false, getHttpPipelineExecutor()));
        httpsBootstrap.setOption("child.tcpNoDelay", true);
        httpsBootstrap.setOption("child.keepAlive", true);
        httpsBootstrap.setOption("child.reuseAddress", true);
