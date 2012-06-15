@@ -122,9 +122,15 @@ public class LocalExecClient {
         // Wait until all messages are flushed before closing the channel.
         if (lastWriteFuture != null) {
             if (delay <= 0) {
-                lastWriteFuture.awaitUninterruptibly();
+                try {
+                    lastWriteFuture.await();
+                } catch (InterruptedException e) {
+                }
             } else {
-                lastWriteFuture.awaitUninterruptibly(delay);
+                try {
+                    lastWriteFuture.await(delay);
+                } catch (InterruptedException e) {
+                }
             }
         }
         // Wait for the end of the exec command
@@ -154,7 +160,10 @@ public class LocalExecClient {
         ChannelFuture future = bootstrapLocalExec.connect(address);
 
         // Wait until the connection attempt succeeds or fails.
-        channel = future.awaitUninterruptibly().getChannel();
+        try {
+            channel = future.await().getChannel();
+        } catch (InterruptedException e) {
+        }
         if (!future.isSuccess()) {
             logger.error("Client Not Connected", future.getCause());
             return false;
@@ -167,6 +176,9 @@ public class LocalExecClient {
     public void disconnect() {
      // Close the connection. Make sure the close operation ends because
         // all I/O operations are asynchronous in Netty.
-        channel.close().awaitUninterruptibly();
+        try {
+            channel.close().await();
+        } catch (InterruptedException e) {
+        }
     }
 }
