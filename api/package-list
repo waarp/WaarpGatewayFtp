@@ -1,0 +1,13 @@
+org.waarp.ftp.exec
+org.waarp.ftp.exec.adminssl
+org.waarp.ftp.exec.config
+org.waarp.ftp.exec.control
+org.waarp.ftp.exec.data
+org.waarp.ftp.exec.database
+org.waarp.ftp.exec.database.data
+org.waarp.ftp.exec.database.model
+org.waarp.ftp.exec.exec
+org.waarp.ftp.exec.file
+org.waarp.ftp.exec.snmp
+org.waarp.ftp.exec.utils
+org.waarp.gateway.ftp.utils

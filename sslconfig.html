@@ -45,40 +45,17 @@
                                 <h5>Waarp Gateway Ftp</h5>
                   <ul>
                   <li class="none">
-            <strong>Overview of Waarp Gateway FTP Server</strong>
-          </li>
+                          <a href="index.html" title="Overview of Waarp Gateway FTP Server">Overview of Waarp Gateway FTP Server</a>
+            </li>
                   <li class="none">
                           <a href="configuration.html" title="Configuration of Waarp Gateway Ftp Server">Configuration of Waarp Gateway Ftp Server</a>
             </li>
           </ul>
                        <h5>Project Documentation</h5>
                   <ul>
-                                                                                                                                                                                          <li class="expanded">
+                                                                                                                                                                                <li class="collapsed">
                           <a href="project-info.html" title="Project Information">Project Information</a>
-                    <ul>
-                      <li class="none">
-            <strong>About</strong>
-          </li>
-                      <li class="none">
-                          <a href="dependencies.html" title="Dependencies">Dependencies</a>
-            </li>
-                      <li class="none">
-                          <a href="issue-tracking.html" title="Issue Tracking">Issue Tracking</a>
-            </li>
-                      <li class="none">
-                          <a href="license.html" title="Project License">Project License</a>
-            </li>
-                      <li class="none">
-                          <a href="team-list.html" title="Project Team">Project Team</a>
-            </li>
-                      <li class="none">
-                          <a href="source-repository.html" title="Source Repository">Source Repository</a>
-            </li>
-                      <li class="none">
-                          <a href="project-summary.html" title="Project Summary">Project Summary</a>
-            </li>
-              </ul>
-        </li>
+                  </li>
                                                                                                                                                                                                                     <li class="collapsed">
                           <a href="project-reports.html" title="Project Reports">Project Reports</a>
                   </li>
@@ -92,7 +69,7 @@
     </div>
     <div id="bodyColumn">
       <div id="contentBox">
-        <div class="section"><h2>Waarp Gateway FTP Server<a name="Waarp_Gateway_FTP_Server"></a></h2><p>The Waarp Gateway FTP project is based on the Waarp Ftp project and propose post transfer execution action.</p></div><div class="section"><h2>Dependency<a name="Dependency"></a></h2><p>It is based mainly on the NETTY framework (NIO great framework support at <a class="externalLink" href="http://netty.io">http://netty.io</a> and is tend to be really efficient, both in term of memory, threads and network bandwidth.</p></div><div class="section"><h2>Specificities<a name="Specificities"></a></h2><p>Bandwidth limitation can be configured both in store and retrieve, per session (although only one value is set by default, but it can be changed dynamically if needed) or globally to the server and of course with no limitation at all if wanted. Limitation should be enough to change the bandwidth behavior for instance depending on the time in the day, so as to allow to limit bandwidth usage when users are at work and in contrary to allow more speed when only batchs are running.</p><p>The specificity of this project is you can adapt this software to your particular needs by: changing the pre or post action on commands (not only transfer), changing the underlying representation of files and directories (for instance with database entries), using any particular authentication mechanism.</p><img src="images/waarp.jpg" alt="Waarp Main Project Logo" /><p>See global Waarp project at <a class="externalLink" href="http://waarp.github.com/Waarp/">http://waarp.github.com/Waarp/</a> and particular Waarp Gateway FTP project at <a class="externalLink" href="http://github.com/WaarpGatewayFtp">http://github.com/WaarpGatewayFtp</a></p></div>
+        <div class="section"><h2>Waarp SSL configuration<a name="Waarp_SSL_configuration"></a></h2><div class="section"><h3>How to configure Waarp SSL<a name="How_to_configure_Waarp_SSL"></a></h3><p>To generate the stores for Waarp, you need to create 1 JKS keyStore. To generate those files, you can use the &quot;keytool&quot; command from the JDK or using the free tool KeyTool IUI (last known version in 2.4.1).</p></div><div class="section"><h3>Using Keytool IUI:<a name="Using_Keytool_IUI:"></a></h3><div class="section"><h4>For SSL connection for Administration HTTPS:<a name="For_SSL_connection_for_Administration_HTTPS:"></a></h4><p>Create one jks KeyStore (server.jks) with one Private Key Version 3 using RSA algorithm. Use this KeyStore as KeyStore for the Server. To do that, suing KeyTool IUI:</p><p>1) Create an empty KeyStore</p><p>2) Create a Private Key Version 3 with RSA algorithm added to this KeyStore</p></div></div><div class="section"><h3>Password Keys<a name="Password_Keys"></a></h3><p>For Host passwords, admin passwords, Waarp uses encrypted password using private DES key. We provide a GUI to generate the DES key (*.des file) and those passwords in files (*.ggp files).</p><p>It can be found in the subproject WaarpPassword Gui project.</p></div></div>
       </div>
     </div>
     <div class="clear">
