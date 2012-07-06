@@ -1,8 +1,8 @@
-GoldenGateFtp Exec Configuration
+WaarpGatewayFtp Configuration
 
-*How to configure GoldenGate Ftp Exec
+*How to configure Waarp Gateway Ftp
 
-  In the zip distribution <GoldenGateFtpExec-X.Y.Z-dist.zip> (available at sourceforge for download),
+  In the zip distribution <WaarpGatewayFtp-X.Y.Z-dist.zip> (available at Github for download),
   you will find an extra directory named: <src/main/config> where two examples files are:
   <config.xml> and <authent.xml>.
   Those two files are related to the simple implementation of the Ftp Server.
@@ -25,7 +25,7 @@ GoldenGateFtp Exec Configuration
 
 *Steps
 
-  *Create keys for SSH and Passwords (see {{{./sslconfig.html}Config GoldenGate OpenSSL and GoldengatePassword GUI project}})
+  *Create keys for SSH and Passwords (see {{{./sslconfig.html}Config Waarp OpenSSL and WaarpPassword GUI project}})
 
   *Create configurations files (server configuration file, authentication configuration file)
   
@@ -33,17 +33,17 @@ GoldenGateFtp Exec Configuration
   
   *Make some tests using a standard FTP client
 
-*How to run GoldenGate Ftp Exec
+*How to run Waarp Gateway Ftp
 
   It can be started like:
 
-  java ... classpath and jvm settings ... <goldengate.ftp.exec.FtpServer> <src/main/config/config.xml>
+  java ... classpath and jvm settings ... <org.waarp.ftp.exec.FtpServer> <src/main/config/config.xml>
 
   Note that in the classpath you need :
 
   *External jars:
 
-    *{{{http://www.jboss.org/netty/index.html}Netty}}
+    *{{{http://netty.io/}Netty}}
 
     *{{{http://commons.apache.org/io/}Apache-Common-IO}}
 
@@ -55,25 +55,25 @@ GoldenGateFtp Exec Configuration
 
     *{{{http://logback.qos.ch/}Logback}}
 
-  *Goldengate jars:
+  *Waarp jars:
 
     *<NettyExtension>
 
-    *<GoldenGateDigest>
+    *<WaarpDigest>
 
-    *<GoldenGateCommon>
+    *<WaarpCommon>
 
-    *<GoldenGateFtp-Core>
+    *<WaarpFtp-Core>
 
-    *<GoldenGateFtp-Filesystem>
+    *<WaarpFtp-Filesystem>
 
-    *<GoldengateFtpExec> of course
+    *<WaarpGatewayFtp> of course
 
   []
 
   Some of them can be replaced if you change the implementation (Common IO is optional,
   Dom4J and Jaxen are only used if XML configuration file is used, SLF4J and Logback could be
-  replaced with other logger framework, see the <goldengate.common.logging> from <GoldenGateCommon>
+  replaced with other logger framework, see the <org.waarp.common.logging> from <WaarpCommon>
   where JDK is also supported, others can easily be supported).
 
   To shutdown the service, either you do a CTRL-C or better if Unix (but not IBM JDK)

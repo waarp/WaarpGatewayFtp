@@ -1,23 +1,26 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>GoldenGate</groupId>
-  <artifactId>GoldenGateFtpExec</artifactId>
-  <name>GoldenGate Ftp Exec</name>
-  <version>2.0.9</version>
-  <description>Full GoldenGate FTP Server with Exec support as GoldenGate Project:
-  this is an extension of GoldenGate FTP server with execution support at the end of
+  <artifactId>WaarpGatewayFtp</artifactId>
+  <name>Waarp Gateway Ftp</name>
+  <version>2.1.0</version>
+  <description>Full Waarp FTP Server with Gateway support as Waarp Project:
+  this is an extension of Waarp FTP server with execution support at the end of
   a transfer.</description>
-  <url>http://openr66.free.fr/GoldenGateFTP</url>
+  <url>http://waarp.github.com/WaarpDigest</url>
   <inceptionYear>2009</inceptionYear>
   <parent>
-    <groupId>GoldenGate</groupId>
+    <groupId>Waarp</groupId>
     <artifactId>persistence-deps</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
   </parent>
+  <issueManagement>
+	<system>GitHub</system>
+  	<url>https://github.com/waarp/WaarpDigest/issues/</url>
+  </issueManagement>
   <scm>
-  	<connection>scm:svn:http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtpExec/trunk</connection>
-  	<developerConnection>scm:svn:https://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtpExec/trunk</developerConnection>
-  	<url>http://goldengate.svn.sourceforge.net/svnroot/goldengate/GoldenGateFtpExec/trunk</url>
+  	<connection>scm:git:git://github.com/waarp/WaarpDigest.git</connection>
+  	<developerConnection>scm:git:git@github.com:YourID/WaarpDigest.git</developerConnection>
+  	<url>https://github.com/waarp/WaarpDigest</url>
   </scm>
   <licenses>
   	<license>
@@ -27,9 +30,9 @@
   </licenses>
   <repositories>
   	<repository>
-  		<id>goldengate.releases</id>
-  		<name>GoldenGate releases</name>
-  		<url>http://openr66.free.fr/maven2</url>
+  		<id>waarp.releases</id>
+  		<name>Waarp releases</name>
+  		<url>http://waarp.github.com/Waarp/maven2</url>
   		<releases>
   			<enabled>true</enabled>
   		</releases>
@@ -40,9 +43,9 @@
   </repositories>
   <dependencies>
   	<dependency>
-  		<groupId>GoldenGate</groupId>
-  		<artifactId>GoldenGateR66</artifactId>
-  		<version>2.3.1</version>
+  		<groupId>Waarp</groupId>
+  		<artifactId>WaarpR66</artifactId>
+  		<version>2.4.1</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>xom</artifactId>
@@ -63,14 +66,14 @@
   		</exclusions>
   	</dependency>
   	<dependency>
-  		<groupId>GoldenGate</groupId>
-  		<artifactId>GoldenGateFtp-Core</artifactId>
-  		<version>1.0.13</version>
+  		<groupId>Waarp</groupId>
+  		<artifactId>WaarpFtp-Core</artifactId>
+  		<version>1.1.0</version>
   	</dependency>
   	<dependency>
-  		<groupId>GoldenGate</groupId>
-  		<artifactId>GoldenGateFtp-Filesystem</artifactId>
-  		<version>1.0.13</version>
+  		<groupId>Waarp</groupId>
+  		<artifactId>WaarpFtp-Filesystem</artifactId>
+  		<version>1.1.0</version>
   	</dependency>
     <dependency>
     	<groupId>Oracle</groupId>
@@ -125,11 +128,11 @@
                 <mkdir dir="${project.build.directory}"/>
                 <mkdir dir="${project.build.directory}/classes"/>
                 <echo message="${project.version}" file="${project.build.directory}/version.txt" />
-                <echo message="// DO NOT MODIFY - WILL BE OVERWRITTEN DURING THE BUILD PROCESS${line.separator}package goldengate.ftp.exec.utils;${line.separator}/** Provides the version information of GoldenGate FTP Exec. */${line.separator}public final class Version {${line.separator} /** The version identifier. */${line.separator} public static final String ID = &quot;${project.version}&quot;;${line.separator} /** Prints out the version identifier to stdout. */${line.separator} public static void main(String[] args) { System.out.println(ID); }${line.separator} private Version() { super(); }${line.separator}}${line.separator}" file="${basedir}/src/main/java/goldengate/ftp/exec/utils/Version.java" />
+                <echo message="// DO NOT MODIFY - WILL BE OVERWRITTEN DURING THE BUILD PROCESS${line.separator}package org.waarp.gateway.ftp.utils;${line.separator}/** Provides the version information of Waarp Gateway FTP. */${line.separator}public final class Version {${line.separator} /** The version identifier. */${line.separator} public static final String ID = &quot;${project.version}&quot;;${line.separator} /** Prints out the version identifier to stdout. */${line.separator} public static void main(String[] args) { System.out.println(ID); }${line.separator} private Version() { super(); }${line.separator}}${line.separator}" file="${basedir}/src/main/java/org/waarp/gateway/ftp/utils/Version.java" />
                 <echo message="${project.artifactId}" />
                 <taskdef resource="net/sf/antcontrib/antlib.xml" />
                 <if>
-                <equals arg1="${project.artifactId}" arg2="GoldenGateFtpExec"/>
+                <equals arg1="${project.artifactId}" arg2="WaarpGatewayFtp"/>
                 <then>
                 	<mkdir dir="${project.build.directory}/site"/>
                 </then>
@@ -227,24 +230,24 @@
 	          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
 	          <additionalparam>
 	            -link http://java.sun.com/javase/6/docs/api/
-	            -link http://jboss.org/file-access/default/members/netty/freezone/api/3.1/
+	            -link http://static.netty.io/3.5/api/
 
-				-group "GoldenGate Ftp Exec Server package" "goldengate.ftp.exec.ExecGatewayFtpServer*:goldengate.ftp.exec.ServerInitDatabase*"
-				-group "GoldenGate Ftp Exec Configuration file based loaders package" "goldengate.ftp.exec.config*"
-				-group "GoldenGate Ftp Exec Database package" "goldengate.ftp.exec.database*"
-				-group "GoldenGate Ftp Exec ControlHandler package" "goldengate.ftp.exec.control*"
-				-group "GoldenGate Ftp Exec Executor package" "goldengate.ftp.exec.exec*"
-				-group "GoldenGate Ftp Exec DataHandler package" "goldengate.ftp.exec.data*"
-				-group "GoldenGate Ftp Exec Administrator package" "goldengate.ftp.exec.adminssl*"
-				-group "GoldenGate Ftp Exec File package" "goldengate.ftp.exec.file*"
-				-group "GoldenGate Ftp Exec SNMP package" "goldengate.ftp.exec.snmp*"
-				-group "GoldenGate Ftp Exec Utils package" "goldengate.ftp.exec.utils*"
+				-group "Waarp Gateway Ftp Server package" "org.waarp.gateway.ftp.ExecGatewayFtpServer*:org.waarp.gateway.ftp.ServerInitDatabase*"
+				-group "Waarp Gateway Ftp Configuration file based loaders package" "org.waarp.gateway.ftp.config*"
+				-group "Waarp Gateway Ftp Database package" "org.waarp.gateway.ftp.database*"
+				-group "Waarp Gateway Ftp ControlHandler package" "org.waarp.gateway.ftp.control*"
+				-group "Waarp Gateway Ftp Executor package" "org.waarp.gateway.ftp.exec*"
+				-group "Waarp Gateway Ftp DataHandler package" "org.waarp.gateway.ftp.data*"
+				-group "Waarp Gateway Ftp Administrator package" "org.waarp.gateway.ftp.adminssl*"
+				-group "Waarp Gateway Ftp File package" "org.waarp.gateway.ftp.file*"
+				-group "Waarp Gateway Ftp SNMP package" "org.waarp.gateway.ftp.snmp*"
+				-group "Waarp Gateway Ftp Utils package" "org.waarp.gateway.ftp.utils*"
 
 	            -sourceclasspath ${basedir}/target/classes
 	          </additionalparam>
 	          <encoding>UTF-8</encoding>
 	          <locale>en_US</locale>
-	          <excludePackageNames>${project.groupId}.example*:${project.groupId}.util.internal*</excludePackageNames>
+	          <excludePackageNames>${project.groupId}.test*:${project.groupId}.example*:${project.groupId}.util.internal*</excludePackageNames>
           </configuration>
           <reports>
            <report>aggregate</report>
