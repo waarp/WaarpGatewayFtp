@@ -1,11 +1,11 @@
-GoldenGate FTP Exec Server
+Waarp Gateway FTP Server
 
-  The GoldenGate FTP Exec project is based on the GoldenGate Ftp project and propose post transfer
+  The Waarp Gateway FTP project is based on the Waarp Ftp project and propose post transfer
   execution action.
 
 Dependency
 
-  It is based mainly on the NETTY framework (NIO great framework support at {{http://www.jboss.org/netty}}
+  It is based mainly on the NETTY framework (NIO great framework support at {{http://netty.io}}
   and is tend to be really efficient, both in term of memory, threads and network bandwidth.
 
 Specificities
@@ -22,8 +22,8 @@ Specificities
   action on commands (not only transfer), changing the underlying representation of files and
   directories (for instance with database entries), using any particular authentication mechanism.
 
-[images/goldengatesmall.jpg] GoldenGate Main Project Logo
+[images/waarp.jpg] Waarp Main Project Logo
 
-  See global GoldenGate project at {{http://openr66.free.fr/}}and particular GoldenGate FTP project at
-  {{http://openr66.free.fr/GoldenGateFTP.html}}
+  See global Waarp project at {{http://waarp.github.com/Waarp/}} and particular Waarp Gateway FTP project at
+  {{http://github.com/WaarpGatewayFtp}}
 
