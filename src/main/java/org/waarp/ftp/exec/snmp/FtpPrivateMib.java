@@ -58,7 +58,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
 	private static WaarpInternalLogger logger = WaarpInternalLoggerFactory
 			.getLogger(FtpPrivateMib.class);
 
-	public static final String SnmpName = "Waarp FTP Exec SNMP";
+	public static final String SnmpName = "Waarp GW FTP SNMP";
 
 	public static final int SnmpPrivateId = 66666;
 
@@ -66,7 +66,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
 
 	public static final String SnmpDefaultAuthor = "Frederic Bregier";
 
-	public static final String SnmpVersion = "Waarp Ftp Exec " +
+	public static final String SnmpVersion = "Waarp GW FTP " +
 			Version.ID;
 
 	public static final String SnmpDefaultLocalization = "Paris, France";

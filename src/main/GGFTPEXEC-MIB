@@ -1,4 +1,4 @@
-GGFTPEXEC-MIB DEFINITIONS ::= BEGIN
+WaarpGWFTP-MIB DEFINITIONS ::= BEGIN
 
 IMPORTS
     NOTIFICATION-GROUP, NOTIFICATION-TYPE, enterprises, OBJECT-TYPE, Counter32, Gauge32, Counter64, MODULE-IDENTITY, mib-2
@@ -10,24 +10,24 @@ IMPORTS
     system
         FROM SNMPv2-MIB;
 
-ggftpexec MODULE-IDENTITY
+waarpgwftp MODULE-IDENTITY
     LAST-UPDATED    "201103050000Z"
-    ORGANIZATION    "GoldenGate GGFTPEXEC"
+    ORGANIZATION    "Waarp GWFTP"
     CONTACT-INFO
       "        Frederic Bregier
 
        E-Mail: openr66@free.fr"
     DESCRIPTION
-      "The MIB module describing GG FTP Exec Mib"
+      "The MIB module describing Waarp Gateway FTP Mib"
     REVISION        "201103050000Z"
     DESCRIPTION
-      "This revision is the first setup of the GG FTP Exec MIB."
+      "This revision is the first setup of the Waarp Gateway FTP MIB."
 -- 1.3.6.1.4.1.66666.21.1.1 -- 
 ::= { enterprises 66666 21 1 1 }
 
 -- root
-goldengate OBJECT IDENTIFIER ::= { enterprises 66666 }    
-ftpexec OBJECT IDENTIFIER ::= { goldengate 21 }    
+waarp OBJECT IDENTIFIER ::= { enterprises 66666 }    
+ftpexec OBJECT IDENTIFIER ::= { waarp 21 }    
 
 -- Textual conventions
 
@@ -61,7 +61,7 @@ applDefinitions OBJECT IDENTIFIER ::= { ftpexec 1 }
 applGlobalValues OBJECT IDENTIFIER ::= { ftpexec 2 }
 applDetailedValues OBJECT IDENTIFIER ::= { ftpexec 3 }
 applErrorValues OBJECT IDENTIFIER ::= { ftpexec 4 }
-goldengatetraps  OBJECT IDENTIFIER ::= { ftpexec 5 }
+waarptraps  OBJECT IDENTIFIER ::= { ftpexec 5 }
 
 
 applName OBJECT-TYPE
@@ -750,13 +750,13 @@ startOrShutdownObject OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Start Or Shutdown Extra Information."
-::= { startOrShutdownGoldengate 1 }
+::= { startOrShutdownWaarp 1 }
 
-startOrShutdownGoldengate NOTIFICATION-TYPE
+startOrShutdownWaarp NOTIFICATION-TYPE
        OBJECTS { startOrShutdownObject }
        STATUS current
        DESCRIPTION "Start or Shutdown SMIv2 notification"
-       ::= { goldengategroup 1 }
+       ::= { waarpgroup 1 }
  
 errorObject OBJECT-TYPE
     SYNTAX      SnmpAdminString
@@ -764,13 +764,13 @@ errorObject OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Nature of Error."
-::= { errorGoldengate 1 }
+::= { errorWaarp 1 }
 
-errorGoldengate NOTIFICATION-TYPE
+errorWaarp NOTIFICATION-TYPE
        OBJECTS { errorObject }
        STATUS current
        DESCRIPTION "Error SMIv2 notification"
-       ::= { goldengategroup 2 }
+       ::= { waarpgroup 2 }
 
 warningObject OBJECT-TYPE
     SYNTAX      SnmpAdminString
@@ -778,13 +778,13 @@ warningObject OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Nature of Warning."
-::= { warningGoldengate 1 }
+::= { warningWaarp 1 }
 
-warningGoldengate NOTIFICATION-TYPE
+warningWaarp NOTIFICATION-TYPE
        OBJECTS { warningObject }
        STATUS current
        DESCRIPTION "Warning SMIv2 notification"
-       ::= { goldengategroup 3 }
+       ::= { waarpgroup 3 }
 
 overloadedObject OBJECT-TYPE
     SYNTAX      SnmpAdminString
@@ -792,13 +792,13 @@ overloadedObject OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Overloaded Server extra information."
-::= { overloadedGoldengate 1 }
+::= { overloadedWaarp 1 }
 
-overloadedGoldengate NOTIFICATION-TYPE
+overloadedWaarp NOTIFICATION-TYPE
        OBJECTS { overloadedObject }
        STATUS current
        DESCRIPTION "Overloaded SMIv2 notification"
-       ::= { goldengategroup 4 }
+       ::= { waarpgroup 4 }
 
 -- TransferLog
 filenameInfo OBJECT-TYPE
@@ -807,61 +807,61 @@ filenameInfo OBJECT-TYPE
     STATUS      current
     DESCRIPTION
         "Current Filename."
-    ::= { infoGoldengate 1 }
+    ::= { infoWaarp 1 }
 modeTransInfo OBJECT-TYPE
     SYNTAX SnmpAdminString
     MAX-ACCESS  accessible-for-notify
     STATUS      current
     DESCRIPTION
         "Mode of Transfer."
-    ::= { infoGoldengate 2 }
+    ::= { infoWaarp 2 }
 startTransInfo OBJECT-TYPE
     SYNTAX TimeStamp
     MAX-ACCESS  accessible-for-notify
     STATUS      current
     DESCRIPTION
         "Start Time of this transfer."
-    ::= { infoGoldengate 3 }
+    ::= { infoWaarp 3 }
 infoStatusInfo OBJECT-TYPE
     SYNTAX SnmpAdminString
     MAX-ACCESS  accessible-for-notify
     STATUS      current
     DESCRIPTION
         "Current Status."
-    ::= { infoGoldengate 4 }
+    ::= { infoWaarp 4 }
 userIdInfo OBJECT-TYPE
     SYNTAX SnmpAdminString
     MAX-ACCESS  accessible-for-notify
     STATUS      current
     DESCRIPTION
         "User Id for this transfer."
-    ::= { infoGoldengate 5 }
+    ::= { infoWaarp 5 }
 accountIdInfo OBJECT-TYPE
     SYNTAX SnmpAdminString
     MAX-ACCESS  accessible-for-notify
     STATUS      current
     DESCRIPTION
         "Account Id for this transfer."
-    ::= { infoGoldengate 6 }
+    ::= { infoWaarp 6 }
 specialIdInfo OBJECT-TYPE
     SYNTAX SnmpAdminString
     MAX-ACCESS  accessible-for-notify
     STATUS      current
     DESCRIPTION
         "Unique Id for this Transfer."
-    ::= { infoGoldengate 7 }
+    ::= { infoWaarp 7 }
 
-infoGoldengate NOTIFICATION-TYPE
+infoWaarp NOTIFICATION-TYPE
        OBJECTS { filenameInfo, modeTransInfo, startTransInfo, infoStatusInfo, userIdInfo, 
        accountId, specialIdInfo }
        STATUS current
        DESCRIPTION "Info SMIv2 notification"
-       ::= { goldengategroup 5 }
+       ::= { waarpgroup 5 }
        
-goldengategroup NOTIFICATION-GROUP
-    NOTIFICATIONS  { startOrShutdownGoldengate,errorGoldengate,warningGoldengate,overloadedGoldengate,infoGoldenGate }
+waarpgroup NOTIFICATION-GROUP
+    NOTIFICATIONS  { startOrShutdownWaarp,errorWaarp,warningWaarp,overloadedWaarp,infoWaarp }
     STATUS         current
-    DESCRIPTION    "Group of Notification in GoldenGate"
-    ::= { goldengatetraps 1 }
+    DESCRIPTION    "Group of Notification in Waarp"
+    ::= { waarptraps 1 }
     
 END
