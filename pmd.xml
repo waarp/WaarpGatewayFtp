@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.3" timestamp="2012-07-06T13:51:37.533">
+<pmd version="4.3" timestamp="2012-07-06T17:50:00.245">
 <file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\ExecGatewayFtpServer.java">
 <violation beginline="42" endline="108" begincolumn="35" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec" class="ExecGatewayFtpServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
 All methods are static.  Consider using Singleton instead.  Alternatively, you could add a private constructor or make the class abstract to silence this warning.
