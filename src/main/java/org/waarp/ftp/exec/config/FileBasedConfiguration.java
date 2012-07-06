@@ -1612,7 +1612,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	}
 
 	/**
-	 * @see goldengate.ftp.core.config.FtpConfiguration#getNextRangePort()
+	 * @see org.waarp.ftp.core.config.FtpConfiguration#getNextRangePort()
 	 */
 	@Override
 	public int getNextRangePort() {
