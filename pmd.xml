@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.3" timestamp="2012-07-06T17:50:00.245">
+<pmd version="4.3" timestamp="2012-07-07T21:48:11.469">
 <file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\ExecGatewayFtpServer.java">
-<violation beginline="42" endline="108" begincolumn="35" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec" class="ExecGatewayFtpServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
+<violation beginline="38" endline="98" begincolumn="35" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec" class="ExecGatewayFtpServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
 All methods are static.  Consider using Singleton instead.  Alternatively, you could add a private constructor or make the class abstract to silence this warning.
 </violation>
 </file>
@@ -60,52 +60,52 @@ These nested if statements could be combined
 </violation>
 </file>
 <file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\config\FileBasedConfiguration.java">
-<violation beginline="593" endline="593" begincolumn="17" endcolumn="54" rule="SingularField" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" variable="httpsBootstrap" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SingularField" priority="3">
+<violation beginline="590" endline="590" begincolumn="17" endcolumn="54" rule="SingularField" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" variable="httpsBootstrap" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SingularField" priority="3">
 Perhaps 'httpsBootstrap' could be replaced by a local variable.
 </violation>
-<violation beginline="641" endline="646" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadIdentity" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="638" endline="643" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadIdentity" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="653" endline="661" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadAuthentication" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="650" endline="658" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadAuthentication" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="677" endline="693" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="674" endline="690" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="696" endline="700" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="693" endline="697" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="705" endline="710" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="702" endline="707" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="712" endline="715" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="709" endline="712" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="719" endline="724" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="716" endline="721" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="806" endline="821" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="803" endline="818" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="980" endline="984" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadNetworkServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="972" endline="976" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadNetworkServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1335" endline="1349" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1327" endline="1341" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1377" endline="1410" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1369" endline="1402" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1393" endline="1409" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1385" endline="1401" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1525" endline="1528" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1517" endline="1520" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1529" endline="1532" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1521" endline="1524" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1536" endline="1546" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1528" endline="1538" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
 </file>
