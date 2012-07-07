@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>WaarpGatewayFtp</artifactId>
   <name>Waarp Gateway Ftp</name>
-  <version>2.1.0</version>
+  <version>2.1.1</version>
   <description>Full Waarp FTP Server with Gateway support as Waarp Project:
   this is an extension of Waarp FTP server with execution support at the end of
   a transfer.</description>
@@ -45,7 +45,7 @@
   	<dependency>
   		<groupId>Waarp</groupId>
   		<artifactId>WaarpR66</artifactId>
-  		<version>2.4.1</version>
+  		<version>2.4.2</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>xom</artifactId>
@@ -96,7 +96,7 @@
     <dependency>
     	<groupId>mysql</groupId>
     	<artifactId>mysql-connector-java</artifactId>
-    	<version>5.1.20</version>
+    	<version>5.1.21</version>
     	<optional>true</optional>
     </dependency>
     <dependency>

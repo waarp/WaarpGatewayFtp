@@ -17,14 +17,10 @@
 package org.waarp.ftp.exec;
 
 import org.jboss.netty.logging.InternalLoggerFactory;
-import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
-import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
-import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk6;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
-import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.exec.config.FileBasedConfiguration;
 import org.waarp.ftp.exec.control.ExecBusinessHandler;
@@ -69,12 +65,6 @@ public class ExecGatewayFtpServer {
 			return;
 		}
 		Configuration.configuration.useLocalExec = configuration.useLocalExec;
-		// Init according JDK
-		if (FtpConfiguration.USEJDK6) {
-			FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk6());
-		} else {
-			FilesystemBasedDirImpl.initJdkDependent(new FilesystemBasedDirJdk5());
-		}
 		if (AbstractExecutor.useDatabase) {
 			// Use R66 module
 			if (args.length > 1) {

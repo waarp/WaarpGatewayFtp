@@ -55,8 +55,6 @@ import org.waarp.common.file.DirInterface;
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
-import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk5;
-import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdk6;
 import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
@@ -78,7 +76,6 @@ import org.waarp.ftp.exec.database.data.DbTransferLog;
 import org.waarp.ftp.exec.database.model.DbModelFactory;
 import org.waarp.ftp.exec.exec.AbstractExecutor;
 import org.waarp.ftp.exec.exec.LocalExecClient;
-import org.waarp.ftp.exec.file.FileBasedDir;
 import org.waarp.ftp.exec.file.SimpleAuth;
 import org.waarp.ftp.exec.snmp.FtpMonitoring;
 import org.waarp.ftp.exec.snmp.FtpPrivateMib;
@@ -966,11 +963,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		}
 		// We use Apache Commons IO
 		FilesystemBasedDirJdkAbstract.ueApacheCommonsIo = true;
-		if (USEJDK6) {
-			FileBasedDir.initJdkDependent(new FilesystemBasedDirJdk6());
-		} else {
-			FileBasedDir.initJdkDependent(new FilesystemBasedDirJdk5());
-		}
 		return true;
 	}
 
