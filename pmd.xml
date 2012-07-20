@@ -1,431 +1,431 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.3" timestamp="2012-07-07T21:48:11.469">
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\ExecGatewayFtpServer.java">
-<violation beginline="38" endline="98" begincolumn="35" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec" class="ExecGatewayFtpServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
+<pmd version="4.3" timestamp="2012-07-20T12:34:26.001">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\ExecGatewayFtpServer.java">
+<violation beginline="38" endline="101" begincolumn="35" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.gateway.ftp" class="ExecGatewayFtpServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
 All methods are static.  Consider using Singleton instead.  Alternatively, you could add a private constructor or make the class abstract to silence this warning.
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\ServerInitDatabase.java">
-<violation beginline="39" endline="120" begincolumn="33" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec" class="ServerInitDatabase" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\ServerInitDatabase.java">
+<violation beginline="39" endline="120" begincolumn="33" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.gateway.ftp" class="ServerInitDatabase" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
 All methods are static.  Consider using Singleton instead.  Alternatively, you could add a private constructor or make the class abstract to silence this warning.
 </violation>
-<violation beginline="70" endline="72" begincolumn="17" endcolumn="17" rule="NonThreadSafeSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec" class="ServerInitDatabase" method="main" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#NonThreadSafeSingleton" priority="3">
+<violation beginline="70" endline="72" begincolumn="17" endcolumn="17" rule="NonThreadSafeSingleton" ruleset="Design Rules" package="org.waarp.gateway.ftp" class="ServerInitDatabase" method="main" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#NonThreadSafeSingleton" priority="3">
 Singleton is not thread safe
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\adminssl\HttpSslHandler.java">
-<violation beginline="108" endline="108" begincolumn="26" endcolumn="63" rule="SingularField" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" variable="queryStringDecoder" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SingularField" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\adminssl\HttpSslHandler.java">
+<violation beginline="108" endline="108" begincolumn="26" endcolumn="63" rule="SingularField" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" variable="queryStringDecoder" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SingularField" priority="3">
 Perhaps 'queryStringDecoder' could be replaced by a local variable.
 </violation>
-<violation beginline="354" endline="358" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="System" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="354" endline="358" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="System" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="424" endline="428" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="Rule" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="424" endline="428" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="Rule" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="561" endline="573" begincolumn="41" endcolumn="41" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="User" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="561" endline="573" begincolumn="41" endcolumn="41" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="User" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="566" endline="571" begincolumn="57" endcolumn="57" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="User" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="566" endline="571" begincolumn="57" endcolumn="57" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="User" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="576" endline="580" begincolumn="41" endcolumn="41" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="User" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="576" endline="580" begincolumn="41" endcolumn="41" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="User" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="644" endline="675" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="checkAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="644" endline="675" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="checkAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="660" endline="669" begincolumn="41" endcolumn="41" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="checkAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="660" endline="669" begincolumn="41" endcolumn="41" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="checkAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="802" endline="813" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="checkSession" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="802" endline="813" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="checkSession" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="818" endline="856" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="handleCookies" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="818" endline="856" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="handleCookies" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="843" endline="848" begincolumn="41" endcolumn="41" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="handleCookies" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="843" endline="848" begincolumn="41" endcolumn="41" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="handleCookies" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="959" endline="980" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.adminssl" class="HttpSslHandler" method="channelConnected" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="959" endline="980" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.adminssl" class="HttpSslHandler" method="channelConnected" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\config\AUTHUPDATE.java">
-<violation beginline="59" endline="79" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="AUTHUPDATE" method="exec" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\config\AUTHUPDATE.java">
+<violation beginline="59" endline="79" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="AUTHUPDATE" method="exec" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="84" endline="88" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.config" class="AUTHUPDATE" method="exec" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="84" endline="88" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.config" class="AUTHUPDATE" method="exec" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\config\FileBasedConfiguration.java">
-<violation beginline="590" endline="590" begincolumn="17" endcolumn="54" rule="SingularField" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" variable="httpsBootstrap" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SingularField" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\config\FileBasedConfiguration.java">
+<violation beginline="646" endline="646" begincolumn="17" endcolumn="54" rule="SingularField" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" variable="httpsBootstrap" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SingularField" priority="3">
 Perhaps 'httpsBootstrap' could be replaced by a local variable.
 </violation>
-<violation beginline="638" endline="643" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadIdentity" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="694" endline="699" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadIdentity" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="650" endline="658" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadAuthentication" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="706" endline="714" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadAuthentication" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="674" endline="690" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="730" endline="746" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="693" endline="697" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="749" endline="753" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="702" endline="707" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="758" endline="763" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="709" endline="712" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="765" endline="768" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="716" endline="721" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="772" endline="777" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="803" endline="818" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="859" endline="874" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadServerParam" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="972" endline="976" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="loadNetworkServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1028" endline="1032" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="loadNetworkServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1327" endline="1341" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1497" endline="1511" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1369" endline="1402" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1539" endline="1572" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1385" endline="1401" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1555" endline="1571" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="initializeAuthent" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1517" endline="1520" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1687" endline="1690" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1521" endline="1524" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1691" endline="1694" begincolumn="25" endcolumn="73" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="1528" endline="1538" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="1698" endline="1708" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.config" class="FileBasedConfiguration" method="getHtmlAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\control\ExecBusinessHandler.java">
-<violation beginline="131" endline="131" begincolumn="41" endcolumn="50" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="afterTransferDoneBeforeAnswer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\control\ExecBusinessHandler.java">
+<violation beginline="131" endline="131" begincolumn="41" endcolumn="50" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="afterTransferDoneBeforeAnswer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="161" endline="161" begincolumn="41" endcolumn="50" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="afterTransferDoneBeforeAnswer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="161" endline="161" begincolumn="41" endcolumn="50" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="afterTransferDoneBeforeAnswer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="191" endline="193" begincolumn="76" endcolumn="123" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="afterTransferDoneBeforeAnswer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="191" endline="193" begincolumn="76" endcolumn="123" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="afterTransferDoneBeforeAnswer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="251" endline="253" begincolumn="51" endcolumn="25" rule="EmptyIfStmt" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyIfStmt" priority="3">
+<violation beginline="251" endline="253" begincolumn="51" endcolumn="25" rule="EmptyIfStmt" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyIfStmt" priority="3">
 Avoid empty if statements
 </violation>
-<violation beginline="251" endline="271" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="251" endline="271" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="253" endline="255" begincolumn="52" endcolumn="25" rule="EmptyIfStmt" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyIfStmt" priority="3">
+<violation beginline="253" endline="255" begincolumn="52" endcolumn="25" rule="EmptyIfStmt" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyIfStmt" priority="3">
 Avoid empty if statements
 </violation>
-<violation beginline="258" endline="270" begincolumn="33" endcolumn="33" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="258" endline="270" begincolumn="33" endcolumn="33" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="259" endline="269" begincolumn="41" endcolumn="41" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="259" endline="269" begincolumn="41" endcolumn="41" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="263" endline="267" begincolumn="49" endcolumn="49" rule="AvoidDeeplyNestedIfStmts" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AvoidDeeplyNestedIfStmts" priority="3">
+<violation beginline="263" endline="267" begincolumn="49" endcolumn="49" rule="AvoidDeeplyNestedIfStmts" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AvoidDeeplyNestedIfStmts" priority="3">
 Deeply nested if..then statements are hard to read
 </violation>
-<violation beginline="327" endline="329" begincolumn="80" endcolumn="127" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="327" endline="329" begincolumn="80" endcolumn="127" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="341" endline="343" begincolumn="72" endcolumn="113" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="341" endline="343" begincolumn="72" endcolumn="113" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="beforeRunCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="355" endline="356" begincolumn="39" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="cleanSession" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<violation beginline="355" endline="356" begincolumn="39" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="cleanSession" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
-<violation beginline="362" endline="370" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="362" endline="370" begincolumn="25" endcolumn="25" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="365" endline="369" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="365" endline="369" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="375" endline="378" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="375" endline="378" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="386" endline="389" begincolumn="33" endcolumn="33" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="executeChannelClosed" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="386" endline="389" begincolumn="33" endcolumn="33" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="executeChannelClosed" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="506" endline="506" begincolumn="34" endcolumn="54" rule="UseLocaleWithCaseConversions" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="getSpecializedSiteCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseLocaleWithCaseConversions" priority="3">
+<violation beginline="510" endline="510" begincolumn="34" endcolumn="54" rule="UseLocaleWithCaseConversions" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="getSpecializedSiteCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseLocaleWithCaseConversions" priority="3">
 When doing a String.toLowerCase()/toUpperCase() call, use a Locale
 </violation>
-<violation beginline="507" endline="507" begincolumn="22" endcolumn="49" rule="PositionLiteralsFirstInComparisons" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="ExecBusinessHandler" method="getSpecializedSiteCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PositionLiteralsFirstInComparisons" priority="3">
+<violation beginline="511" endline="511" begincolumn="22" endcolumn="49" rule="PositionLiteralsFirstInComparisons" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="ExecBusinessHandler" method="getSpecializedSiteCommand" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PositionLiteralsFirstInComparisons" priority="3">
 Position literals first in String comparisons
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\control\WaarpActionLogger.java">
-<violation beginline="41" endline="229" begincolumn="32" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\control\WaarpActionLogger.java">
+<violation beginline="41" endline="229" begincolumn="32" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
 All methods are static.  Consider using Singleton instead.  Alternatively, you could add a private constructor or make the class abstract to silence this warning.
 </violation>
-<violation beginline="79" endline="85" begincolumn="49" endcolumn="49" rule="AvoidDeeplyNestedIfStmts" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logCreate" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AvoidDeeplyNestedIfStmts" priority="3">
+<violation beginline="79" endline="85" begincolumn="49" endcolumn="49" rule="AvoidDeeplyNestedIfStmts" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logCreate" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AvoidDeeplyNestedIfStmts" priority="3">
 Deeply nested if..then statements are hard to read
 </violation>
-<violation beginline="88" endline="90" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logCreate" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="88" endline="90" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logCreate" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="112" endline="141" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logAction" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="112" endline="141" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logAction" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="127" endline="129" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="127" endline="129" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="163" endline="227" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="163" endline="227" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="167" endline="175" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="167" endline="175" begincolumn="33" endcolumn="33" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="170" endline="171" begincolumn="43" endcolumn="41" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="170" endline="171" begincolumn="43" endcolumn="41" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="171" endline="172" begincolumn="43" endcolumn="41" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="171" endline="172" begincolumn="43" endcolumn="41" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="199" endline="201" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="199" endline="201" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="209" endline="212" begincolumn="41" endcolumn="41" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="209" endline="212" begincolumn="41" endcolumn="41" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="222" endline="225" begincolumn="33" endcolumn="33" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<violation beginline="222" endline="225" begincolumn="33" endcolumn="33" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.control" class="WaarpActionLogger" method="logErrorAction" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\data\FileSystemBasedDataBusinessHandler.java">
-<violation beginline="36" endline="37" begincolumn="39" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.data" class="FileSystemBasedDataBusinessHandler" method="cleanSession" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\data\FileSystemBasedDataBusinessHandler.java">
+<violation beginline="36" endline="37" begincolumn="39" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.data" class="FileSystemBasedDataBusinessHandler" method="cleanSession" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
-<violation beginline="45" endline="46" begincolumn="60" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.data" class="FileSystemBasedDataBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<violation beginline="45" endline="46" begincolumn="60" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.data" class="FileSystemBasedDataBusinessHandler" method="exceptionLocalCaught" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
-<violation beginline="53" endline="54" begincolumn="44" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.data" class="FileSystemBasedDataBusinessHandler" method="executeChannelClosed" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<violation beginline="53" endline="54" begincolumn="44" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.data" class="FileSystemBasedDataBusinessHandler" method="executeChannelClosed" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
-<violation beginline="62" endline="63" begincolumn="62" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.data" class="FileSystemBasedDataBusinessHandler" method="executeChannelConnected" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<violation beginline="62" endline="63" begincolumn="62" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.data" class="FileSystemBasedDataBusinessHandler" method="executeChannelConnected" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\database\data\DbTransferLog.java">
-<violation beginline="182" endline="182" begincolumn="17" endcolumn="28" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\data\DbTransferLog.java">
+<violation beginline="182" endline="182" begincolumn="17" endcolumn="28" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'setToArray' called during object construction
 </violation>
-<violation beginline="184" endline="184" begincolumn="17" endcolumn="24" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="184" endline="184" begincolumn="17" endcolumn="24" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'insert' called during object construction
 </violation>
-<violation beginline="465" endline="465" begincolumn="57" endcolumn="96" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="create" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="465" endline="465" begincolumn="57" endcolumn="96" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="create" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="474" endline="474" begincolumn="57" endcolumn="111" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="create" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="474" endline="474" begincolumn="57" endcolumn="111" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="create" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="477" endline="477" begincolumn="49" endcolumn="103" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="create" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="477" endline="477" begincolumn="49" endcolumn="103" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="create" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="530" endline="535" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getStatusPrepareStament" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="530" endline="535" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getStatusPrepareStament" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="569" endline="595" begincolumn="24" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getLogPrepareStament" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="569" endline="595" begincolumn="24" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getLogPrepareStament" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="580" endline="595" begincolumn="24" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getLogPrepareStament" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="580" endline="595" begincolumn="24" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getLogPrepareStament" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="634" endline="635" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="634" endline="635" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="635" endline="636" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="635" endline="636" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="636" endline="637" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="636" endline="637" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="694" endline="695" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="694" endline="695" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="695" endline="696" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="695" endline="696" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="696" endline="697" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="696" endline="697" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="715" endline="716" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="715" endline="716" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="716" endline="717" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="716" endline="717" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="717" endline="718" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="717" endline="718" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="getResultCountPrepareStatement" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="839" endline="839" begincolumn="21" endcolumn="38" rule="CompareObjectsWithEquals" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="setReplyCodeExecutionStatus" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#CompareObjectsWithEquals" priority="3">
+<violation beginline="839" endline="839" begincolumn="21" endcolumn="38" rule="CompareObjectsWithEquals" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="setReplyCodeExecutionStatus" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#CompareObjectsWithEquals" priority="3">
 Use equals() to compare object references.
 </violation>
-<violation beginline="951" endline="953" begincolumn="29" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.database.data" class="DbTransferLog" method="clear" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<violation beginline="951" endline="953" begincolumn="29" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.data" class="DbTransferLog" method="clear" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\database\model\DbModelFactory.java">
-<violation beginline="30" endline="66" begincolumn="84" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.ftp.exec.database.model" class="DbModelFactory" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelFactory.java">
+<violation beginline="30" endline="66" begincolumn="84" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.model" class="DbModelFactory" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
 All methods are static.  Consider using Singleton instead.  Alternatively, you could add a private constructor or make the class abstract to silence this warning.
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\database\model\DbModelMysql.java">
-<violation beginline="173" endline="221" begincolumn="29" endcolumn="9" rule="AvoidSynchronizedAtMethodLevel" ruleset="Design Rules" package="org.waarp.ftp.exec.database.model" class="DbModelMysql" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AvoidSynchronizedAtMethodLevel" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java">
+<violation beginline="173" endline="221" begincolumn="29" endcolumn="9" rule="AvoidSynchronizedAtMethodLevel" ruleset="Design Rules" package="org.waarp.gateway.ftp.database.model" class="DbModelMysql" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AvoidSynchronizedAtMethodLevel" priority="3">
 Use block level rather than method level synchronization
 </violation>
-<violation beginline="185" endline="186" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.model" class="DbModelMysql" method="nextSequence" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="185" endline="186" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.model" class="DbModelMysql" method="nextSequence" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="217" endline="218" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.database.model" class="DbModelMysql" method="nextSequence" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="217" endline="218" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.database.model" class="DbModelMysql" method="nextSequence" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\exec\AbstractExecutor.java">
-<violation beginline="72" endline="72" begincolumn="31" endcolumn="41" rule="AssignmentToNonFinalStatic" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="AbstractExecutor" variable="useDatabase" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AssignmentToNonFinalStatic" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\AbstractExecutor.java">
+<violation beginline="72" endline="72" begincolumn="31" endcolumn="41" rule="AssignmentToNonFinalStatic" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="AbstractExecutor" variable="useDatabase" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AssignmentToNonFinalStatic" priority="3">
 Possible unsafe assignment to a non-final static field in a constructor.
 </violation>
-<violation beginline="371" endline="372" begincolumn="57" endcolumn="17" rule="EmptyWhileStmt" ruleset="Basic Rules" package="org.waarp.ftp.exec.exec" class="AbstractExecutor" method="replaceAll" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyWhileStmt" priority="3">
+<violation beginline="371" endline="372" begincolumn="57" endcolumn="17" rule="EmptyWhileStmt" ruleset="Basic Rules" package="org.waarp.gateway.ftp.exec" class="AbstractExecutor" method="replaceAll" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyWhileStmt" priority="3">
 Avoid empty while statements
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\exec\ExecuteExecutor.java">
-<violation beginline="86" endline="89" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.ftp.exec.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\ExecuteExecutor.java">
+<violation beginline="86" endline="89" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
 These nested if statements could be combined
 </violation>
-<violation beginline="122" endline="122" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="122" endline="122" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="122" endline="122" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="122" endline="122" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="127" endline="127" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="127" endline="127" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="127" endline="127" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="127" endline="127" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="135" endline="135" begincolumn="33" endcolumn="90" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="135" endline="135" begincolumn="33" endcolumn="90" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="141" endline="141" begincolumn="25" endcolumn="82" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="141" endline="141" begincolumn="25" endcolumn="82" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\exec\LocalExecClient.java">
-<violation beginline="90" endline="92" begincolumn="16" endcolumn="9" rule="UncommentedEmptyConstructor" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="LocalExecClient" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyConstructor" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\LocalExecClient.java">
+<violation beginline="90" endline="92" begincolumn="16" endcolumn="9" rule="UncommentedEmptyConstructor" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="LocalExecClient" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyConstructor" priority="3">
 Document empty constructor
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\exec\R66PreparedTransferExecutor.java">
-<violation beginline="135" endline="135" begincolumn="63" endcolumn="100" rule="SimpleDateFormatNeedsLocale" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="R66PreparedTransferExecutor" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SimpleDateFormatNeedsLocale" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\R66PreparedTransferExecutor.java">
+<violation beginline="135" endline="135" begincolumn="63" endcolumn="100" rule="SimpleDateFormatNeedsLocale" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SimpleDateFormatNeedsLocale" priority="3">
 When instantiating a SimpleDateFormat object, specify a Locale
 </violation>
-<violation beginline="140" endline="141" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.exec" class="R66PreparedTransferExecutor" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="140" endline="141" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="182" endline="183" begincolumn="25" endcolumn="71" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="182" endline="183" begincolumn="25" endcolumn="71" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="201" endline="201" begincolumn="25" endcolumn="91" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="201" endline="201" begincolumn="25" endcolumn="91" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
-<violation beginline="209" endline="209" begincolumn="25" endcolumn="91" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.ftp.exec.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
+<violation beginline="209" endline="209" begincolumn="25" endcolumn="91" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
 New exception is thrown in catch block, original stack trace may be lost
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\file\FileBasedAuth.java">
-<violation beginline="200" endline="201" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.file" class="FileBasedAuth" method="specialNoSessionAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\file\FileBasedAuth.java">
+<violation beginline="200" endline="201" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.file" class="FileBasedAuth" method="specialNoSessionAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\snmp\FtpCounter32.java">
-<violation beginline="35" endline="35" begincolumn="21" endcolumn="24" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpCounter32" variable="type" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpCounter32.java">
+<violation beginline="35" endline="35" begincolumn="21" endcolumn="24" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpCounter32" variable="type" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
 Private field 'type' could be made final; it is only initialized in the declaration or constructor.
 </violation>
-<violation beginline="36" endline="36" begincolumn="21" endcolumn="25" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpCounter32" variable="entry" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
+<violation beginline="36" endline="36" begincolumn="21" endcolumn="25" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpCounter32" variable="entry" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
 Private field 'entry' could be made final; it is only initialized in the declaration or constructor.
 </violation>
-<violation beginline="41" endline="41" begincolumn="17" endcolumn="34" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpCounter32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="41" endline="41" begincolumn="17" endcolumn="34" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpCounter32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'setInternalValue' called during object construction
 </violation>
-<violation beginline="47" endline="47" begincolumn="17" endcolumn="39" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpCounter32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="47" endline="47" begincolumn="17" endcolumn="39" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpCounter32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'setInternalValue' called during object construction
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\snmp\FtpGauge32.java">
-<violation beginline="35" endline="35" begincolumn="21" endcolumn="24" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpGauge32" variable="type" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpGauge32.java">
+<violation beginline="35" endline="35" begincolumn="21" endcolumn="24" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpGauge32" variable="type" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
 Private field 'type' could be made final; it is only initialized in the declaration or constructor.
 </violation>
-<violation beginline="36" endline="36" begincolumn="21" endcolumn="25" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpGauge32" variable="entry" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
+<violation beginline="36" endline="36" begincolumn="21" endcolumn="25" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpGauge32" variable="entry" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
 Private field 'entry' could be made final; it is only initialized in the declaration or constructor.
 </violation>
-<violation beginline="41" endline="41" begincolumn="17" endcolumn="34" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpGauge32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="41" endline="41" begincolumn="17" endcolumn="34" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpGauge32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'setInternalValue' called during object construction
 </violation>
-<violation beginline="47" endline="47" begincolumn="17" endcolumn="39" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpGauge32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="47" endline="47" begincolumn="17" endcolumn="39" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpGauge32" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'setInternalValue' called during object construction
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\snmp\FtpMonitoring.java">
-<violation beginline="64" endline="64" begincolumn="32" endcolumn="45" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" variable="trafficCounter" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpMonitoring.java">
+<violation beginline="64" endline="64" begincolumn="32" endcolumn="45" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" variable="trafficCounter" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
 Private field 'trafficCounter' could be made final; it is only initialized in the declaration or constructor.
 </violation>
-<violation beginline="92" endline="99" begincolumn="9" endcolumn="9" rule="NonStaticInitializer" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#NonStaticInitializer" priority="3">
+<violation beginline="92" endline="99" begincolumn="9" endcolumn="9" rule="NonStaticInitializer" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#NonStaticInitializer" priority="3">
 Non-static initializers are confusing
 </violation>
-<violation beginline="119" endline="123" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
+<violation beginline="119" endline="123" begincolumn="17" endcolumn="17" rule="ConfusingTernary" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConfusingTernary" priority="3">
 Avoid if (x != y) ..; else ..;
 </violation>
-<violation beginline="124" endline="124" begincolumn="17" endcolumn="33" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="124" endline="124" begincolumn="17" endcolumn="33" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'initialize' called during object construction
 </violation>
-<violation beginline="166" endline="167" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" method="initialize" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="166" endline="167" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" method="initialize" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="191" endline="192" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" method="releaseResources" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="191" endline="192" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" method="releaseResources" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="300" endline="433" begincolumn="33" endcolumn="33" rule="SwitchStmtsShouldHaveDefault" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SwitchStmtsShouldHaveDefault" priority="3">
+<violation beginline="300" endline="433" begincolumn="33" endcolumn="33" rule="SwitchStmtsShouldHaveDefault" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SwitchStmtsShouldHaveDefault" priority="3">
 Switch statements should have a default label
 </violation>
-<violation beginline="434" endline="435" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="434" endline="435" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
-<violation beginline="435" endline="436" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.ftp.exec.snmp" class="FtpMonitoring" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="435" endline="436" begincolumn="27" endcolumn="25" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.snmp" class="FtpMonitoring" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\snmp\FtpPrivateMib.java">
-<violation beginline="353" endline="354" begincolumn="58" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpPrivateMib" method="updateServices" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java">
+<violation beginline="353" endline="354" begincolumn="58" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpPrivateMib" method="updateServices" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
-<violation beginline="361" endline="362" begincolumn="51" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpPrivateMib" method="updateServices" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
+<violation beginline="361" endline="362" begincolumn="51" endcolumn="9" rule="UncommentedEmptyMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpPrivateMib" method="updateServices" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyMethod" priority="3">
 Document empty method
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\ftp\exec\snmp\FtpTimeTicks.java">
-<violation beginline="34" endline="34" begincolumn="21" endcolumn="24" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpTimeTicks" variable="type" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
+<file name="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpTimeTicks.java">
+<violation beginline="34" endline="34" begincolumn="21" endcolumn="24" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpTimeTicks" variable="type" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
 Private field 'type' could be made final; it is only initialized in the declaration or constructor.
 </violation>
-<violation beginline="35" endline="35" begincolumn="21" endcolumn="25" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpTimeTicks" variable="entry" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
+<violation beginline="35" endline="35" begincolumn="21" endcolumn="25" rule="ImmutableField" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpTimeTicks" variable="entry" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ImmutableField" priority="3">
 Private field 'entry' could be made final; it is only initialized in the declaration or constructor.
 </violation>
-<violation beginline="40" endline="40" begincolumn="17" endcolumn="34" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpTimeTicks" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="40" endline="40" begincolumn="17" endcolumn="34" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpTimeTicks" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'setInternalValue' called during object construction
 </violation>
-<violation beginline="46" endline="46" begincolumn="17" endcolumn="39" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.ftp.exec.snmp" class="FtpTimeTicks" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
+<violation beginline="46" endline="46" begincolumn="17" endcolumn="39" rule="ConstructorCallsOverridableMethod" ruleset="Design Rules" package="org.waarp.gateway.ftp.snmp" class="FtpTimeTicks" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#ConstructorCallsOverridableMethod" priority="1">
 Overridable method 'setInternalValue' called during object construction
 </violation>
 </file>
