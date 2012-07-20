@@ -1,7 +1,7 @@
 Waarp Gateway FTP Server
 
   The Waarp Gateway FTP project is based on the Waarp Ftp project and propose post transfer
-  execution action.
+  execution action. It supports FTPS (implicit or explicit).
 
 Dependency
 
