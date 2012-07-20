@@ -37,7 +37,7 @@ WaarpGatewayFtp Configuration
 
   It can be started like:
 
-  java ... classpath and jvm settings ... <org.waarp.ftp.exec.FtpServer> <src/main/config/config.xml>
+  java ... classpath and jvm settings ... <org.waarp.gateway.ftp.exec.FtpServer> <src/main/config/config.xml>
 
   Note that in the classpath you need :
 
