@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:fg="http://www.FGolubov.com/XMLEditor" elementFormDefault="qualified">
-
+  <xsd:notation name="version" system="2.1.2"/>
   <xsd:simpleType name="booleanType">
 		<xsd:annotation>
 			<xsd:appinfo>
@@ -111,6 +111,50 @@
 		</xsd:annotation>
         <xsd:restriction base="nonEmptyString"/>
 	</xsd:simpleType>
+	            <xsd:group name="KeyStore">
+                 <xsd:sequence>
+				  <xsd:element name="keypath" type="JKS-File">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="JKS KeyStore for R66 Access in SSL Mode (containing Server Certificate)"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+				  <xsd:element name="keystorepass" type="nonEmptyString">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="Password for the KeyStore"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+				  <xsd:element name="keypass" type="nonEmptyString">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="Password for the Server Certificate within the KeyStore"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+                 </xsd:sequence>
+            </xsd:group>
+            <xsd:group name="TrustKeyStore">
+                 <xsd:sequence>
+				  <xsd:element name="trustkeypath" type="JKS-File">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="JKS Trust KeyStore for R66 Access in SSL Mode with Client Authentication (containing Client Certificate)"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+				  <xsd:element name="trustkeystorepass" type="nonEmptyString">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="Password for the Trust KeyStore"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+                 </xsd:sequence>
+            </xsd:group>
+	
             <xsd:group name="AdministratorKeyStore">
                  <xsd:sequence>
 				  <xsd:element name="admkeypath" type="JKS-File">
@@ -526,6 +570,40 @@
 			  </xsd:sequence>
 			</xsd:complexType>
 		</xsd:element>
+		
+		
+        <xsd:element name="ssl" minOccurs="0" maxOccurs="1">
+			<xsd:complexType>
+			  <xsd:sequence>
+                <xsd:group ref="KeyStore">
+                </xsd:group>
+                <xsd:group ref="TrustKeyStore" minOccurs="0" maxOccurs="1">
+                </xsd:group>
+				  <xsd:element name="trustuseclientauthenticate" type="booleanType" default="False" minOccurs="0" maxOccurs="1">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="True if R66 will only allow client through SSL authentication"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+				  <xsd:element name="useimplicitftps" type="booleanType" default="False" minOccurs="0" maxOccurs="1">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="True if R66 will behave as Implicit FTPS support (native SSL/TLS). Only one of useimplicitftps or useexplicitftps can be True"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+				  <xsd:element name="useexplicitftps" type="booleanType" default="False" minOccurs="0" maxOccurs="1">
+                    <xsd:annotation>
+                        <xsd:appinfo>
+                            <fg:node-info message="True if R66 will behave as Explicit FTPS support (SSL/TLS through AUTH and PROT commands). Only one of useimplicitftps or useexplicitftps can be True"/>
+                        </xsd:appinfo>
+                    </xsd:annotation>
+                  </xsd:element>
+			  </xsd:sequence>
+			</xsd:complexType>
+		</xsd:element>
+		
       </xsd:sequence>
     </xsd:complexType>
   </xsd:element>

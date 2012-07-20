@@ -5,6 +5,13 @@
 		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
+		<release version="2.1.2" date="2012-07-20" description="New functionality Release">
+			<action dev="Frederic Bregier" type="add">Add FTPS implicit and explicit support</action>
+			<action dev="Frederic Bregier" type="fix">Fix hierarchy</action>
+		</release>
+		<release version="2.1.1" date="2012-07-07" description="Fix Release">
+			<action dev="Frederic Bregier" type="fix">Update dependency</action>
+		</release>
 		<release version="2.1.0" date="2012-07-06" description="First Waarp Release">
 			<action dev="Frederic Bregier" type="fix">Fix hierarchy</action>
 		</release>
