@@ -1774,7 +1774,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	}
 
 	/**
-	 * @see org.waarp.gateway.ftp.core.config.FtpConfiguration#getNextRangePort()
+	 * @see org.waarp.ftp.core.config.FtpConfiguration#getNextRangePort()
 	 */
 	@Override
 	public int getNextRangePort() {
