@@ -27,6 +27,7 @@ import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
 import org.waarp.commandexec.client.LocalExecClientHandler;
 import org.waarp.commandexec.client.LocalExecClientPipelineFactory;
 import org.waarp.commandexec.utils.LocalExecResult;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.future.WaarpFuture;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
@@ -154,7 +155,7 @@ public class LocalExecClient {
 		// Close the connection. Make sure the close operation ends because
 		// all I/O operations are asynchronous in Netty.
 		try {
-			channel.close().await();
+			WaarpSslUtility.closingSslChannel(channel).await();
 		} catch (InterruptedException e) {
 		}
 	}
