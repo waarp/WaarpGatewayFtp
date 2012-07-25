@@ -28,13 +28,11 @@ import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
 import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.channel.ChannelHandlerContext;
 import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.channel.group.ChannelGroup;
 import org.jboss.netty.handler.codec.http.Cookie;
 import org.jboss.netty.handler.codec.http.CookieDecoder;
 import org.jboss.netty.handler.codec.http.CookieEncoder;
@@ -47,17 +45,16 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
-import org.jboss.netty.handler.ssl.SslHandler;
 import org.jboss.netty.handler.traffic.TrafficCounter;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
+import org.waarp.common.crypto.ssl.WaarpSslUtility;
 import org.waarp.common.database.DbAdmin;
 import org.waarp.common.database.DbPreparedStatement;
 import org.waarp.common.database.DbSession;
 import org.waarp.common.database.exception.WaarpDatabaseException;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
-import org.waarp.common.future.WaarpFuture;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.common.utility.WaarpStringUtils;
@@ -84,10 +81,6 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 	 */
 	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
 			.getLogger(HttpSslHandler.class);
-	/**
-	 * Waiter for SSL handshake is finished
-	 */
-	private static final ConcurrentHashMap<Integer, WaarpFuture> waitForSsl = new ConcurrentHashMap<Integer, WaarpFuture>();
 	/**
 	 * Session Management
 	 */
@@ -187,66 +180,12 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 	 */
 	private volatile boolean isPrivateDbSession = false;
 
-	/**
-	 * Remover from SSL HashMap
-	 */
-	private static final ChannelFutureListener remover = new ChannelFutureListener() {
-		public void operationComplete(ChannelFuture future) {
-			logger.debug("SSL remover");
-			waitForSsl.remove(future.getChannel().getId());
-		}
-	};
-
 	private String getTrimValue(String varname) {
 		String value = params.get(varname).get(0).trim();
 		if (value.length() == 0) {
 			value = null;
 		}
 		return value;
-	}
-
-	/**
-	 * Add the Channel as SSL handshake is over
-	 * 
-	 * @param channel
-	 */
-	private static void addSslConnectedChannel(Channel channel) {
-		WaarpFuture futureSSL = new WaarpFuture(true);
-		waitForSsl.put(channel.getId(), futureSSL);
-		channel.getCloseFuture().addListener(remover);
-	}
-
-	/**
-	 * Set the future of SSL handshake to status
-	 * 
-	 * @param channel
-	 * @param status
-	 */
-	private static void setStatusSslConnectedChannel(Channel channel, boolean status) {
-		WaarpFuture futureSSL = waitForSsl.get(channel.getId());
-		if (futureSSL != null) {
-			if (status) {
-				futureSSL.setSuccess();
-			} else {
-				futureSSL.cancel();
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * org.jboss.netty.channel.SimpleChannelUpstreamHandler#channelOpen(org.jboss.netty.channel.
-	 * ChannelHandlerContext, org.jboss.netty.channel.ChannelStateEvent)
-	 */
-	@Override
-	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
-		Channel channel = e.getChannel();
-		logger.debug("Add channel to ssl");
-		addSslConnectedChannel(channel);
-		FileBasedConfiguration.fileBasedConfiguration.getHttpChannelGroup().add(channel);
-		super.channelOpen(ctx, e);
 	}
 
 	private String index() {
@@ -893,7 +832,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 		ChannelFuture future = channel.write(response);
 		// Close the connection after the write operation is done if necessary.
 		if (close) {
-			future.addListener(ChannelFutureListener.CLOSE);
+			future.addListener(WaarpSslUtility.SSLCLOSE);
 		}
 		if (shutdown) {
 			/*
@@ -903,7 +842,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 			 */
 			FtpChannelUtils.teminateServer(FileBasedConfiguration.fileBasedConfiguration);
 			if (!close) {
-				future.addListener(ChannelFutureListener.CLOSE);
+				future.addListener(WaarpSslUtility.SSLCLOSE);
 			}
 		}
 	}
@@ -925,7 +864,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 				WaarpStringUtils.UTF8));
 		clearSession();
 		// Close the connection as soon as the error message is sent.
-		ctx.getChannel().write(response).addListener(ChannelFutureListener.CLOSE);
+		ctx.getChannel().write(response).addListener(WaarpSslUtility.SSLCLOSE);
 	}
 
 	@Override
@@ -947,42 +886,15 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 	/*
 	 * (non-Javadoc)
 	 * @see
-	 * org.jboss.netty.channel.SimpleChannelUpstreamHandler#channelConnected(org.jboss.netty.channel
-	 * .ChannelHandlerContext, org.jboss.netty.channel.ChannelStateEvent)
+	 * org.jboss.netty.channel.SimpleChannelUpstreamHandler#channelOpen(org.jboss.netty.channel.
+	 * ChannelHandlerContext, org.jboss.netty.channel.ChannelStateEvent)
 	 */
 	@Override
-	public void channelConnected(ChannelHandlerContext ctx, ChannelStateEvent e)
+	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
 			throws Exception {
-		// Get the SslHandler in the current pipeline.
-		// We added it in NetworkSslServerPipelineFactory.
-		final SslHandler sslHandler = ctx.getPipeline().get(SslHandler.class);
-		if (sslHandler != null) {
-			// Get the SslHandler and begin handshake ASAP.
-			// Get notified when SSL handshake is done.
-			ChannelFuture handshakeFuture;
-			handshakeFuture = sslHandler.handshake();
-			if (handshakeFuture != null) {
-				handshakeFuture.addListener(new ChannelFutureListener() {
-					public void operationComplete(ChannelFuture future)
-							throws Exception {
-						logger.debug("Handshake: " + future.isSuccess(), future.getCause());
-						if (future.isSuccess()) {
-							setStatusSslConnectedChannel(future.getChannel(), true);
-						} else {
-							setStatusSslConnectedChannel(future.getChannel(), false);
-							future.getChannel().close();
-						}
-					}
-				});
-			}
-		} else {
-			logger.warn("SSL Not found");
-		}
-		super.channelConnected(ctx, e);
-		ChannelGroup group =
-				FileBasedConfiguration.fileBasedConfiguration.getHttpChannelGroup();
-		if (group != null) {
-			group.add(e.getChannel());
-		}
+		Channel channel = e.getChannel();
+		logger.debug("Add channel to ssl");
+		FileBasedConfiguration.fileBasedConfiguration.getHttpChannelGroup().add(channel);
+		super.channelOpen(ctx, e);
 	}
 }
