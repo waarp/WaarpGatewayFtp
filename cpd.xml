@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <pmd-cpd>
 <duplication lines="57" tokens="301">
-<file line="58" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
-<file line="51" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
+<file line="58" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
+<file line="51" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
 <codefragment>
 <![CDATA[
 		String primaryKey = " PRIMARY KEY ";
@@ -66,8 +66,8 @@
 </codefragment>
 </duplication>
 <duplication lines="76" tokens="279">
-<file line="825" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="825" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -150,8 +150,8 @@
 </codefragment>
 </duplication>
 <duplication lines="70" tokens="277">
-<file line="814" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="939" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="814" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="939" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 	public static WaarpEntry[] WaarpDetailedValues = {
@@ -228,9 +228,9 @@
 </codefragment>
 </duplication>
 <duplication lines="68" tokens="275">
-<file line="819" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="822" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="819" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="822" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -305,8 +305,8 @@
 </codefragment>
 </duplication>
 <duplication lines="65" tokens="263">
-<file line="828" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="828" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -378,8 +378,8 @@
 </codefragment>
 </duplication>
 <duplication lines="65" tokens="263">
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="944" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="944" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -451,8 +451,8 @@
 </codefragment>
 </duplication>
 <duplication lines="72" tokens="260">
-<file line="105" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelH2.java"/>
-<file line="101" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
+<file line="105" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelH2.java"/>
+<file line="101" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
 <codefragment>
 <![CDATA[
 				" START WITH " + (DbConstant.ILLEGALVALUE + 1);
@@ -531,8 +531,8 @@
 </codefragment>
 </duplication>
 <duplication lines="62" tokens="251">
-<file line="831" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="831" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -601,8 +601,8 @@
 </codefragment>
 </duplication>
 <duplication lines="62" tokens="251">
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="947" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="947" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -671,8 +671,8 @@
 </codefragment>
 </duplication>
 <duplication lines="59" tokens="239">
-<file line="834" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="834" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -738,8 +738,8 @@
 </codefragment>
 </duplication>
 <duplication lines="59" tokens="239">
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="950" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="950" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -805,8 +805,8 @@
 </codefragment>
 </duplication>
 <duplication lines="56" tokens="227">
-<file line="837" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="837" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -869,8 +869,8 @@
 </codefragment>
 </duplication>
 <duplication lines="56" tokens="227">
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="953" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="953" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -933,8 +933,8 @@
 </codefragment>
 </duplication>
 <duplication lines="53" tokens="215">
-<file line="840" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="840" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -994,8 +994,8 @@
 </codefragment>
 </duplication>
 <duplication lines="53" tokens="215">
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="956" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="956" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1055,8 +1055,8 @@
 </codefragment>
 </duplication>
 <duplication lines="50" tokens="203">
-<file line="843" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="843" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1113,8 +1113,8 @@
 </codefragment>
 </duplication>
 <duplication lines="50" tokens="203">
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="959" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="959" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1171,8 +1171,8 @@
 </codefragment>
 </duplication>
 <duplication lines="47" tokens="191">
-<file line="846" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="846" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1226,8 +1226,8 @@
 </codefragment>
 </duplication>
 <duplication lines="47" tokens="191">
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="962" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="962" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1281,9 +1281,9 @@
 </codefragment>
 </duplication>
 <duplication lines="58" tokens="189">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="846" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="962" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="846" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="962" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -1348,24 +1348,24 @@
 </codefragment>
 </duplication>
 <duplication lines="50" tokens="185">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="819" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="822" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="825" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="828" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="831" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="834" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="837" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="840" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="843" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="944" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="947" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="950" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="953" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="956" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="959" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="819" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="822" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="825" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="828" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="831" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="834" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="837" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="840" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="843" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="944" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="947" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="950" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="953" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="956" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="959" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -1422,11 +1422,11 @@
 </codefragment>
 </duplication>
 <duplication lines="46" tokens="179">
-<file line="719" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="849" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="965" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="719" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="849" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="965" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1479,9 +1479,9 @@
 </codefragment>
 </duplication>
 <duplication lines="47" tokens="173">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="849" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="965" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="849" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="965" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -1535,11 +1535,11 @@
 </codefragment>
 </duplication>
 <duplication lines="43" tokens="167">
-<file line="722" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="852" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="968" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="722" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="852" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="968" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1589,9 +1589,9 @@
 </codefragment>
 </duplication>
 <duplication lines="44" tokens="161">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="852" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="968" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="852" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="968" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -1642,11 +1642,11 @@
 </codefragment>
 </duplication>
 <duplication lines="39" tokens="155">
-<file line="726" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="855" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="971" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="726" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="855" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="971" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1692,9 +1692,9 @@
 </codefragment>
 </duplication>
 <duplication lines="41" tokens="149">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="855" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="971" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="855" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="971" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -1742,8 +1742,8 @@
 </codefragment>
 </duplication>
 <duplication lines="15" tokens="148">
-<file line="765" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\data\DbTransferLog.java"/>
-<file line="799" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\data\DbTransferLog.java"/>
+<file line="765" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\data\DbTransferLog.java"/>
+<file line="799" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\data\DbTransferLog.java"/>
 <codefragment>
 <![CDATA[
 			DbSession session, boolean in)
@@ -1765,11 +1765,11 @@
 </codefragment>
 </duplication>
 <duplication lines="36" tokens="143">
-<file line="729" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="858" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="974" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="729" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="858" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="974" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1812,8 +1812,8 @@
 </codefragment>
 </duplication>
 <duplication lines="26" tokens="138">
-<file line="80" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelOracle.java"/>
-<file line="76" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
+<file line="80" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelOracle.java"/>
+<file line="76" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
 <codefragment>
 <![CDATA[
 			return;
@@ -1846,9 +1846,9 @@
 </codefragment>
 </duplication>
 <duplication lines="38" tokens="137">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="858" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="974" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="858" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="974" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -1893,11 +1893,11 @@
 </codefragment>
 </duplication>
 <duplication lines="33" tokens="131">
-<file line="732" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="861" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="977" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="732" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="861" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="977" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -1937,9 +1937,9 @@
 </codefragment>
 </duplication>
 <duplication lines="13" tokens="129">
-<file line="59" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelH2.java"/>
-<file line="63" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
-<file line="56" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
+<file line="59" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelH2.java"/>
+<file line="63" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
+<file line="56" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
 <codefragment>
 <![CDATA[
 		String action = createTableH2 + DbTransferLog.table + "(";
@@ -1959,9 +1959,9 @@
 </codefragment>
 </duplication>
 <duplication lines="35" tokens="125">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="861" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="977" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="861" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="977" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -2003,8 +2003,8 @@
 </codefragment>
 </duplication>
 <duplication lines="32" tokens="123">
-<file line="83" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
-<file line="80" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelOracle.java"/>
+<file line="83" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
+<file line="80" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelOracle.java"/>
 <codefragment>
 <![CDATA[
 			return;
@@ -2043,11 +2043,11 @@
 </codefragment>
 </duplication>
 <duplication lines="30" tokens="119">
-<file line="735" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="864" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="980" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="735" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="864" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="980" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -2084,9 +2084,9 @@
 </codefragment>
 </duplication>
 <duplication lines="31" tokens="113">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="864" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="980" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="864" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="980" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -2124,10 +2124,10 @@
 </codefragment>
 </duplication>
 <duplication lines="20" tokens="110">
-<file line="85" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelH2.java"/>
-<file line="88" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
-<file line="85" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelOracle.java"/>
-<file line="81" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
+<file line="85" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelH2.java"/>
+<file line="88" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelMysql.java"/>
+<file line="85" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelOracle.java"/>
+<file line="81" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\database\model\DbModelPostgresql.java"/>
 <codefragment>
 <![CDATA[
 		action = "CREATE INDEX IF NOT EXISTS IDX_TRANSLOG ON " + DbTransferLog.table + "(";
@@ -2154,11 +2154,11 @@
 </codefragment>
 </duplication>
 <duplication lines="27" tokens="107">
-<file line="738" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="816" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="867" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="941" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="983" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="738" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="816" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="867" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="941" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="983" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_GAUGE32,
@@ -2192,9 +2192,9 @@
 </codefragment>
 </duplication>
 <duplication lines="28" tokens="101">
-<file line="715" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="867" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
-<file line="983" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="715" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="867" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
+<file line="983" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\snmp\FtpPrivateMib.java"/>
 <codefragment>
 <![CDATA[
 			new WaarpEntry(SMIConstants.SYNTAX_COUNTER32,
@@ -2229,8 +2229,8 @@
 </codefragment>
 </duplication>
 <duplication lines="11" tokens="100">
-<file line="365" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\adminssl\HttpSslHandler.java"/>
-<file line="413" path="J:\Git\fredericBregier\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\adminssl\HttpSslHandler.java"/>
+<file line="304" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\adminssl\HttpSslHandler.java"/>
+<file line="352" path="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\adminssl\HttpSslHandler.java"/>
 <codefragment>
 <![CDATA[
 			String system = REQUEST.Rule.readFileUnique();
