@@ -28,6 +28,7 @@ import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 import org.jboss.netty.handler.execution.ExecutionHandler;
 import org.jboss.netty.handler.ssl.SslHandler;
+import org.jboss.netty.handler.stream.ChunkedWriteHandler;
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
@@ -66,10 +67,14 @@ public class HttpSslPipelineFactory implements ChannelPipelineFactory {
 		pipeline.addLast("encoder", new HttpResponseEncoder());
 		pipeline.addLast("pipelineExecutor", new ExecutionHandler(
 				FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor()));
+        pipeline.addLast("streamer", new ChunkedWriteHandler());
 		if (useHttpCompression) {
 			pipeline.addLast("deflater", new HttpContentCompressor());
 		}
-		pipeline.addLast("handler", new HttpSslHandler());
+		pipeline.addLast("handler", new HttpKernelSslHandler(
+				FileBasedConfiguration.fileBasedConfiguration.httpBasePath,
+				HttpBusinessFactory.httpPageHandler)); 
+		// new HttpSslHandler());
 		return pipeline;
 	}
 }

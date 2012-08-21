@@ -31,7 +31,8 @@ import org.waarp.ftp.filesystembased.FilesystemBasedFtpAuth;
 import org.waarp.ftp.filesystembased.FilesystemBasedFtpRestart;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.database.DbConstant;
-import org.waarp.gateway.ftp.exec.AbstractExecutor.CommandExecutor;
+import org.waarp.gateway.kernel.exec.AbstractExecutor.CommandExecutor;
+import org.waarp.gateway.kernel.session.HttpAuthInterface;
 
 /**
  * FtpAuth implementation based on a list of (user/password/account) stored in a xml file load at
@@ -40,7 +41,7 @@ import org.waarp.gateway.ftp.exec.AbstractExecutor.CommandExecutor;
  * @author Frederic Bregier
  * 
  */
-public class FileBasedAuth extends FilesystemBasedFtpAuth {
+public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInterface {
 	/**
 	 * Internal Logger
 	 */
