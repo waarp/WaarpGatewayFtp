@@ -70,7 +70,6 @@ import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.exception.FtpUnknownFieldException;
-import org.waarp.gateway.ftp.adminssl.HttpBusinessFactory;
 import org.waarp.gateway.ftp.adminssl.HttpSslPipelineFactory;
 import org.waarp.gateway.ftp.control.FtpConstraintLimitHandler;
 import org.waarp.gateway.ftp.database.DbConstant;
@@ -1351,7 +1350,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		hashConfig.clear();
 		hashConfig = null;
 		configuration = null;
-		HttpBusinessFactory.httpPageHandler = HttpBusinessFactory.initializeHttpPageHandler(httpBasePath);
 		return true;
 	}
 

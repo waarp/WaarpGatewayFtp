@@ -71,10 +71,7 @@ public class HttpSslPipelineFactory implements ChannelPipelineFactory {
 		if (useHttpCompression) {
 			pipeline.addLast("deflater", new HttpContentCompressor());
 		}
-		pipeline.addLast("handler", new HttpKernelSslHandler(
-				FileBasedConfiguration.fileBasedConfiguration.httpBasePath,
-				HttpBusinessFactory.httpPageHandler)); 
-		// new HttpSslHandler());
+		pipeline.addLast("handler", new HttpSslHandler());
 		return pipeline;
 	}
 }
