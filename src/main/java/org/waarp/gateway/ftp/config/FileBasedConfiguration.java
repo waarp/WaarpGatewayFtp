@@ -75,12 +75,12 @@ import org.waarp.gateway.ftp.control.FtpConstraintLimitHandler;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 import org.waarp.gateway.ftp.database.model.DbModelFactory;
-import org.waarp.gateway.ftp.exec.AbstractExecutor;
-import org.waarp.gateway.ftp.exec.LocalExecClient;
 import org.waarp.gateway.ftp.file.SimpleAuth;
 import org.waarp.gateway.ftp.snmp.FtpMonitoring;
 import org.waarp.gateway.ftp.snmp.FtpPrivateMib;
 import org.waarp.gateway.ftp.snmp.FtpVariableFactory;
+import org.waarp.gateway.kernel.exec.AbstractExecutor;
+import org.waarp.gateway.kernel.exec.LocalExecClient;
 import org.waarp.snmp.SnmpConfiguration;
 import org.waarp.snmp.WaarpMOFactory;
 import org.waarp.snmp.WaarpSnmpAgent;
@@ -1397,7 +1397,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	 */
 	public void configureLExec() {
 		if (useLocalExec) {
-			LocalExecClient.initialize(this);
+			LocalExecClient.initialize(this.CLIENT_THREAD, this.maxGlobalMemory);
 		}
 	}
 

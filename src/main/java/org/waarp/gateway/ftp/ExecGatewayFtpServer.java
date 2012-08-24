@@ -25,7 +25,7 @@ import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.control.ExecBusinessHandler;
 import org.waarp.gateway.ftp.data.FileSystemBasedDataBusinessHandler;
-import org.waarp.gateway.ftp.exec.AbstractExecutor;
+import org.waarp.gateway.kernel.exec.AbstractExecutor;
 import org.waarp.openr66.protocol.configuration.Configuration;
 
 /**

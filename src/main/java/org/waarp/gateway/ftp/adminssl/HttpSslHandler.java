@@ -65,10 +65,10 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.control.FtpConstraintLimitHandler;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
-import org.waarp.gateway.ftp.exec.AbstractExecutor;
-import org.waarp.gateway.ftp.exec.AbstractExecutor.CommandExecutor;
 import org.waarp.gateway.ftp.file.FileBasedAuth;
 import org.waarp.gateway.ftp.utils.Version;
+import org.waarp.gateway.kernel.exec.AbstractExecutor;
+import org.waarp.gateway.kernel.exec.AbstractExecutor.CommandExecutor;
 import org.waarp.openr66.protocol.http.HttpWriteCacheEnable;
 
 /**
