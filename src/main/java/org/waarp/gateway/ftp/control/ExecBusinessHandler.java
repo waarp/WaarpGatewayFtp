@@ -44,10 +44,10 @@ import org.waarp.ftp.filesystembased.FilesystemBasedFtpRestart;
 import org.waarp.gateway.ftp.config.AUTHUPDATE;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.database.DbConstant;
-import org.waarp.gateway.ftp.exec.AbstractExecutor;
-import org.waarp.gateway.ftp.exec.R66PreparedTransferExecutor;
 import org.waarp.gateway.ftp.file.FileBasedAuth;
 import org.waarp.gateway.ftp.file.FileBasedDir;
+import org.waarp.gateway.kernel.exec.AbstractExecutor;
+import org.waarp.gateway.kernel.exec.R66PreparedTransferExecutor;
 
 /**
  * BusinessHandler implementation that allows pre and post actions on any operations and

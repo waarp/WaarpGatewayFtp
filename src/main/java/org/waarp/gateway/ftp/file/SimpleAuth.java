@@ -18,7 +18,7 @@ package org.waarp.gateway.ftp.file;
 
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
-import org.waarp.gateway.ftp.exec.AbstractExecutor.CommandExecutor;
+import org.waarp.gateway.kernel.exec.AbstractExecutor.CommandExecutor;
 
 /**
  * Simple Authentication based on a previously load XML file.

@@ -24,8 +24,4 @@ package org.waarp.gateway.ftp.database;
  * 
  */
 public class DbConstant extends org.waarp.common.database.DbConstant {
-	/**
-	 * Illegal value as SpecialId of transfer (any value above is valid)
-	 */
-	public static final long ILLEGALVALUE = Long.MIN_VALUE;
 }
