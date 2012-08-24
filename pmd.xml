@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<pmd version="4.3" timestamp="2012-07-25T18:38:58.550">
+<pmd version="4.3" timestamp="2012-08-24T19:51:37.487">
 <file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\ExecGatewayFtpServer.java">
 <violation beginline="38" endline="101" begincolumn="35" endcolumn="1" rule="UseSingleton" ruleset="Design Rules" package="org.waarp.gateway.ftp" class="ExecGatewayFtpServer" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UseSingleton" priority="3">
 All methods are static.  Consider using Singleton instead.  Alternatively, you could add a private constructor or make the class abstract to silence this warning.
@@ -298,61 +298,8 @@ Avoid empty catch blocks
 Avoid empty catch blocks
 </violation>
 </file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\AbstractExecutor.java">
-<violation beginline="72" endline="72" begincolumn="31" endcolumn="41" rule="AssignmentToNonFinalStatic" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="AbstractExecutor" variable="useDatabase" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#AssignmentToNonFinalStatic" priority="3">
-Possible unsafe assignment to a non-final static field in a constructor.
-</violation>
-<violation beginline="371" endline="372" begincolumn="57" endcolumn="17" rule="EmptyWhileStmt" ruleset="Basic Rules" package="org.waarp.gateway.ftp.exec" class="AbstractExecutor" method="replaceAll" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyWhileStmt" priority="3">
-Avoid empty while statements
-</violation>
-</file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\ExecuteExecutor.java">
-<violation beginline="86" endline="89" begincolumn="25" endcolumn="25" rule="CollapsibleIfStatements" ruleset="Basic Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#CollapsibleIfStatements" priority="3">
-These nested if statements could be combined
-</violation>
-<violation beginline="122" endline="122" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-<violation beginline="122" endline="122" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-<violation beginline="127" endline="127" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-<violation beginline="127" endline="127" begincolumn="41" endcolumn="98" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-<violation beginline="135" endline="135" begincolumn="33" endcolumn="90" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-<violation beginline="141" endline="141" begincolumn="25" endcolumn="82" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="ExecuteExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-</file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\LocalExecClient.java">
-<violation beginline="91" endline="93" begincolumn="16" endcolumn="9" rule="UncommentedEmptyConstructor" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="LocalExecClient" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#UncommentedEmptyConstructor" priority="3">
-Document empty constructor
-</violation>
-</file>
-<file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\exec\R66PreparedTransferExecutor.java">
-<violation beginline="135" endline="135" begincolumn="63" endcolumn="100" rule="SimpleDateFormatNeedsLocale" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#SimpleDateFormatNeedsLocale" priority="3">
-When instantiating a SimpleDateFormat object, specify a Locale
-</violation>
-<violation beginline="140" endline="141" begincolumn="35" endcolumn="33" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
-Avoid empty catch blocks
-</violation>
-<violation beginline="182" endline="183" begincolumn="25" endcolumn="71" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-<violation beginline="201" endline="201" begincolumn="25" endcolumn="91" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-<violation beginline="209" endline="209" begincolumn="25" endcolumn="91" rule="PreserveStackTrace" ruleset="Design Rules" package="org.waarp.gateway.ftp.exec" class="R66PreparedTransferExecutor" method="run" externalInfoUrl="http://pmd.sourceforge.net/rules/design.html#PreserveStackTrace" priority="3">
-New exception is thrown in catch block, original stack trace may be lost
-</violation>
-</file>
 <file name="J:\Git\github\waarp-digest\WaarpGatewayFtp\src\main\java\org\waarp\gateway\ftp\file\FileBasedAuth.java">
-<violation beginline="200" endline="201" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.file" class="FileBasedAuth" method="specialNoSessionAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
+<violation beginline="201" endline="202" begincolumn="19" endcolumn="17" rule="EmptyCatchBlock" ruleset="Basic Rules" package="org.waarp.gateway.ftp.file" class="FileBasedAuth" method="specialNoSessionAuth" externalInfoUrl="http://pmd.sourceforge.net/rules/basic.html#EmptyCatchBlock" priority="3">
 Avoid empty catch blocks
 </violation>
 </file>
