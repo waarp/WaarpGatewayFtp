@@ -5,7 +5,15 @@
 		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="2.1.3" date="2012-07-25" description="Fix release">
+		<release version="2.1.5" date="2012-09-01" description="New functionalities release">
+			<action dev="Frederic Bregier" type="add">Add Windows service capability</action>
+			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
+		</release>
+	    <release version="2.1.4" date="2012-08-24" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Fix XSD</action>
+			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
+		</release>
+	    <release version="2.1.3" date="2012-07-25" description="Fix release">
 			<action dev="Frederic Bregier" type="fix">Ssl Fix</action>
 			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
 		</release>

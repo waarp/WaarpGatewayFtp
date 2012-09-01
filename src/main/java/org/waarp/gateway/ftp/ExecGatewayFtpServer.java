@@ -55,26 +55,29 @@ public class ExecGatewayFtpServer {
 		InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
 		logger = WaarpInternalLoggerFactory
 				.getLogger(ExecGatewayFtpServer.class);
-		String config = args[0];
+		initialize(args[0], args.length > 1 ? args[1] : null);
+	}
+	
+	public static boolean initialize(String config, String r66file) {
 		FileBasedConfiguration configuration = new FileBasedConfiguration(
 				ExecGatewayFtpServer.class, ExecBusinessHandler.class,
 				FileSystemBasedDataBusinessHandler.class,
 				new FilesystemBasedFileParameterImpl());
 		if (!configuration.setConfigurationServerFromXml(config)) {
 			System.err.println("Bad main configuration");
-			return;
+			return false;
 		}
 		Configuration.configuration.useLocalExec = configuration.useLocalExec;
 		if (AbstractExecutor.useDatabase) {
 			// Use R66 module
-			if (args.length > 1) {
+			if (r66file != null) {
 				if (!org.waarp.openr66.configuration.FileBasedConfiguration
 						.setSubmitClientConfigurationFromXml(Configuration.configuration,
-								args[1])) {
+								r66file)) {
 					// if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1]))
 					// {
 					System.err.println("Bad R66 configuration");
-					return;
+					return false;
 				}
 			} else {
 				// Cannot get R66 functional
@@ -96,6 +99,7 @@ public class ExecGatewayFtpServer {
 				(configuration.getFtpInternalConfiguration().isUsingNativeSsl()? "Implicit SSL On" :
 					configuration.getFtpInternalConfiguration().isAcceptAuthProt() ?"Explicit SSL On":
 						"with SSL Off"));
+		return true;
 	}
 
 }
