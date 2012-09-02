@@ -68,7 +68,7 @@ public class FtpEngine extends EngineAbstract {
 			shutdown();
 			return;
 		}
-		Configuration.configuration.isStartedAsService = true;
+		Configuration.configuration.shutdownConfiguration.serviceFuture = closeFuture;
 		try {
 			if (!ExecGatewayFtpServer.initialize(ftpfile, r66file)) {
 				logger.error("Cannot start Gateway FTP");
@@ -144,9 +144,7 @@ public class FtpEngine extends EngineAbstract {
 						.getFtpInternalConfiguration()
 						.getDataActiveChannelFactory()));
 		logger.warn("Exit end of Data Shutdown");
-		if (Configuration.configuration.isStartedAsService) {
-			FtpEngine.closeFuture.setSuccess();
-		}
+		FtpEngine.closeFuture.setSuccess();
 		if (WaarpInternalLoggerFactory.getDefaultFactory() instanceof WaarpSlf4JLoggerFactory) {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			lc.stop();
