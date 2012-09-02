@@ -26,13 +26,13 @@ import org.jboss.netty.channel.ChannelFactory;
 import org.jboss.netty.channel.group.ChannelGroupFuture;
 import org.jboss.netty.channel.group.ChannelGroupFutureListener;
 import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-import org.jboss.netty.util.internal.SystemPropertyUtil;
 import org.slf4j.LoggerFactory;
 import org.waarp.common.future.WaarpFuture;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
 import org.waarp.common.service.EngineAbstract;
+import org.waarp.common.utility.SystemPropertyUtil;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.utils.FtpTimerTask;
 import org.waarp.gateway.ftp.ExecGatewayFtpServer;
@@ -68,7 +68,7 @@ public class FtpEngine extends EngineAbstract {
 			shutdown();
 			return;
 		}
-		Configuration.configuration.isStartedAsService = true;
+		Configuration.configuration.shutdownConfiguration.serviceFuture = closeFuture;
 		try {
 			if (!ExecGatewayFtpServer.initialize(ftpfile, r66file)) {
 				logger.error("Cannot start Gateway FTP");
@@ -144,9 +144,7 @@ public class FtpEngine extends EngineAbstract {
 						.getFtpInternalConfiguration()
 						.getDataActiveChannelFactory()));
 		logger.warn("Exit end of Data Shutdown");
-		if (Configuration.configuration.isStartedAsService) {
-			FtpEngine.closeFuture.setSuccess();
-		}
+		FtpEngine.closeFuture.setSuccess();
 		if (WaarpInternalLoggerFactory.getDefaultFactory() instanceof WaarpSlf4JLoggerFactory) {
 			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 			lc.stop();
