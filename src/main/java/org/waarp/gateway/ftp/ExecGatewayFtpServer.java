@@ -25,6 +25,7 @@ import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.control.ExecBusinessHandler;
 import org.waarp.gateway.ftp.data.FileSystemBasedDataBusinessHandler;
+import org.waarp.gateway.ftp.service.FtpEngine;
 import org.waarp.gateway.kernel.exec.AbstractExecutor;
 import org.waarp.openr66.protocol.configuration.Configuration;
 
@@ -59,10 +60,20 @@ public class ExecGatewayFtpServer {
 	}
 	
 	public static boolean initialize(String config, String r66file) {
+		boolean asAService = false;
+		if (logger == null) {
+			// Called as a service
+			logger = WaarpInternalLoggerFactory
+					.getLogger(ExecGatewayFtpServer.class);
+			asAService = true;
+		}
 		FileBasedConfiguration configuration = new FileBasedConfiguration(
 				ExecGatewayFtpServer.class, ExecBusinessHandler.class,
 				FileSystemBasedDataBusinessHandler.class,
 				new FilesystemBasedFileParameterImpl());
+		if (asAService) {
+			configuration.shutdownConfiguration.serviceFuture = FtpEngine.closeFuture;
+		}
 		if (!configuration.setConfigurationServerFromXml(config)) {
 			System.err.println("Bad main configuration");
 			return false;
