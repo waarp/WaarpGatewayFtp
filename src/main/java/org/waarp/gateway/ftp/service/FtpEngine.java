@@ -20,26 +20,15 @@
  */
 package org.waarp.gateway.ftp.service;
 
-import java.util.Timer;
-
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.ChannelGroupFutureListener;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-import org.slf4j.LoggerFactory;
 import org.waarp.common.future.WaarpFuture;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
-import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
 import org.waarp.common.service.EngineAbstract;
 import org.waarp.common.utility.SystemPropertyUtil;
 import org.waarp.ftp.core.config.FtpConfiguration;
-import org.waarp.ftp.core.utils.FtpTimerTask;
+import org.waarp.ftp.core.utils.FtpChannelUtils;
 import org.waarp.gateway.ftp.ExecGatewayFtpServer;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
-import org.waarp.openr66.protocol.configuration.Configuration;
-
-import ch.qos.logback.classic.LoggerContext;
 
 /**
  * Engine used to start and stop the real Gateway Ftp service
@@ -68,7 +57,6 @@ public class FtpEngine extends EngineAbstract {
 			shutdown();
 			return;
 		}
-		Configuration.configuration.shutdownConfiguration.serviceFuture = closeFuture;
 		try {
 			if (!ExecGatewayFtpServer.initialize(ftpfile, r66file)) {
 				logger.error("Cannot start Gateway FTP");
@@ -83,72 +71,10 @@ public class FtpEngine extends EngineAbstract {
 		logger.warn("Service started with "+ftpfile);
 	}
 
-	/**
-	 * Finalize resources attached to Control or Data handlers
-	 * 
-	 * @author Frederic Bregier
-	 * 
-	 */
-	private static class FtpChannelGroupFutureListener implements
-			ChannelGroupFutureListener {
-		OrderedMemoryAwareThreadPoolExecutor pool;
-
-		ChannelFactory channelFactory;
-
-		ChannelFactory channelFactory2;
-
-		public FtpChannelGroupFutureListener(
-				OrderedMemoryAwareThreadPoolExecutor pool,
-				ChannelFactory channelFactory, ChannelFactory channelFactory2) {
-			this.pool = pool;
-			this.channelFactory = channelFactory;
-			this.channelFactory2 = channelFactory2;
-		}
-
-		public void operationComplete(ChannelGroupFuture future)
-				throws Exception {
-			pool.shutdownNow();
-			channelFactory.releaseExternalResources();
-			if (channelFactory2 != null) {
-				channelFactory2.releaseExternalResources();
-			}
-		}
-	}
 	
 	private static void exit(FtpConfiguration configuration) {
-		configuration.isShutdown = true;
-		long delay = configuration.TIMEOUTCON;
-		logger.warn("Exit: Give a delay of " + delay + " ms");
-		configuration.inShutdownProcess();
-		try {
-			Thread.sleep(delay);
-		} catch (InterruptedException e) {
-		}
-		configuration.getFtpInternalConfiguration()
-				.getGlobalTrafficShapingHandler().releaseExternalResources();
-		Timer timer = new Timer(true);
-		FtpTimerTask timerTask = new FtpTimerTask(FtpTimerTask.TIMER_CONTROL);
-		timerTask.configuration = configuration;
-		timer.schedule(timerTask, configuration.TIMEOUTCON / 2);
-		configuration.releaseResources();
-		logger.info("Exit Shutdown Data");
-		configuration.getFtpInternalConfiguration()
-			.getDataChannelGroup().size();
-		configuration.getFtpInternalConfiguration().getDataChannelGroup()
-			.close().addListener(
-				new FtpChannelGroupFutureListener(configuration
-						.getFtpInternalConfiguration()
-						.getDataPipelineExecutor(), configuration
-						.getFtpInternalConfiguration()
-						.getDataPassiveChannelFactory(), configuration
-						.getFtpInternalConfiguration()
-						.getDataActiveChannelFactory()));
-		logger.warn("Exit end of Data Shutdown");
-		FtpEngine.closeFuture.setSuccess();
-		if (WaarpInternalLoggerFactory.getDefaultFactory() instanceof WaarpSlf4JLoggerFactory) {
-			LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
-			lc.stop();
-		}
+		FtpChannelUtils util = new FtpChannelUtils(configuration);
+		util.run();
 	}
 	
 	@Override
