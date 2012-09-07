@@ -51,6 +51,7 @@ import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
 import org.waarp.common.digest.FilesystemBasedDigest;
 import org.waarp.common.exception.CryptoException;
+import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.file.DirInterface;
 import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
@@ -1609,15 +1610,23 @@ public class FileBasedConfiguration extends FtpConfiguration {
 			for (int i = 0; i < configAuthenticationDecls.length; i++) {
 				values[i] = new XmlValue(configAuthenticationDecls[i]);
 			}
-			values[0].setFromString(auth.user);
-			// PasswdFile: none values[1].setFromString();
-			values[2].setFromString(auth.password);
+			try {
+				values[0].setFromString(auth.user);
+				// PasswdFile: none values[1].setFromString();
+				values[2].setFromString(auth.password);
+			} catch (InvalidArgumentException e1) {
+				logger.error("Error during Write Authentication file", e1);
+				return false;
+			}
 			// Accounts
 			String[] accts = auth.accounts;
 			for (String string : accts) {
 				try {
 					values[3].addFromString(string);
 				} catch (InvalidObjectException e) {
+					logger.error("Error during Write Authentication file", e);
+					return false;
+				} catch (InvalidArgumentException e) {
 					logger.error("Error during Write Authentication file", e);
 					return false;
 				}
@@ -1628,14 +1637,24 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				logger.error("Error during Write Authentication file", e);
 				return false;
 			}
-			values[5].setFromString(auth.retrCmd);
+			try {
+				values[5].setFromString(auth.retrCmd);
+			} catch (InvalidArgumentException e1) {
+				logger.error("Error during Write Authentication file", e1);
+				return false;
+			}
 			try {
 				values[6].setValue(auth.retrDelay);
 			} catch (InvalidObjectException e) {
 				logger.error("Error during Write Authentication file", e);
 				return false;
 			}
-			values[7].setFromString(auth.storCmd);
+			try {
+				values[7].setFromString(auth.storCmd);
+			} catch (InvalidArgumentException e1) {
+				logger.error("Error during Write Authentication file", e1);
+				return false;
+			}
 			try {
 				values[8].setValue(auth.storDelay);
 			} catch (InvalidObjectException e) {
