@@ -1038,105 +1038,115 @@
 <a class="jxr_linenumber" name="1028" href="#1028">1028</a> 		<strong class="jxr_keyword">for</strong> (<strong class="jxr_keyword">int</strong> i = 0; i &lt; logDecls.length; i++) {
 <a class="jxr_linenumber" name="1029" href="#1029">1029</a> 			values[i] = <strong class="jxr_keyword">new</strong> XmlValue(logDecls[i]);
 <a class="jxr_linenumber" name="1030" href="#1030">1030</a> 		}
-<a class="jxr_linenumber" name="1031" href="#1031">1031</a> 		values[0].setFromString(Long.toString(specialId));
-<a class="jxr_linenumber" name="1032" href="#1032">1032</a> 		values[1].setFromString(user);
-<a class="jxr_linenumber" name="1033" href="#1033">1033</a> 		values[2].setFromString(account);
-<a class="jxr_linenumber" name="1034" href="#1034">1034</a> 		values[3].setFromString(filename);
-<a class="jxr_linenumber" name="1035" href="#1035">1035</a> 		values[4].setFromString(mode);
-<a class="jxr_linenumber" name="1036" href="#1036">1036</a> 		values[5].setFromString(getErrorInfo().getMesg());
-<a class="jxr_linenumber" name="1037" href="#1037">1037</a> 		values[6].setFromString(infotransf);
-<a class="jxr_linenumber" name="1038" href="#1038">1038</a> 		values[7].setFromString(getUpdatedInfo().name());
-<a class="jxr_linenumber" name="1039" href="#1039">1039</a> 		values[8].setFromString(start.toString());
-<a class="jxr_linenumber" name="1040" href="#1040">1040</a> 		values[9].setFromString(stop.toString());
-<a class="jxr_linenumber" name="1041" href="#1041">1041</a> 		<strong class="jxr_keyword">return</strong> values;
-<a class="jxr_linenumber" name="1042" href="#1042">1042</a> 	}
-<a class="jxr_linenumber" name="1043" href="#1043">1043</a> 
-<a class="jxr_linenumber" name="1044" href="#1044">1044</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="1045" href="#1045">1045</a> <em class="jxr_javadoccomment">	 * Save the current DbTransferLog to a file</em>
-<a class="jxr_linenumber" name="1046" href="#1046">1046</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="1047" href="#1047">1047</a> <em class="jxr_javadoccomment">	 * @param filename</em>
-<a class="jxr_linenumber" name="1048" href="#1048">1048</a> <em class="jxr_javadoccomment">	 * @return The message for the HTTPS interface</em>
-<a class="jxr_linenumber" name="1049" href="#1049">1049</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="1050" href="#1050">1050</a> 	<strong class="jxr_keyword">public</strong> String saveDbTransferLog(String filename) {
-<a class="jxr_linenumber" name="1051" href="#1051">1051</a> 		Document document = XmlUtil.createEmptyDocument();
-<a class="jxr_linenumber" name="1052" href="#1052">1052</a> 		XmlValue[] roots = <strong class="jxr_keyword">new</strong> XmlValue[1];
-<a class="jxr_linenumber" name="1053" href="#1053">1053</a> 		XmlValue root = <strong class="jxr_keyword">new</strong> XmlValue(logsElements[0]);
-<a class="jxr_linenumber" name="1054" href="#1054">1054</a> 		roots[0] = root;
-<a class="jxr_linenumber" name="1055" href="#1055">1055</a> 		String message = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="1056" href="#1056">1056</a> 		XmlValue[] values = saveIntoXmlValue();
-<a class="jxr_linenumber" name="1057" href="#1057">1057</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="1058" href="#1058">1058</a> 			root.addValue(values);
-<a class="jxr_linenumber" name="1059" href="#1059">1059</a> 		} <strong class="jxr_keyword">catch</strong> (InvalidObjectException e) {
-<a class="jxr_linenumber" name="1060" href="#1060">1060</a> 			logger.error(<span class="jxr_string">"Error during Write DbTransferLog file"</span>, e);
-<a class="jxr_linenumber" name="1061" href="#1061">1061</a> 			<strong class="jxr_keyword">return</strong> <span class="jxr_string">"Error during purge"</span>;
-<a class="jxr_linenumber" name="1062" href="#1062">1062</a> 		}
-<a class="jxr_linenumber" name="1063" href="#1063">1063</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="1064" href="#1064">1064</a> 			delete();
-<a class="jxr_linenumber" name="1065" href="#1065">1065</a> 		} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseException e) {
-<a class="jxr_linenumber" name="1066" href="#1066">1066</a> 			message = <span class="jxr_string">"Error during purge"</span>;
-<a class="jxr_linenumber" name="1067" href="#1067">1067</a> 		}
-<a class="jxr_linenumber" name="1068" href="#1068">1068</a> 		message = <span class="jxr_string">"Purge Correct Logs successful"</span>;
-<a class="jxr_linenumber" name="1069" href="#1069">1069</a> 		XmlUtil.write(document, roots);
+<a class="jxr_linenumber" name="1031" href="#1031">1031</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="1032" href="#1032">1032</a> 			values[0].setFromString(Long.toString(specialId));
+<a class="jxr_linenumber" name="1033" href="#1033">1033</a> 			values[1].setFromString(user);
+<a class="jxr_linenumber" name="1034" href="#1034">1034</a> 			values[2].setFromString(account);
+<a class="jxr_linenumber" name="1035" href="#1035">1035</a> 			values[3].setFromString(filename);
+<a class="jxr_linenumber" name="1036" href="#1036">1036</a> 			values[4].setFromString(mode);
+<a class="jxr_linenumber" name="1037" href="#1037">1037</a> 			values[5].setFromString(getErrorInfo().getMesg());
+<a class="jxr_linenumber" name="1038" href="#1038">1038</a> 			values[6].setFromString(infotransf);
+<a class="jxr_linenumber" name="1039" href="#1039">1039</a> 			values[7].setFromString(getUpdatedInfo().name());
+<a class="jxr_linenumber" name="1040" href="#1040">1040</a> 			values[8].setFromString(start.toString());
+<a class="jxr_linenumber" name="1041" href="#1041">1041</a> 			values[9].setFromString(stop.toString());
+<a class="jxr_linenumber" name="1042" href="#1042">1042</a> 		} <strong class="jxr_keyword">catch</strong> (InvalidArgumentException e) {
+<a class="jxr_linenumber" name="1043" href="#1043">1043</a> 			<strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="1044" href="#1044">1044</a> 		}
+<a class="jxr_linenumber" name="1045" href="#1045">1045</a> 		<strong class="jxr_keyword">return</strong> values;
+<a class="jxr_linenumber" name="1046" href="#1046">1046</a> 	}
+<a class="jxr_linenumber" name="1047" href="#1047">1047</a> 
+<a class="jxr_linenumber" name="1048" href="#1048">1048</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1049" href="#1049">1049</a> <em class="jxr_javadoccomment">	 * Save the current DbTransferLog to a file</em>
+<a class="jxr_linenumber" name="1050" href="#1050">1050</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="1051" href="#1051">1051</a> <em class="jxr_javadoccomment">	 * @param filename</em>
+<a class="jxr_linenumber" name="1052" href="#1052">1052</a> <em class="jxr_javadoccomment">	 * @return The message for the HTTPS interface</em>
+<a class="jxr_linenumber" name="1053" href="#1053">1053</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="1054" href="#1054">1054</a> 	<strong class="jxr_keyword">public</strong> String saveDbTransferLog(String filename) {
+<a class="jxr_linenumber" name="1055" href="#1055">1055</a> 		Document document = XmlUtil.createEmptyDocument();
+<a class="jxr_linenumber" name="1056" href="#1056">1056</a> 		XmlValue[] roots = <strong class="jxr_keyword">new</strong> XmlValue[1];
+<a class="jxr_linenumber" name="1057" href="#1057">1057</a> 		XmlValue root = <strong class="jxr_keyword">new</strong> XmlValue(logsElements[0]);
+<a class="jxr_linenumber" name="1058" href="#1058">1058</a> 		roots[0] = root;
+<a class="jxr_linenumber" name="1059" href="#1059">1059</a> 		String message = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="1060" href="#1060">1060</a> 		XmlValue[] values = saveIntoXmlValue();
+<a class="jxr_linenumber" name="1061" href="#1061">1061</a> 		<strong class="jxr_keyword">if</strong> (values == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="1062" href="#1062">1062</a> 			<strong class="jxr_keyword">return</strong> <span class="jxr_string">"Error during export"</span>;
+<a class="jxr_linenumber" name="1063" href="#1063">1063</a> 		}
+<a class="jxr_linenumber" name="1064" href="#1064">1064</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="1065" href="#1065">1065</a> 			root.addValue(values);
+<a class="jxr_linenumber" name="1066" href="#1066">1066</a> 		} <strong class="jxr_keyword">catch</strong> (InvalidObjectException e) {
+<a class="jxr_linenumber" name="1067" href="#1067">1067</a> 			logger.error(<span class="jxr_string">"Error during Write DbTransferLog file"</span>, e);
+<a class="jxr_linenumber" name="1068" href="#1068">1068</a> 			<strong class="jxr_keyword">return</strong> <span class="jxr_string">"Error during purge"</span>;
+<a class="jxr_linenumber" name="1069" href="#1069">1069</a> 		}
 <a class="jxr_linenumber" name="1070" href="#1070">1070</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="1071" href="#1071">1071</a> 			XmlUtil.saveDocument(filename, document);
-<a class="jxr_linenumber" name="1072" href="#1072">1072</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e1) {
-<a class="jxr_linenumber" name="1073" href="#1073">1073</a> 			logger.error(<span class="jxr_string">"Cannot write to file: "</span> + filename + <span class="jxr_string">" since {}"</span>, e1.getMessage());
-<a class="jxr_linenumber" name="1074" href="#1074">1074</a> 			<strong class="jxr_keyword">return</strong> message + <span class="jxr_string">" but cannot save file as export"</span>;
-<a class="jxr_linenumber" name="1075" href="#1075">1075</a> 		}
-<a class="jxr_linenumber" name="1076" href="#1076">1076</a> 		<strong class="jxr_keyword">return</strong> message;
-<a class="jxr_linenumber" name="1077" href="#1077">1077</a> 	}
-<a class="jxr_linenumber" name="1078" href="#1078">1078</a> 
-<a class="jxr_linenumber" name="1079" href="#1079">1079</a> 	<em class="jxr_javadoccomment">/**</em>
-<a class="jxr_linenumber" name="1080" href="#1080">1080</a> <em class="jxr_javadoccomment">	 * Export DbTransferLogs to a file and purge the corresponding DbTransferLogs</em>
-<a class="jxr_linenumber" name="1081" href="#1081">1081</a> <em class="jxr_javadoccomment">	 * </em>
-<a class="jxr_linenumber" name="1082" href="#1082">1082</a> <em class="jxr_javadoccomment">	 * @param preparedStatement</em>
-<a class="jxr_linenumber" name="1083" href="#1083">1083</a> <em class="jxr_javadoccomment">	 *            the DbTransferLog as SELECT command to export (and purge)</em>
-<a class="jxr_linenumber" name="1084" href="#1084">1084</a> <em class="jxr_javadoccomment">	 * @param filename</em>
-<a class="jxr_linenumber" name="1085" href="#1085">1085</a> <em class="jxr_javadoccomment">	 *            the filename where the DbLogs will be exported</em>
-<a class="jxr_linenumber" name="1086" href="#1086">1086</a> <em class="jxr_javadoccomment">	 * @return The message for the HTTPS interface</em>
-<a class="jxr_linenumber" name="1087" href="#1087">1087</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="1088" href="#1088">1088</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
-<a class="jxr_linenumber" name="1089" href="#1089">1089</a> 			String filename) {
-<a class="jxr_linenumber" name="1090" href="#1090">1090</a> 		Document document = XmlUtil.createEmptyDocument();
-<a class="jxr_linenumber" name="1091" href="#1091">1091</a> 		XmlValue[] roots = <strong class="jxr_keyword">new</strong> XmlValue[1];
-<a class="jxr_linenumber" name="1092" href="#1092">1092</a> 		XmlValue root = <strong class="jxr_keyword">new</strong> XmlValue(logsElements[0]);
-<a class="jxr_linenumber" name="1093" href="#1093">1093</a> 		roots[0] = root;
-<a class="jxr_linenumber" name="1094" href="#1094">1094</a> 		String message = <strong class="jxr_keyword">null</strong>;
-<a class="jxr_linenumber" name="1095" href="#1095">1095</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="1096" href="#1096">1096</a> 			<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="1097" href="#1097">1097</a> 				preparedStatement.executeQuery();
-<a class="jxr_linenumber" name="1098" href="#1098">1098</a> 				<strong class="jxr_keyword">while</strong> (preparedStatement.getNext()) {
-<a class="jxr_linenumber" name="1099" href="#1099">1099</a> 					DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
-<a class="jxr_linenumber" name="1100" href="#1100">1100</a> 					XmlValue[] values = log.saveIntoXmlValue();
-<a class="jxr_linenumber" name="1101" href="#1101">1101</a> 					<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="1102" href="#1102">1102</a> 						root.addValue(values);
-<a class="jxr_linenumber" name="1103" href="#1103">1103</a> 					} <strong class="jxr_keyword">catch</strong> (InvalidObjectException e) {
-<a class="jxr_linenumber" name="1104" href="#1104">1104</a> 						logger.error(<span class="jxr_string">"Error during Write DbTransferLog file"</span>, e);
-<a class="jxr_linenumber" name="1105" href="#1105">1105</a> 						<strong class="jxr_keyword">return</strong> <span class="jxr_string">"Error during purge"</span>;
-<a class="jxr_linenumber" name="1106" href="#1106">1106</a> 					}
-<a class="jxr_linenumber" name="1107" href="#1107">1107</a> 					log.delete();
-<a class="jxr_linenumber" name="1108" href="#1108">1108</a> 				}
-<a class="jxr_linenumber" name="1109" href="#1109">1109</a> 				message = <span class="jxr_string">"Purge Correct Logs successful"</span>;
-<a class="jxr_linenumber" name="1110" href="#1110">1110</a> 			} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseNoConnectionException e) {
-<a class="jxr_linenumber" name="1111" href="#1111">1111</a> 				message = <span class="jxr_string">"Error during purge"</span>;
-<a class="jxr_linenumber" name="1112" href="#1112">1112</a> 			} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseSqlException e) {
-<a class="jxr_linenumber" name="1113" href="#1113">1113</a> 				message = <span class="jxr_string">"Error during purge"</span>;
-<a class="jxr_linenumber" name="1114" href="#1114">1114</a> 			} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseException e) {
-<a class="jxr_linenumber" name="1115" href="#1115">1115</a> 				message = <span class="jxr_string">"Error during purge"</span>;
-<a class="jxr_linenumber" name="1116" href="#1116">1116</a> 			}
-<a class="jxr_linenumber" name="1117" href="#1117">1117</a> 		} <strong class="jxr_keyword">finally</strong> {
-<a class="jxr_linenumber" name="1118" href="#1118">1118</a> 			preparedStatement.realClose();
-<a class="jxr_linenumber" name="1119" href="#1119">1119</a> 		}
-<a class="jxr_linenumber" name="1120" href="#1120">1120</a> 		XmlUtil.write(document, roots);
-<a class="jxr_linenumber" name="1121" href="#1121">1121</a> 		<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="1122" href="#1122">1122</a> 			XmlUtil.saveDocument(filename, document);
-<a class="jxr_linenumber" name="1123" href="#1123">1123</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e1) {
-<a class="jxr_linenumber" name="1124" href="#1124">1124</a> 			logger.error(<span class="jxr_string">"Cannot write to file: "</span> + filename + <span class="jxr_string">" since {}"</span>, e1.getMessage());
-<a class="jxr_linenumber" name="1125" href="#1125">1125</a> 			<strong class="jxr_keyword">return</strong> message + <span class="jxr_string">" but cannot save file as export"</span>;
-<a class="jxr_linenumber" name="1126" href="#1126">1126</a> 		}
-<a class="jxr_linenumber" name="1127" href="#1127">1127</a> 		<strong class="jxr_keyword">return</strong> message;
-<a class="jxr_linenumber" name="1128" href="#1128">1128</a> 	}
-<a class="jxr_linenumber" name="1129" href="#1129">1129</a> }
+<a class="jxr_linenumber" name="1071" href="#1071">1071</a> 			delete();
+<a class="jxr_linenumber" name="1072" href="#1072">1072</a> 		} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseException e) {
+<a class="jxr_linenumber" name="1073" href="#1073">1073</a> 			message = <span class="jxr_string">"Error during purge"</span>;
+<a class="jxr_linenumber" name="1074" href="#1074">1074</a> 		}
+<a class="jxr_linenumber" name="1075" href="#1075">1075</a> 		message = <span class="jxr_string">"Purge Correct Logs successful"</span>;
+<a class="jxr_linenumber" name="1076" href="#1076">1076</a> 		XmlUtil.write(document, roots);
+<a class="jxr_linenumber" name="1077" href="#1077">1077</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="1078" href="#1078">1078</a> 			XmlUtil.saveDocument(filename, document);
+<a class="jxr_linenumber" name="1079" href="#1079">1079</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e1) {
+<a class="jxr_linenumber" name="1080" href="#1080">1080</a> 			logger.error(<span class="jxr_string">"Cannot write to file: "</span> + filename + <span class="jxr_string">" since {}"</span>, e1.getMessage());
+<a class="jxr_linenumber" name="1081" href="#1081">1081</a> 			<strong class="jxr_keyword">return</strong> message + <span class="jxr_string">" but cannot save file as export"</span>;
+<a class="jxr_linenumber" name="1082" href="#1082">1082</a> 		}
+<a class="jxr_linenumber" name="1083" href="#1083">1083</a> 		<strong class="jxr_keyword">return</strong> message;
+<a class="jxr_linenumber" name="1084" href="#1084">1084</a> 	}
+<a class="jxr_linenumber" name="1085" href="#1085">1085</a> 
+<a class="jxr_linenumber" name="1086" href="#1086">1086</a> 	<em class="jxr_javadoccomment">/**</em>
+<a class="jxr_linenumber" name="1087" href="#1087">1087</a> <em class="jxr_javadoccomment">	 * Export DbTransferLogs to a file and purge the corresponding DbTransferLogs</em>
+<a class="jxr_linenumber" name="1088" href="#1088">1088</a> <em class="jxr_javadoccomment">	 * </em>
+<a class="jxr_linenumber" name="1089" href="#1089">1089</a> <em class="jxr_javadoccomment">	 * @param preparedStatement</em>
+<a class="jxr_linenumber" name="1090" href="#1090">1090</a> <em class="jxr_javadoccomment">	 *            the DbTransferLog as SELECT command to export (and purge)</em>
+<a class="jxr_linenumber" name="1091" href="#1091">1091</a> <em class="jxr_javadoccomment">	 * @param filename</em>
+<a class="jxr_linenumber" name="1092" href="#1092">1092</a> <em class="jxr_javadoccomment">	 *            the filename where the DbLogs will be exported</em>
+<a class="jxr_linenumber" name="1093" href="#1093">1093</a> <em class="jxr_javadoccomment">	 * @return The message for the HTTPS interface</em>
+<a class="jxr_linenumber" name="1094" href="#1094">1094</a> <em class="jxr_javadoccomment">	 */</em>
+<a class="jxr_linenumber" name="1095" href="#1095">1095</a> 	<strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">static</strong> String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
+<a class="jxr_linenumber" name="1096" href="#1096">1096</a> 			String filename) {
+<a class="jxr_linenumber" name="1097" href="#1097">1097</a> 		Document document = XmlUtil.createEmptyDocument();
+<a class="jxr_linenumber" name="1098" href="#1098">1098</a> 		XmlValue[] roots = <strong class="jxr_keyword">new</strong> XmlValue[1];
+<a class="jxr_linenumber" name="1099" href="#1099">1099</a> 		XmlValue root = <strong class="jxr_keyword">new</strong> XmlValue(logsElements[0]);
+<a class="jxr_linenumber" name="1100" href="#1100">1100</a> 		roots[0] = root;
+<a class="jxr_linenumber" name="1101" href="#1101">1101</a> 		String message = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="1102" href="#1102">1102</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="1103" href="#1103">1103</a> 			<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="1104" href="#1104">1104</a> 				preparedStatement.executeQuery();
+<a class="jxr_linenumber" name="1105" href="#1105">1105</a> 				<strong class="jxr_keyword">while</strong> (preparedStatement.getNext()) {
+<a class="jxr_linenumber" name="1106" href="#1106">1106</a> 					DbTransferLog log = DbTransferLog.getFromStatement(preparedStatement);
+<a class="jxr_linenumber" name="1107" href="#1107">1107</a> 					XmlValue[] values = log.saveIntoXmlValue();
+<a class="jxr_linenumber" name="1108" href="#1108">1108</a> 					<strong class="jxr_keyword">if</strong> (values == <strong class="jxr_keyword">null</strong>) {
+<a class="jxr_linenumber" name="1109" href="#1109">1109</a> 						<strong class="jxr_keyword">return</strong> <span class="jxr_string">"Error during export"</span>;
+<a class="jxr_linenumber" name="1110" href="#1110">1110</a> 					}
+<a class="jxr_linenumber" name="1111" href="#1111">1111</a> 					<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="1112" href="#1112">1112</a> 						root.addValue(values);
+<a class="jxr_linenumber" name="1113" href="#1113">1113</a> 					} <strong class="jxr_keyword">catch</strong> (InvalidObjectException e) {
+<a class="jxr_linenumber" name="1114" href="#1114">1114</a> 						logger.error(<span class="jxr_string">"Error during Write DbTransferLog file"</span>, e);
+<a class="jxr_linenumber" name="1115" href="#1115">1115</a> 						<strong class="jxr_keyword">return</strong> <span class="jxr_string">"Error during purge"</span>;
+<a class="jxr_linenumber" name="1116" href="#1116">1116</a> 					}
+<a class="jxr_linenumber" name="1117" href="#1117">1117</a> 					log.delete();
+<a class="jxr_linenumber" name="1118" href="#1118">1118</a> 				}
+<a class="jxr_linenumber" name="1119" href="#1119">1119</a> 				message = <span class="jxr_string">"Purge Correct Logs successful"</span>;
+<a class="jxr_linenumber" name="1120" href="#1120">1120</a> 			} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseNoConnectionException e) {
+<a class="jxr_linenumber" name="1121" href="#1121">1121</a> 				message = <span class="jxr_string">"Error during purge"</span>;
+<a class="jxr_linenumber" name="1122" href="#1122">1122</a> 			} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseSqlException e) {
+<a class="jxr_linenumber" name="1123" href="#1123">1123</a> 				message = <span class="jxr_string">"Error during purge"</span>;
+<a class="jxr_linenumber" name="1124" href="#1124">1124</a> 			} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseException e) {
+<a class="jxr_linenumber" name="1125" href="#1125">1125</a> 				message = <span class="jxr_string">"Error during purge"</span>;
+<a class="jxr_linenumber" name="1126" href="#1126">1126</a> 			}
+<a class="jxr_linenumber" name="1127" href="#1127">1127</a> 		} <strong class="jxr_keyword">finally</strong> {
+<a class="jxr_linenumber" name="1128" href="#1128">1128</a> 			preparedStatement.realClose();
+<a class="jxr_linenumber" name="1129" href="#1129">1129</a> 		}
+<a class="jxr_linenumber" name="1130" href="#1130">1130</a> 		XmlUtil.write(document, roots);
+<a class="jxr_linenumber" name="1131" href="#1131">1131</a> 		<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="1132" href="#1132">1132</a> 			XmlUtil.saveDocument(filename, document);
+<a class="jxr_linenumber" name="1133" href="#1133">1133</a> 		} <strong class="jxr_keyword">catch</strong> (IOException e1) {
+<a class="jxr_linenumber" name="1134" href="#1134">1134</a> 			logger.error(<span class="jxr_string">"Cannot write to file: "</span> + filename + <span class="jxr_string">" since {}"</span>, e1.getMessage());
+<a class="jxr_linenumber" name="1135" href="#1135">1135</a> 			<strong class="jxr_keyword">return</strong> message + <span class="jxr_string">" but cannot save file as export"</span>;
+<a class="jxr_linenumber" name="1136" href="#1136">1136</a> 		}
+<a class="jxr_linenumber" name="1137" href="#1137">1137</a> 		<strong class="jxr_keyword">return</strong> message;
+<a class="jxr_linenumber" name="1138" href="#1138">1138</a> 	}
+<a class="jxr_linenumber" name="1139" href="#1139">1139</a> }
 </pre>
 <hr/><div id="footer">This page was automatically generated by <a href="http://maven.apache.org/">Maven</a></div></body>
 </html>
