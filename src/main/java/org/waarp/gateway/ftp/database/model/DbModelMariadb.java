@@ -18,6 +18,7 @@
 package org.waarp.gateway.ftp.database.model;
 
 import java.sql.SQLException;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.waarp.common.database.DbPreparedStatement;
 import org.waarp.common.database.DbRequest;
@@ -29,25 +30,31 @@ import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 
 /**
- * PostGreSQL Database Model implementation
+ * MariaDB Database Model implementation
  * 
  * @author Frederic Bregier
  * 
  */
-public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPostgresql {
+public class DbModelMariadb extends org.waarp.common.database.model.DbModelMariadb {
 	/**
 	 * Create the object and initialize if necessary the driver
 	 * 
+	 * @param dbserver
+	 * @param dbuser
+	 * @param dbpasswd
 	 * @throws WaarpDatabaseNoConnectionException
 	 */
-	public DbModelPostgresql() throws WaarpDatabaseNoConnectionException {
-		super();
+	public DbModelMariadb(String dbserver,
+			String dbuser, String dbpasswd) throws WaarpDatabaseNoConnectionException {
+		super(dbserver, dbuser, dbpasswd);
 	}
+
+	private final ReentrantLock lock = new ReentrantLock();
 
 	@Override
 	public void createTables(DbSession session) throws WaarpDatabaseNoConnectionException {
 		// Create tables: configuration, hosts, rules, runner, cptrunner
-		String createTableH2 = "CREATE TABLE ";
+		String createTableH2 = "CREATE TABLE IF NOT EXISTS ";
 		String primaryKey = " PRIMARY KEY ";
 		String notNull = " NOT NULL ";
 
@@ -97,8 +104,29 @@ public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPo
 		}
 
 		// cptrunner
-		action = "CREATE SEQUENCE " + DbTransferLog.fieldseq +
-				" MINVALUE " + (DbConstant.ILLEGALVALUE + 1);
+		/*
+		 * # Table to handle any number of sequences: CREATE TABLE Sequences ( name VARCHAR(22) NOT
+		 * NULL, seq INT UNSIGNED NOT NULL, # (or BIGINT) PRIMARY KEY name ); # Create a Sequence:
+		 * INSERT INTO Sequences (name, seq) VALUES (?, 0); # Drop a Sequence: DELETE FROM Sequences
+		 * WHERE name = ?; # Get a sequence number: UPDATE Sequences SET seq = LAST_INSERT_ID(seq +
+		 * 1) WHERE name = ?; $seq = $db->LastInsertId();
+		 */
+		action = "CREATE TABLE Sequences (name VARCHAR(22) NOT NULL PRIMARY KEY," +
+				"seq BIGINT NOT NULL)";
+		System.out.println(action);
+		try {
+			request.query(action);
+		} catch (WaarpDatabaseNoConnectionException e) {
+			e.printStackTrace();
+			return;
+		} catch (WaarpDatabaseSqlException e) {
+			e.printStackTrace();
+			return;
+		} finally {
+			request.close();
+		}
+		action = "INSERT INTO Sequences (name, seq) VALUES ('" + DbTransferLog.fieldseq + "', " +
+				(DbConstant.ILLEGALVALUE + 1) + ")";
 		System.out.println(action);
 		try {
 			request.query(action);
@@ -120,8 +148,8 @@ public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPo
 	@Override
 	public void resetSequence(DbSession session, long newvalue)
 			throws WaarpDatabaseNoConnectionException {
-		String action = "ALTER SEQUENCE " + DbTransferLog.fieldseq +
-				" RESTART WITH " + newvalue;
+		String action = "UPDATE Sequences SET seq = " + newvalue +
+				" WHERE name = '" + DbTransferLog.fieldseq + "'";
 		DbRequest request = new DbRequest(session);
 		try {
 			request.query(action);
@@ -142,30 +170,53 @@ public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPo
 	 * @see org.waarp.openr66.databaseold.model.DbModel#nextSequence()
 	 */
 	@Override
-	public long nextSequence(DbSession dbSession)
+	public synchronized long nextSequence(DbSession dbSession)
 			throws WaarpDatabaseNoConnectionException,
 			WaarpDatabaseSqlException, WaarpDatabaseNoDataException {
-		long result = DbConstant.ILLEGALVALUE;
-		String action = "SELECT NEXTVAL('" + DbTransferLog.fieldseq + "')";
-		DbPreparedStatement preparedStatement = new DbPreparedStatement(
-				dbSession);
+		lock.lock();
 		try {
-			preparedStatement.createPrepareStatement(action);
-			// Limit the search
-			preparedStatement.executeQuery();
-			if (preparedStatement.getNext()) {
-				try {
-					result = preparedStatement.getResultSet().getLong(1);
-				} catch (SQLException e) {
-					throw new WaarpDatabaseSqlException(e);
-				}
-				return result;
-			} else {
-				throw new WaarpDatabaseNoDataException(
-						"No sequence found. Must be initialized first");
+			long result = DbConstant.ILLEGALVALUE;
+			String action = "SELECT seq FROM Sequences WHERE name = '" +
+					DbTransferLog.fieldseq + "' FOR UPDATE";
+			DbPreparedStatement preparedStatement = new DbPreparedStatement(
+					dbSession);
+			try {
+				dbSession.conn.setAutoCommit(false);
+			} catch (SQLException e1) {
 			}
+			try {
+				preparedStatement.createPrepareStatement(action);
+				// Limit the search
+				preparedStatement.executeQuery();
+				if (preparedStatement.getNext()) {
+					try {
+						result = preparedStatement.getResultSet().getLong(1);
+					} catch (SQLException e) {
+						throw new WaarpDatabaseSqlException(e);
+					}
+				} else {
+					throw new WaarpDatabaseNoDataException(
+							"No sequence found. Must be initialized first");
+				}
+			} finally {
+				preparedStatement.realClose();
+			}
+			action = "UPDATE Sequences SET seq = " + (result + 1) +
+					" WHERE name = '" + DbTransferLog.fieldseq + "'";
+			try {
+				preparedStatement.createPrepareStatement(action);
+				// Limit the search
+				preparedStatement.executeUpdate();
+			} finally {
+				preparedStatement.realClose();
+			}
+			return result;
 		} finally {
-			preparedStatement.realClose();
+			try {
+				dbSession.conn.setAutoCommit(true);
+			} catch (SQLException e1) {
+			}
+			lock.unlock();
 		}
 	}
 	@Override
