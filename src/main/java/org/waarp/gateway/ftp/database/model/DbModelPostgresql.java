@@ -168,4 +168,15 @@ public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPo
 			preparedStatement.realClose();
 		}
 	}
+	@Override
+	public boolean upgradeDb(DbSession session, String version)
+			throws WaarpDatabaseNoConnectionException {
+		return true;
+	}
+
+	@Override
+	public boolean needUpgradeDb(DbSession session, String version, boolean tryFix)
+			throws WaarpDatabaseNoConnectionException {
+		return false;
+	}
 }
