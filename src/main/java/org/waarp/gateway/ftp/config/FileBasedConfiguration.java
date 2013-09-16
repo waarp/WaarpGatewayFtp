@@ -595,10 +595,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	 */
 	public int SERVER_HTTPSPORT = 8067;
 	/**
-	 * Max global memory limit: default is 4GB
-	 */
-	public long maxGlobalMemory = 0x100000000L;
-	/**
 	 * Http Admin base
 	 */
 	public String httpBasePath = "src/main/admin/";

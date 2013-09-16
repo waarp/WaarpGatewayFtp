@@ -86,6 +86,8 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 	 */
 	private static final ConcurrentHashMap<String, FileBasedAuth> sessions = new ConcurrentHashMap<String, FileBasedAuth>();
 	private static final ConcurrentHashMap<String, DbSession> dbSessions = new ConcurrentHashMap<String, DbSession>();
+	private static final Random random = new Random();
+	
 	private volatile FtpSession ftpSession =
 			new FtpSession(FileBasedConfiguration.fileBasedConfiguration,
 					null);
@@ -657,7 +659,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 			clearSession();
 			admin = new DefaultCookie(FTPSESSION,
 					FileBasedConfiguration.fileBasedConfiguration.HOST_ID +
-							Long.toHexString(new Random().nextLong()));
+							Long.toHexString(random.nextLong()));
 			sessions.put(admin.getValue(), this.authentHttp);
 			if (this.isPrivateDbSession) {
 				dbSessions.put(admin.getValue(), dbSession);
