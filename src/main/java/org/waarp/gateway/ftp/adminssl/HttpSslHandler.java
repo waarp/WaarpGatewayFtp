@@ -784,7 +784,6 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 					if (admin != null) {
 						cookieEncoder.addCookie(admin);
 						response.addHeader(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
-						cookieEncoder = new CookieEncoder(true);
 						logger.debug("AddSession: " + uriRequest + ":{}", admin);
 					}
 				}
