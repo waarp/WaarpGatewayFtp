@@ -258,8 +258,8 @@ public class ExecBusinessHandler extends BusinessHandler {
 				if (constraints.checkConstraintsSleep(1)) {
 					if (constraints.checkConstraints()) {
 						// Really overload so refuse the command
-						logger.info("Server overloaded. Try later... \n"
-								+ getFtpSession().toString());
+						logger.info("Server overloaded. {} Try later... \n"
+								+ getFtpSession().toString(), constraints.lastAlert);
 						if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
 							FileBasedConfiguration.fileBasedConfiguration.ftpMib.
 									notifyOverloaded("Server overloaded",
