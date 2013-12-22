@@ -268,8 +268,8 @@
 <a class="jxr_linenumber" name="258" href="#258">258</a> 				<strong class="jxr_keyword">if</strong> (constraints.checkConstraintsSleep(1)) {
 <a class="jxr_linenumber" name="259" href="#259">259</a> 					<strong class="jxr_keyword">if</strong> (constraints.checkConstraints()) {
 <a class="jxr_linenumber" name="260" href="#260">260</a> 						<em class="jxr_comment">// Really overload so refuse the command</em>
-<a class="jxr_linenumber" name="261" href="#261">261</a> 						logger.info(<span class="jxr_string">"Server overloaded. Try later... \n"</span>
-<a class="jxr_linenumber" name="262" href="#262">262</a> 								+ getFtpSession().toString());
+<a class="jxr_linenumber" name="261" href="#261">261</a> 						logger.info(<span class="jxr_string">"Server overloaded. {} Try later... \n"</span>
+<a class="jxr_linenumber" name="262" href="#262">262</a> 								+ getFtpSession().toString(), constraints.lastAlert);
 <a class="jxr_linenumber" name="263" href="#263">263</a> 						<strong class="jxr_keyword">if</strong> (FileBasedConfiguration.fileBasedConfiguration.ftpMib != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="264" href="#264">264</a> 							FileBasedConfiguration.fileBasedConfiguration.ftpMib.
 <a class="jxr_linenumber" name="265" href="#265">265</a> 									notifyOverloaded(<span class="jxr_string">"Server overloaded"</span>,
@@ -420,16 +420,16 @@
 <a class="jxr_linenumber" name="410" href="#410">410</a> 					dbR66Session = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="411" href="#411">411</a> 					internalDb = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="412" href="#412">412</a> 				}
-<a class="jxr_linenumber" name="413" href="#413">413</a> 			}
-<a class="jxr_linenumber" name="414" href="#414">414</a> 			<strong class="jxr_keyword">if</strong> (DbConstant.admin.isConnected) {
-<a class="jxr_linenumber" name="415" href="#415">415</a> 				<strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="416" href="#416">416</a> 					dbFtpSession = <strong class="jxr_keyword">new</strong> DbSession(DbConstant.admin, false);
-<a class="jxr_linenumber" name="417" href="#417">417</a> 				} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseNoConnectionException e1) {
-<a class="jxr_linenumber" name="418" href="#418">418</a> 					logger.warn(<span class="jxr_string">"Database not ready due to {}"</span>, e1.getMessage());
-<a class="jxr_linenumber" name="419" href="#419">419</a> 					QUIT command = (QUIT)
-<a class="jxr_linenumber" name="420" href="#420">420</a> 							FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
-<a class="jxr_linenumber" name="421" href="#421">421</a> 					<strong class="jxr_keyword">this</strong>.getFtpSession().setNextCommand(command);
-<a class="jxr_linenumber" name="422" href="#422">422</a> 					dbFtpSession = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="413" href="#413">413</a> 				<strong class="jxr_keyword">if</strong> (DbConstant.admin.isConnected) {
+<a class="jxr_linenumber" name="414" href="#414">414</a> 					<strong class="jxr_keyword">try</strong> {
+<a class="jxr_linenumber" name="415" href="#415">415</a> 						dbFtpSession = <strong class="jxr_keyword">new</strong> DbSession(DbConstant.admin, false);
+<a class="jxr_linenumber" name="416" href="#416">416</a> 					} <strong class="jxr_keyword">catch</strong> (WaarpDatabaseNoConnectionException e1) {
+<a class="jxr_linenumber" name="417" href="#417">417</a> 						logger.warn(<span class="jxr_string">"Database not ready due to {}"</span>, e1.getMessage());
+<a class="jxr_linenumber" name="418" href="#418">418</a> 						QUIT command = (QUIT)
+<a class="jxr_linenumber" name="419" href="#419">419</a> 								FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
+<a class="jxr_linenumber" name="420" href="#420">420</a> 						<strong class="jxr_keyword">this</strong>.getFtpSession().setNextCommand(command);
+<a class="jxr_linenumber" name="421" href="#421">421</a> 						dbFtpSession = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="422" href="#422">422</a> 					}
 <a class="jxr_linenumber" name="423" href="#423">423</a> 				}
 <a class="jxr_linenumber" name="424" href="#424">424</a> 			}
 <a class="jxr_linenumber" name="425" href="#425">425</a> 		}

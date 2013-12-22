@@ -73,11 +73,11 @@
 <a class="jxr_linenumber" name="63" href="#63">63</a>  				<strong class="jxr_keyword">var</strong> = <strong class="jxr_keyword">new</strong> IpAddress();
 <a class="jxr_linenumber" name="64" href="#64">64</a>  				<strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="65" href="#65">65</a>  			<strong class="jxr_keyword">case</strong> SMIConstants.SYNTAX_COUNTER32:
-<a class="jxr_linenumber" name="66" href="#66">66</a>  				<strong class="jxr_keyword">var</strong> = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/gateway/ftp/snmp/FtpCounter32.html">FtpCounter32</a>(mibLevel, entry);
+<a class="jxr_linenumber" name="66" href="#66">66</a>  				<strong class="jxr_keyword">var</strong> = <strong class="jxr_keyword">new</strong> FtpCounter32(mibLevel, entry);
 <a class="jxr_linenumber" name="67" href="#67">67</a>  				<strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="68" href="#68">68</a>  			<strong class="jxr_keyword">case</strong> SMIConstants.SYNTAX_GAUGE32:
 <a class="jxr_linenumber" name="69" href="#69">69</a>  				<em class="jxr_comment">// case SMIConstants.SYNTAX_UNSIGNED_INTEGER32:</em>
-<a class="jxr_linenumber" name="70" href="#70">70</a>  				<strong class="jxr_keyword">var</strong> = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/gateway/ftp/snmp/FtpGauge32.html">FtpGauge32</a>(mibLevel, entry);
+<a class="jxr_linenumber" name="70" href="#70">70</a>  				<strong class="jxr_keyword">var</strong> = <strong class="jxr_keyword">new</strong> FtpGauge32(mibLevel, entry);
 <a class="jxr_linenumber" name="71" href="#71">71</a>  				<strong class="jxr_keyword">break</strong>;
 <a class="jxr_linenumber" name="72" href="#72">72</a>  			<strong class="jxr_keyword">case</strong> SMIConstants.SYNTAX_TIMETICKS:
 <a class="jxr_linenumber" name="73" href="#73">73</a>  				<strong class="jxr_keyword">var</strong> = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/gateway/ftp/snmp/FtpTimeTicks.html">FtpTimeTicks</a>(mibLevel, entry);
