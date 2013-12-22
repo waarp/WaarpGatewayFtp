@@ -39,7 +39,7 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
  */
 public class HttpSslPipelineFactory implements ChannelPipelineFactory {
 	public static WaarpSslContextFactory waarpSslContextFactory;
-	public static WaarpSecureKeyStore WaarpSecureKeyStore;
+	public static WaarpSecureKeyStore waarpSecureKeyStore;
 	private final ExecutorService executorService;
 	public boolean useHttpCompression = false;
 	public boolean enableRenegotiation = false;

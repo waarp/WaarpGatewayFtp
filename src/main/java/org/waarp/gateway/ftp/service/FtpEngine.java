@@ -42,7 +42,7 @@ public class FtpEngine extends EngineAbstract {
 	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
 			.getLogger(FtpEngine.class);
 	
-	public static WaarpFuture closeFuture = new WaarpFuture(true);
+	public static final WaarpFuture closeFuture = new WaarpFuture(true);
 	
 	public static final String CONFIGFILE = "org.waarp.gateway.ftp.config.file";
 	

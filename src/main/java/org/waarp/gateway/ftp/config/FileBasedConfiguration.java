@@ -59,6 +59,7 @@ import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
 import org.waarp.common.logging.WaarpInternalLogger;
 import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.common.utility.WaarpThreadFactory;
 import org.waarp.common.xml.XmlDecl;
 import org.waarp.common.xml.XmlHash;
@@ -595,10 +596,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	 */
 	public int SERVER_HTTPSPORT = 8067;
 	/**
-	 * Max global memory limit: default is 4GB
-	 */
-	public long maxGlobalMemory = 0x100000000L;
-	/**
 	 * Http Admin base
 	 */
 	public String httpBasePath = "src/main/admin/";
@@ -842,7 +839,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 					return false;
 				}
 				try {
-					HttpSslPipelineFactory.WaarpSecureKeyStore =
+					HttpSslPipelineFactory.waarpSecureKeyStore =
 							new WaarpSecureKeyStore(keypath, keystorepass,
 									keypass);
 				} catch (CryptoException e) {
@@ -850,10 +847,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
 					return false;
 				}
 				// No client authentication
-				HttpSslPipelineFactory.WaarpSecureKeyStore.initEmptyTrustStore();
+				HttpSslPipelineFactory.waarpSecureKeyStore.initEmptyTrustStore();
 				HttpSslPipelineFactory.waarpSslContextFactory =
 						new WaarpSslContextFactory(
-								HttpSslPipelineFactory.WaarpSecureKeyStore, true);
+								HttpSslPipelineFactory.waarpSecureKeyStore, true);
 			}
 		}
 		value = hashConfig.get(XML_MONITOR_SNMP_CONFIG);
@@ -1213,7 +1210,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				return false;
 			}
 			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore =
+				FtpsPipelineFactory.waarpSecureKeyStore =
 						new WaarpSecureKeyStore(keypath, keystorepass,
 								keypass);
 			} catch (CryptoException e) {
@@ -1226,7 +1223,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		value = hashConfig.get(XML_PATH_TRUSTKEYPATH);
 		if (value == null || (value.isEmpty())) {
 			logger.info("Unable to find TRUST Key Path");
-			FtpsPipelineFactory.WaarpSecureKeyStore.initEmptyTrustStore();
+			FtpsPipelineFactory.waarpSecureKeyStore.initEmptyTrustStore();
 		} else {
 			String keypath = value.getString();
 			if ((keypath == null) || (keypath.length() == 0)) {
@@ -1249,7 +1246,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				useClientAuthent = value.getBoolean();
 			}
 			try {
-				FtpsPipelineFactory.WaarpSecureKeyStore.initTrustStore(keypath,
+				FtpsPipelineFactory.waarpSecureKeyStore.initTrustStore(keypath,
 						keystorepass, useClientAuthent);
 			} catch (CryptoException e) {
 				logger.error("Bad TrustKeyStore construction");
@@ -1258,7 +1255,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		}
 		FtpsPipelineFactory.waarpSslContextFactory =
 				new WaarpSslContextFactory(
-						FtpsPipelineFactory.WaarpSecureKeyStore);
+						FtpsPipelineFactory.waarpSecureKeyStore);
 		boolean useImplicit = false;
 		value = hashConfig.get(XML_IMPLICIT_FTPS);
 		if (value != null && (!value.isEmpty())) {
@@ -1446,7 +1443,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		if (password == null) {
 			return false;
 		}
-		return Arrays.equals(SERVERADMINKEY, password.getBytes());
+		return Arrays.equals(SERVERADMINKEY, password.getBytes(WaarpStringUtils.UTF8));
 	}
 
 	/**
@@ -1546,7 +1543,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				}
 				try {
 					byte[] byteKeys = cryptoKey.decryptHexFile(key);
-					passwd = new String(byteKeys);
+					passwd = new String(byteKeys, WaarpStringUtils.UTF8);
 				} catch (Exception e2) {
 					logger.error("Cannot read key for user " + user, e2);
 					continue;
@@ -1559,7 +1556,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 					try {
 						byteKeys =
 								cryptoKey.decryptHexInBytes(encrypted);
-						passwd = new String(byteKeys);
+						passwd = new String(byteKeys, WaarpStringUtils.UTF8);
 					} catch (Exception e) {
 						logger.error(
 								"Unable to Decrypt Key for user " + user, e);

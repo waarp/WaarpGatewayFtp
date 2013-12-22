@@ -5,10 +5,14 @@
 		<author email="waarp1 at free.fr">Frederic Bregier</author>
 	</properties>
 	<body>
-		<release version="2.1.7" date="2013-09-15" description="Fix release">
+		<release version="2.1.8" date="2013-12-14" description="Fix release">
+			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
+			<action dev="Frederic Bregier" type="fix">Fix following FindBugs process</action>
+		</release>
+	    <release version="2.1.7" date="2013-09-15" description="Fix release">
 			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
 		</release>
-	    <release version="2.1.6" date="2013-11-17" description="Fix release">
+	    <release version="2.1.6" date="2012-11-17" description="Fix release">
 			<action dev="Frederic Bregier" type="fix">Upgrade jar dependencies</action>
 		</release>
 		<release version="2.1.5" date="2012-09-08" description="New functionalities release">

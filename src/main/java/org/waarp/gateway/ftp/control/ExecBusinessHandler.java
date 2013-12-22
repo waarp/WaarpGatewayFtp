@@ -258,8 +258,8 @@ public class ExecBusinessHandler extends BusinessHandler {
 				if (constraints.checkConstraintsSleep(1)) {
 					if (constraints.checkConstraints()) {
 						// Really overload so refuse the command
-						logger.info("Server overloaded. Try later... \n"
-								+ getFtpSession().toString());
+						logger.info("Server overloaded. {} Try later... \n"
+								+ getFtpSession().toString(), constraints.lastAlert);
 						if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
 							FileBasedConfiguration.fileBasedConfiguration.ftpMib.
 									notifyOverloaded("Server overloaded",
@@ -410,16 +410,16 @@ public class ExecBusinessHandler extends BusinessHandler {
 					dbR66Session = null;
 					internalDb = true;
 				}
-			}
-			if (DbConstant.admin.isConnected) {
-				try {
-					dbFtpSession = new DbSession(DbConstant.admin, false);
-				} catch (WaarpDatabaseNoConnectionException e1) {
-					logger.warn("Database not ready due to {}", e1.getMessage());
-					QUIT command = (QUIT)
-							FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
-					this.getFtpSession().setNextCommand(command);
-					dbFtpSession = null;
+				if (DbConstant.admin.isConnected) {
+					try {
+						dbFtpSession = new DbSession(DbConstant.admin, false);
+					} catch (WaarpDatabaseNoConnectionException e1) {
+						logger.warn("Database not ready due to {}", e1.getMessage());
+						QUIT command = (QUIT)
+								FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
+						this.getFtpSession().setNextCommand(command);
+						dbFtpSession = null;
+					}
 				}
 			}
 		}
