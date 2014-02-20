@@ -649,7 +649,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	/**
 	 * ThreadPoolExecutor for Http and Https Server
 	 */
-	private volatile OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
+	private OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
 	/**
 	 * Monitoring: snmp configuration file (empty means no snmp support)
 	 */
