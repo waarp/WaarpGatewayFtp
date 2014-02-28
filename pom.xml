@@ -45,7 +45,7 @@
   	<dependency>
   		<groupId>Waarp</groupId>
   		<artifactId>WaarpR66</artifactId>
-  		<version>2.4.23</version>
+  		<version>2.4.25</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>xom</artifactId>
@@ -69,12 +69,12 @@
   	<dependency>
   		<groupId>Waarp</groupId>
   		<artifactId>WaarpFtp-Core</artifactId>
-  		<version>1.1.7</version>
+  		<version>1.1.8</version>
   	</dependency>
   	<dependency>
   		<groupId>Waarp</groupId>
   		<artifactId>WaarpFtp-Filesystem</artifactId>
-  		<version>1.1.7</version>
+  		<version>1.1.8</version>
   	</dependency>
     <dependency>
     	<groupId>Oracle</groupId>
@@ -91,13 +91,13 @@
     <dependency>
     	<groupId>org.postgresql</groupId>
     	<artifactId>postgresql</artifactId>
-    	<version>9.3-1100-jdbc4</version>
+    	<version>9.3-1101-jdbc4</version>
     	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>mysql</groupId>
     	<artifactId>mysql-connector-java</artifactId>
-    	<version>5.1.27</version>
+    	<version>5.1.29</version>
     	<optional>true</optional>
     </dependency>
     <dependency>
@@ -109,7 +109,7 @@
     <dependency>
     	<groupId>Waarp</groupId>
     	<artifactId>WaarpGatewayKernel</artifactId>
-    	<version>1.0.3</version>
+    	<version>1.0.4</version>
     </dependency>
     <dependency>
     	<groupId>commons-daemon</groupId>
@@ -120,7 +120,7 @@
     <dependency>
     	<groupId>Waarp</groupId>
     	<artifactId>WaarpSnmp</artifactId>
-    	<version>1.1.4</version>
+    	<version>1.1.5</version>
     	<optional>true</optional>
     </dependency>
   </dependencies>

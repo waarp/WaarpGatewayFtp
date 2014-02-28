@@ -17,8 +17,6 @@
  */
 package org.waarp.gateway.ftp.adminssl;
 
-import java.util.concurrent.ExecutorService;
-
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
@@ -40,16 +38,13 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 public class HttpSslPipelineFactory implements ChannelPipelineFactory {
 	public static WaarpSslContextFactory waarpSslContextFactory;
 	public static WaarpSecureKeyStore waarpSecureKeyStore;
-	private final ExecutorService executorService;
 	public boolean useHttpCompression = false;
 	public boolean enableRenegotiation = false;
 
 	public HttpSslPipelineFactory(boolean useHttpCompression,
-			boolean enableRenegotiation,
-			ExecutorService executor) {
+			boolean enableRenegotiation) {
 		this.useHttpCompression = useHttpCompression;
 		this.enableRenegotiation = enableRenegotiation;
-		this.executorService = executor;
 	}
 
 	@Override
@@ -58,7 +53,7 @@ public class HttpSslPipelineFactory implements ChannelPipelineFactory {
 		// Add SSL handler first to encrypt and decrypt everything.
         SslHandler sslhandler = waarpSslContextFactory.initPipelineFactory(true,
 				false,
-				enableRenegotiation, executorService);
+				enableRenegotiation);
         sslhandler.setIssueHandshake(true);
         pipeline.addLast("ssl", sslhandler);
 

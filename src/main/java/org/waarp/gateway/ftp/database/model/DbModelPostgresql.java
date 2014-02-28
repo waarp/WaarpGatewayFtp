@@ -98,7 +98,8 @@ public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPo
 
 		// cptrunner
 		action = "CREATE SEQUENCE " + DbTransferLog.fieldseq +
-				" MINVALUE " + (DbConstant.ILLEGALVALUE + 1);
+				" MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
+				" RESTART WITH " + (DbConstant.ILLEGALVALUE + 1);
 		System.out.println(action);
 		try {
 			request.query(action);
@@ -121,6 +122,7 @@ public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPo
 	public void resetSequence(DbSession session, long newvalue)
 			throws WaarpDatabaseNoConnectionException {
 		String action = "ALTER SEQUENCE " + DbTransferLog.fieldseq +
+				" MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
 				" RESTART WITH " + newvalue;
 		DbRequest request = new DbRequest(session);
 		try {

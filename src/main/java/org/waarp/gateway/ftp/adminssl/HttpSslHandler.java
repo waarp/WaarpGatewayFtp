@@ -88,19 +88,19 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 	private static final ConcurrentHashMap<String, DbSession> dbSessions = new ConcurrentHashMap<String, DbSession>();
 	private static final Random random = new Random();
 	
-	private volatile FtpSession ftpSession =
+	private FtpSession ftpSession =
 			new FtpSession(FileBasedConfiguration.fileBasedConfiguration,
 					null);
-	private volatile FileBasedAuth authentHttp =
+	private FileBasedAuth authentHttp =
 			new FileBasedAuth(ftpSession);
 
-	private volatile HttpRequest request;
+	private HttpRequest request;
 	private volatile boolean newSession = false;
 	private volatile Cookie admin = null;
 	private final StringBuilder responseContent = new StringBuilder();
-	private volatile String uriRequest;
-	private volatile Map<String, List<String>> params;
-	private volatile QueryStringDecoder queryStringDecoder;
+	private String uriRequest;
+	private Map<String, List<String>> params;
+	private QueryStringDecoder queryStringDecoder;
 	private volatile boolean forceClose = false;
 	private volatile boolean shutdown = false;
 
@@ -176,7 +176,7 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 	 * The Database connection attached to this NetworkChannel shared among all associated
 	 * LocalChannels in the session
 	 */
-	private volatile DbSession dbSession = null;
+	private DbSession dbSession = null;
 	/**
 	 * Does this dbSession is private and so should be closed
 	 */

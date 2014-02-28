@@ -649,7 +649,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	/**
 	 * ThreadPoolExecutor for Http and Https Server
 	 */
-	private volatile OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
+	private OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
 	/**
 	 * Monitoring: snmp configuration file (empty means no snmp support)
 	 */
@@ -1369,7 +1369,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				httpsChannelFactory);
 		// Set up the event pipeline factory.
 		httpsBootstrap.setPipelineFactory(new HttpSslPipelineFactory(useHttpCompression,
-				false, getHttpPipelineExecutor()));
+				false));
 		httpsBootstrap.setOption("child.tcpNoDelay", true);
 		httpsBootstrap.setOption("child.keepAlive", true);
 		httpsBootstrap.setOption("child.reuseAddress", true);
