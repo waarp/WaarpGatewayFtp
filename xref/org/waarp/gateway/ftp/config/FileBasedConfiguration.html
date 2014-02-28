@@ -659,7 +659,7 @@
 <a class="jxr_linenumber" name="649" href="#649">649</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="650" href="#650">650</a> <em class="jxr_javadoccomment">	 * ThreadPoolExecutor for Http and Https Server</em>
 <a class="jxr_linenumber" name="651" href="#651">651</a> <em class="jxr_javadoccomment">	 */</em>
-<a class="jxr_linenumber" name="652" href="#652">652</a> 	<strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">volatile</strong> OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
+<a class="jxr_linenumber" name="652" href="#652">652</a> 	<strong class="jxr_keyword">private</strong> OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
 <a class="jxr_linenumber" name="653" href="#653">653</a> 	<em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="654" href="#654">654</a> <em class="jxr_javadoccomment">	 * Monitoring: snmp configuration file (empty means no snmp support)</em>
 <a class="jxr_linenumber" name="655" href="#655">655</a> <em class="jxr_javadoccomment">	 */</em>
@@ -1379,7 +1379,7 @@
 <a class="jxr_linenumber" name="1369" href="#1369">1369</a> 				httpsChannelFactory);
 <a class="jxr_linenumber" name="1370" href="#1370">1370</a> 		<em class="jxr_comment">// Set up the event pipeline factory.</em>
 <a class="jxr_linenumber" name="1371" href="#1371">1371</a> 		httpsBootstrap.setPipelineFactory(<strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/gateway/ftp/adminssl/HttpSslPipelineFactory.html">HttpSslPipelineFactory</a>(useHttpCompression,
-<a class="jxr_linenumber" name="1372" href="#1372">1372</a> 				false, getHttpPipelineExecutor()));
+<a class="jxr_linenumber" name="1372" href="#1372">1372</a> 				false));
 <a class="jxr_linenumber" name="1373" href="#1373">1373</a> 		httpsBootstrap.setOption(<span class="jxr_string">"child.tcpNoDelay"</span>, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="1374" href="#1374">1374</a> 		httpsBootstrap.setOption(<span class="jxr_string">"child.keepAlive"</span>, <strong class="jxr_keyword">true</strong>);
 <a class="jxr_linenumber" name="1375" href="#1375">1375</a> 		httpsBootstrap.setOption(<span class="jxr_string">"child.reuseAddress"</span>, <strong class="jxr_keyword">true</strong>);
