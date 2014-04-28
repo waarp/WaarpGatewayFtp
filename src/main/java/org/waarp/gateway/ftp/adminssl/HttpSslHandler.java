@@ -69,7 +69,7 @@ import org.waarp.gateway.ftp.file.FileBasedAuth;
 import org.waarp.gateway.ftp.utils.Version;
 import org.waarp.gateway.kernel.exec.AbstractExecutor;
 import org.waarp.gateway.kernel.exec.AbstractExecutor.CommandExecutor;
-import org.waarp.openr66.protocol.http.HttpWriteCacheEnable;
+import org.waarp.gateway.kernel.http.HttpWriteCacheEnable;
 
 /**
  * @author Frederic Bregier
