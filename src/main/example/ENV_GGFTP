@@ -1,7 +1,7 @@
 #!/bin/sh
 export AIXTHREAD_SCOPE=S
 # JDK SUN
-#export JAVABASE="/usr/local/jdk1.6.0_13"
+#export JAVABASE="/usr/local/jdk1.6"
 #export JAVAJDK="${JAVABASE}"
 #JAVA_HOME="${JAVAJDK}/jre"
 #JAVA_OPTS1="-server"
@@ -9,8 +9,7 @@ export AIXTHREAD_SCOPE=S
 #export JAVA_RUN="${JAVA_HOME}/bin/java ${JAVA_OPTS1} ${JAVA_OPTS2} "
 
 # JDK IBM
-#export JAVABASE="/usr/java6_64"
-export JAVABASE="/usr/local/ibm-java-x86_64-60"
+export JAVABASE="/usr/java6_64"
 export JAVAJDK="${JAVABASE}"
 JAVA_HOME="${JAVAJDK}/jre"
 JAVA_OPTS1="-Xquickstart -Xgcpolicy:gencon -Xdisableexcessivegc"
@@ -26,26 +25,9 @@ export GGBIN="${GGHOME}/lib"
 loggerserver=" -Dlogback.configurationFile=${GGHOME}/config/logback.xml "
 loggerclient=" -Dlogback.configurationFile=${GGHOME}/config/logback-client.xml "
 
-libraries=" ${R66BIN}/slf4j-api-1.6.1.jar:${R66BIN}/logback-access-0.9.26.jar:\
-${R66BIN}/logback-classic-0.9.26.jar:${R66BIN}/logback-core-0.9.26.jar:\
-${R66BIN}/dom4j-1.6.1.jar:${R66BIN}/jaxen-1.1.1.jar:\
-${R66BIN}/commons-io-1.4.jar:${R66BIN}/commons-compress-1.1.jar:\
-${R66BIN}/commons-codec-1.4.jar:${R66BIN}/commons-exec-1.1.jar:\
-${R66BIN}/ojdbc5.jar:${R66BIN}/orai18n.jar:\
-${R66BIN}/javasysmon-0.3.3.jar:\
-${R66BIN}/GoldenGateCommon-1.1.0.jar:${R66BIN}/GoldenGateDigest-1.0.1.jar:\
-${R66BIN}/GoldenGateExec-1.0.1.jar:\
-${R66BIN}/NettyExtension-1.1.7.jar:${R66BIN}/netty-3.2.3.Final.jar:\
-${R66BIN}/GoldenGateR66-2.0.1.jar \
-:${GGBIN}/GoldenGateFtp-Core-1.0.8.jar\
-:${GGBIN}/GoldenGateFtp-Simpleimpl-1.0.8.jar\
-:${GGBIN}/GoldenGateFtpExec-2.0.0.jar"
+GG_CLASSPATH=" ${GGBIN}/WaarpGatewayFtp-2.1.8.jar:${GGBIN}/* "
 
-testclientlib="${libraries}:${GGBIN}/GG-FTP-Test-Client.jar\
-:${GGBIN}/commons-net-2.0.jar:${GGBIN}/commons-net-ftp-2.0.jar"
-
-export GGJAVARUNCLIENT="${JAVA_RUN} -cp ${testclientlib} ${loggerclient} "
-export GGJAVARUNSERVER="${JAVA_RUN} -cp ${libraries} ${loggerserver} "
+export GGJAVARUNSERVER="${JAVA_RUN} -cp ${GG_CLASSPATH} ${loggerserver} "
 export GGSERVER="${GGHOME}/config/config.xml"
 
 ################
