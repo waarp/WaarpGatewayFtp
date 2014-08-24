@@ -23,7 +23,7 @@ import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply500Exception;
 import org.waarp.common.command.exception.Reply501Exception;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 
 /**
@@ -40,7 +40,7 @@ public class AUTHUPDATE extends AbstractCommand {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
 			.getLogger(AUTHUPDATE.class);
 
 	/*

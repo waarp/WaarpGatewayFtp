@@ -36,7 +36,7 @@ import org.waarp.common.database.exception.WaarpDatabaseNoDataException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
 import org.waarp.common.exception.InvalidArgumentException;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.common.xml.XmlDecl;
 import org.waarp.common.xml.XmlType;
 import org.waarp.common.xml.XmlUtil;
@@ -56,7 +56,7 @@ public class DbTransferLog extends AbstractDbData {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
 			.getLogger(DbTransferLog.class);
 
 	public static enum Columns {

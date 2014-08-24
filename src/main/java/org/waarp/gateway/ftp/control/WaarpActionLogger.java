@@ -22,7 +22,7 @@ import org.waarp.common.database.DbSession;
 import org.waarp.common.database.data.AbstractDbData.UpdatedInfo;
 import org.waarp.common.database.exception.WaarpDatabaseException;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.control.BusinessHandler;
 import org.waarp.ftp.core.data.FtpTransfer;
@@ -42,7 +42,7 @@ public class WaarpActionLogger {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
 			.getLogger(WaarpActionLogger.class);
 
 	/**

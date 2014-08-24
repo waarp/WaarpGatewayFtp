@@ -17,7 +17,7 @@
  */
 package org.waarp.gateway.ftp.control;
 
-import org.jboss.netty.handler.traffic.GlobalTrafficShapingHandler;
+import io.netty.handler.traffic.GlobalTrafficShapingHandler;
 import org.waarp.common.cpu.WaarpConstraintLimitHandler;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 

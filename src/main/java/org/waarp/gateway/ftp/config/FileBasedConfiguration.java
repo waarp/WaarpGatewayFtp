@@ -33,15 +33,15 @@ import java.util.concurrent.TimeUnit;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.group.ChannelGroup;
-import org.jboss.netty.channel.group.ChannelGroupFuture;
-import org.jboss.netty.channel.group.ChannelGroupFutureListener;
-import org.jboss.netty.channel.group.DefaultChannelGroup;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
-import org.jboss.netty.handler.traffic.AbstractTrafficShapingHandler;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.ChannelFactory;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.ChannelGroupFuture;
+import io.netty.channel.group.ChannelGroupFutureListener;
+import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import io.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import io.netty.handler.traffic.AbstractTrafficShapingHandler;
 import org.waarp.common.crypto.Des;
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
@@ -58,7 +58,7 @@ import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.common.utility.WaarpThreadFactory;
 import org.waarp.common.xml.XmlDecl;
@@ -68,11 +68,11 @@ import org.waarp.common.xml.XmlUtil;
 import org.waarp.common.xml.XmlValue;
 import org.waarp.ftp.core.config.FtpConfiguration;
 import org.waarp.ftp.core.control.BusinessHandler;
-import org.waarp.ftp.core.control.ftps.FtpsPipelineFactory;
+import org.waarp.ftp.core.control.ftps.FtpsInitializer;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.ftp.core.exception.FtpUnknownFieldException;
-import org.waarp.gateway.ftp.adminssl.HttpSslPipelineFactory;
+import org.waarp.gateway.ftp.adminssl.HttpSslInitializer;
 import org.waarp.gateway.ftp.control.FtpConstraintLimitHandler;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
@@ -97,7 +97,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
 			.getLogger(FileBasedConfiguration.class);
 
 	/**
@@ -839,7 +839,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 					return false;
 				}
 				try {
-					HttpSslPipelineFactory.waarpSecureKeyStore =
+					HttpSslInitializer.waarpSecureKeyStore =
 							new WaarpSecureKeyStore(keypath, keystorepass,
 									keypass);
 				} catch (CryptoException e) {
@@ -847,10 +847,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
 					return false;
 				}
 				// No client authentication
-				HttpSslPipelineFactory.waarpSecureKeyStore.initEmptyTrustStore();
-				HttpSslPipelineFactory.waarpSslContextFactory =
+				HttpSslInitializer.waarpSecureKeyStore.initEmptyTrustStore();
+				HttpSslInitializer.waarpSslContextFactory =
 						new WaarpSslContextFactory(
-								HttpSslPipelineFactory.waarpSecureKeyStore, true);
+								HttpSslInitializer.waarpSecureKeyStore, true);
 			}
 		}
 		value = hashConfig.get(XML_MONITOR_SNMP_CONFIG);
@@ -1210,7 +1210,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				return false;
 			}
 			try {
-				FtpsPipelineFactory.waarpSecureKeyStore =
+				FtpsInitializer.waarpSecureKeyStore =
 						new WaarpSecureKeyStore(keypath, keystorepass,
 								keypass);
 			} catch (CryptoException e) {
@@ -1223,7 +1223,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		value = hashConfig.get(XML_PATH_TRUSTKEYPATH);
 		if (value == null || (value.isEmpty())) {
 			logger.info("Unable to find TRUST Key Path");
-			FtpsPipelineFactory.waarpSecureKeyStore.initEmptyTrustStore();
+			FtpsInitializer.waarpSecureKeyStore.initEmptyTrustStore();
 		} else {
 			String keypath = value.getString();
 			if ((keypath == null) || (keypath.length() == 0)) {
@@ -1246,16 +1246,16 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				useClientAuthent = value.getBoolean();
 			}
 			try {
-				FtpsPipelineFactory.waarpSecureKeyStore.initTrustStore(keypath,
+				FtpsInitializer.waarpSecureKeyStore.initTrustStore(keypath,
 						keystorepass, useClientAuthent);
 			} catch (CryptoException e) {
 				logger.error("Bad TrustKeyStore construction");
 				return false;
 			}
 		}
-		FtpsPipelineFactory.waarpSslContextFactory =
+		FtpsInitializer.waarpSslContextFactory =
 				new WaarpSslContextFactory(
-						FtpsPipelineFactory.waarpSecureKeyStore);
+						FtpsInitializer.waarpSecureKeyStore);
 		boolean useImplicit = false;
 		value = hashConfig.get(XML_IMPLICIT_FTPS);
 		if (value != null && (!value.isEmpty())) {
@@ -1332,7 +1332,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 			logger.error("Cannot load Exec configuration");
 			return false;
 		}
-		// if (!DbConstant.admin.isConnected) {
+		// if (!DbConstant.admin.isActive) {
 		// if no database, must load authentication from file
 		if (!loadAuthentication()) {
 			logger.error("Cannot load Authentication configuration");
@@ -1368,7 +1368,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		httpsBootstrap = new ServerBootstrap(
 				httpsChannelFactory);
 		// Set up the event pipeline factory.
-		httpsBootstrap.setPipelineFactory(new HttpSslPipelineFactory(useHttpCompression,
+		httpsBootstrap.setInitializer(new HttpSslInitializer(useHttpCompression,
 				false));
 		httpsBootstrap.setOption("child.tcpNoDelay", true);
 		httpsBootstrap.setOption("child.keepAlive", true);
@@ -1744,7 +1744,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		 * XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX XXXUPINFXXX
 		 * XXXSTARTXXX XXXSTOPXXX
 		 */
-		if (!DbConstant.admin.isConnected) {
+		if (!DbConstant.admin.isActive) {
 			return "";
 		}
 		DbPreparedStatement preparedStatement = null;

@@ -17,7 +17,7 @@
  */
 package org.waarp.gateway.ftp.snmp;
 
-import org.jboss.netty.handler.traffic.TrafficCounter;
+import io.netty.handler.traffic.TrafficCounter;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.database.DbPreparedStatement;
 import org.waarp.common.database.DbSession;
@@ -26,7 +26,7 @@ import org.waarp.common.database.exception.WaarpDatabaseException;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
@@ -47,7 +47,7 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
 	/**
 	 * Internal Logger
 	 */
-	private static WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static WaarpInternalLogger logger = WaarpWaarpLoggerFactory
 			.getLogger(FtpMonitoring.class);
 
 	public WaarpSnmpAgent agent;

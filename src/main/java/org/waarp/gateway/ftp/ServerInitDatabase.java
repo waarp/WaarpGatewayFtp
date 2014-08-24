@@ -17,11 +17,11 @@
  */
 package org.waarp.gateway.ftp;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
+import io.netty.logging.WaarpLoggerFactory;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
@@ -66,15 +66,15 @@ public class ServerInitDatabase {
 	 *            as config_database file [rules_directory host_authent limit_configuration]
 	 */
 	public static void main(String[] args) {
-		InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+		WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
 		if (logger == null) {
-			logger = WaarpInternalLoggerFactory.getLogger(ServerInitDatabase.class);
+			logger = WaarpWaarpLoggerFactory.getLogger(ServerInitDatabase.class);
 		}
 		if (!getParams(args)) {
 			logger.error("Need at least the configuration file as first argument then optionally\n"
 					+
 					"    -initdb");
-			if (DbConstant.admin != null && DbConstant.admin.isConnected) {
+			if (DbConstant.admin != null && DbConstant.admin.isActive) {
 				DbConstant.admin.close();
 			}
 			FtpChannelUtils.stopLogger();

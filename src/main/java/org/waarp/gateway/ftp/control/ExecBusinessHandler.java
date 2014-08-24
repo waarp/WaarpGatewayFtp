@@ -18,8 +18,8 @@ package org.waarp.gateway.ftp.control;
 
 import java.io.File;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ExceptionEvent;
+import io.netty.channel.Channel;
+import io.netty.channel.ExceptionEvent;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply421Exception;
@@ -31,7 +31,7 @@ import org.waarp.common.database.data.AbstractDbData.UpdatedInfo;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.future.WaarpFuture;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.access.QUIT;
@@ -60,7 +60,7 @@ public class ExecBusinessHandler extends BusinessHandler {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
 			.getLogger(ExecBusinessHandler.class);
 
 	/**
@@ -399,7 +399,7 @@ public class ExecBusinessHandler extends BusinessHandler {
 	public void executeChannelConnected(Channel channel) {
 		if (AbstractExecutor.useDatabase) {
 			if (org.waarp.openr66.database.DbConstant.admin != null &&
-					org.waarp.openr66.database.DbConstant.admin.isConnected) {
+					org.waarp.openr66.database.DbConstant.admin.isActive) {
 				try {
 					dbR66Session = new DbSession(org.waarp.openr66.database.DbConstant.admin, false);
 				} catch (WaarpDatabaseNoConnectionException e1) {
@@ -410,7 +410,7 @@ public class ExecBusinessHandler extends BusinessHandler {
 					dbR66Session = null;
 					internalDb = true;
 				}
-				if (DbConstant.admin.isConnected) {
+				if (DbConstant.admin.isActive) {
 					try {
 						dbFtpSession = new DbSession(DbConstant.admin, false);
 					} catch (WaarpDatabaseNoConnectionException e1) {

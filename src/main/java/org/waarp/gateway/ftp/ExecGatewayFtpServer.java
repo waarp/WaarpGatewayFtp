@@ -16,10 +16,10 @@
  */
 package org.waarp.gateway.ftp;
 
-import org.jboss.netty.logging.InternalLoggerFactory;
+import io.netty.logging.WaarpLoggerFactory;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
 import org.waarp.ftp.core.exception.FtpNoConnectionException;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
@@ -53,8 +53,8 @@ public class ExecGatewayFtpServer {
 					ExecGatewayFtpServer.class.getName() + " <config-file> [<r66config-file>]");
 			return;
 		}
-		InternalLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
-		logger = WaarpInternalLoggerFactory
+		WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+		logger = WaarpWaarpLoggerFactory
 				.getLogger(ExecGatewayFtpServer.class);
 		initialize(args[0], args.length > 1 ? args[1] : null);
 	}
@@ -63,7 +63,7 @@ public class ExecGatewayFtpServer {
 		boolean asAService = false;
 		if (logger == null) {
 			// Called as a service
-			logger = WaarpInternalLoggerFactory
+			logger = WaarpWaarpLoggerFactory
 					.getLogger(ExecGatewayFtpServer.class);
 			asAService = true;
 		}

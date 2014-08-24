@@ -23,7 +23,7 @@ import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.Reply421Exception;
 import org.waarp.common.command.exception.Reply530Exception;
 import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpInternalLoggerFactory;
+import org.waarp.common.logging.WaarpWaarpLoggerFactory;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.file.FtpDir;
 import org.waarp.ftp.core.session.FtpSession;
@@ -45,7 +45,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
 			.getLogger(FileBasedAuth.class);
 
 	/**
