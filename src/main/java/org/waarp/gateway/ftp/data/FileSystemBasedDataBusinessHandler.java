@@ -17,7 +17,6 @@
 package org.waarp.gateway.ftp.data;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ExceptionEvent;
 import org.waarp.ftp.core.data.handler.DataBusinessHandler;
 
 /**
@@ -27,37 +26,18 @@ import org.waarp.ftp.core.data.handler.DataBusinessHandler;
  * 
  */
 public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#cleanSession(goldengate
-	 * .ftp.core.session.FtpSession)
-	 */
 	@Override
 	protected void cleanSession() {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#exceptionLocalCaught
-	 * (io.netty.channel.ExceptionEvent)
-	 */
 	@Override
-	public void exceptionLocalCaught(ExceptionEvent e) {
+	public void exceptionLocalCaught(Throwable e) {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#executeChannelClosed ()
-	 */
 	@Override
 	public void executeChannelClosed() {
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#executeChannelConnected
-	 * (io.netty.channel.Channel)
-	 */
 	@Override
 	public void executeChannelConnected(Channel channel) {
 	}

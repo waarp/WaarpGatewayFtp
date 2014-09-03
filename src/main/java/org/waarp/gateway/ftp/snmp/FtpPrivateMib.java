@@ -31,8 +31,8 @@ import org.snmp4j.smi.SMIConstants;
 import org.snmp4j.smi.TimeTicks;
 import org.snmp4j.smi.VariableBinding;
 import org.waarp.common.command.ReplyCode;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 import org.waarp.gateway.ftp.utils.Version;
@@ -55,7 +55,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
 	/**
 	 * Internal Logger
 	 */
-	private static WaarpInternalLogger logger = WaarpWaarpLoggerFactory
+	private static WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpPrivateMib.class);
 
 	public static final String SnmpName = "Waarp GW FTP SNMP";

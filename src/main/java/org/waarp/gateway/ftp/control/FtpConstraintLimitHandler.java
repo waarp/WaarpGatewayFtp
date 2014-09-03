@@ -111,29 +111,17 @@ public class FtpConstraintLimitHandler extends WaarpConstraintLimitHandler {
 				percentageDecrease, handler, delay, limitLowBandwidth);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.common.cpu.WaarpConstraintLimitHandler#getNumberLocalChannel()
-	 */
 	@Override
 	protected int getNumberLocalChannel() {
 		return FileBasedConfiguration.fileBasedConfiguration.getFtpInternalConfiguration()
 				.getNumberSessions();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.common.cpu.WaarpConstraintLimitHandler#getReadLimit()
-	 */
 	@Override
 	protected long getReadLimit() {
 		return FileBasedConfiguration.fileBasedConfiguration.getServerGlobalReadLimit();
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.common.cpu.WaarpConstraintLimitHandler#getWriteLimit()
-	 */
 	@Override
 	protected long getWriteLimit() {
 		return FileBasedConfiguration.fileBasedConfiguration.getServerGlobalWriteLimit();

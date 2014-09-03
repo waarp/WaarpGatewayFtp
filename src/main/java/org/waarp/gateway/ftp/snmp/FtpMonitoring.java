@@ -25,8 +25,8 @@ import org.waarp.common.database.data.AbstractDbData.UpdatedInfo;
 import org.waarp.common.database.exception.WaarpDatabaseException;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
@@ -47,7 +47,7 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
 	/**
 	 * Internal Logger
 	 */
-	private static WaarpInternalLogger logger = WaarpWaarpLoggerFactory
+	private static WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpMonitoring.class);
 
 	public WaarpSnmpAgent agent;
@@ -64,7 +64,7 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
 	private TrafficCounter trafficCounter =
 			FileBasedConfiguration.fileBasedConfiguration.
 					getFtpInternalConfiguration().getGlobalTrafficShapingHandler()
-					.getTrafficCounter();
+					.trafficCounter();
 
 	public long nbCountInfoUnknown = 0;
 	public long nbCountInfoNotUpdated = 0;
@@ -361,11 +361,11 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
 						updateGlobalValue(entry.ordinal(), nbOutErrorTransfer);
 						return;
 					case applInboundBandwidthKBS:
-						val = trafficCounter.getLastReadThroughput() >> 10;// B/s -> KB/s
+						val = trafficCounter.lastReadThroughput() >> 10;// B/s -> KB/s
 						updateGlobalValue(entry.ordinal(), val);
 						return;
 					case applOutboundBandwidthKBS:
-						val = trafficCounter.getLastWriteThroughput() >> 10;
+						val = trafficCounter.lastWriteThroughput() >> 10;
 						updateGlobalValue(entry.ordinal(), val);
 						return;
 					case nbInfoUnknown:

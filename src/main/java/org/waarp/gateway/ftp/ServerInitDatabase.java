@@ -17,11 +17,10 @@
  */
 package org.waarp.gateway.ftp;
 
-import io.netty.logging.WaarpLoggerFactory;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
@@ -40,7 +39,7 @@ public class ServerInitDatabase {
 	/**
 	 * Internal Logger
 	 */
-	static volatile WaarpInternalLogger logger;
+	static volatile WaarpLogger logger;
 
 	static String sxml = null;
 	static boolean database = false;
@@ -68,7 +67,7 @@ public class ServerInitDatabase {
 	public static void main(String[] args) {
 		WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
 		if (logger == null) {
-			logger = WaarpWaarpLoggerFactory.getLogger(ServerInitDatabase.class);
+			logger = WaarpLoggerFactory.getLogger(ServerInitDatabase.class);
 		}
 		if (!getParams(args)) {
 			logger.error("Need at least the configuration file as first argument then optionally\n"

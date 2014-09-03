@@ -19,7 +19,6 @@ package org.waarp.gateway.ftp.control;
 import java.io.File;
 
 import io.netty.channel.Channel;
-import io.netty.channel.ExceptionEvent;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.command.exception.Reply421Exception;
@@ -30,8 +29,8 @@ import org.waarp.common.database.DbSession;
 import org.waarp.common.database.data.AbstractDbData.UpdatedInfo;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.future.WaarpFuture;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.ftp.core.command.AbstractCommand;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.ftp.core.command.access.QUIT;
@@ -60,7 +59,7 @@ public class ExecBusinessHandler extends BusinessHandler {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(ExecBusinessHandler.class);
 
 	/**
@@ -73,12 +72,6 @@ public class ExecBusinessHandler extends BusinessHandler {
 	public DbSession dbR66Session = null;
 	private boolean internalDb = false;
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * goldengate.ftp.core.control.BusinessHandler#afterTransferDoneBeforeAnswer(goldengate.ftp.
-	 * core.data.FtpTransfer)
-	 */
 	@Override
 	public void afterTransferDoneBeforeAnswer(FtpTransfer transfer)
 			throws CommandAbstractException {
@@ -356,11 +349,11 @@ public class ExecBusinessHandler extends BusinessHandler {
 	}
 
 	@Override
-	public void exceptionLocalCaught(ExceptionEvent e) {
+	public void exceptionLocalCaught(Throwable cause) {
 		if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
 			String mesg;
-			if (e.getCause() != null && e.getCause().getMessage() != null) {
-				mesg = e.getCause().getMessage();
+			if (cause != null && cause.getMessage() != null) {
+				mesg = cause.getMessage();
 			} else {
 				if (this.getFtpSession() != null) {
 					mesg = "Exception while " + this.getFtpSession().getReplyCode().getMesg();
@@ -476,12 +469,6 @@ public class ExecBusinessHandler extends BusinessHandler {
 		throw new Reply502Exception("OPTS not implemented");
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * goldengate.ftp.core.control.BusinessHandler#getSpecializedSiteCommand(goldengate.ftp.core
-	 * .session.FtpSession, java.lang.String)
-	 */
 	@Override
 	public AbstractCommand getSpecializedSiteCommand(FtpSession session,
 			String line) {

@@ -16,8 +16,8 @@
  */
 package org.waarp.gateway.ftp.file;
 
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.gateway.kernel.exec.AbstractExecutor.CommandExecutor;
 
 /**
@@ -30,7 +30,7 @@ public class SimpleAuth {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(SimpleAuth.class);
 
 	/**

@@ -21,8 +21,8 @@
 package org.waarp.gateway.ftp.service;
 
 import org.waarp.common.future.WaarpFuture;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.service.EngineAbstract;
 import org.waarp.common.utility.SystemPropertyUtil;
 import org.waarp.ftp.core.config.FtpConfiguration;
@@ -39,7 +39,7 @@ public class FtpEngine extends EngineAbstract {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(FtpEngine.class);
 	
 	public static final WaarpFuture closeFuture = new WaarpFuture(true);

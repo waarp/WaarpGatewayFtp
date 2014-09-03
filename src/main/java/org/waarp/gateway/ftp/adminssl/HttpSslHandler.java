@@ -25,27 +25,26 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.ByteBufs;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelStateEvent;
-import io.netty.channel.ExceptionEvent;
-import io.netty.channel.MessageEvent;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.Cookie;
 import io.netty.handler.codec.http.CookieDecoder;
-import io.netty.handler.codec.http.CookieEncoder;
 import io.netty.handler.codec.http.DefaultCookie;
-import io.netty.handler.codec.http.DefaultHttpResponse;
+import io.netty.handler.codec.http.DefaultFullHttpResponse;
+import io.netty.handler.codec.http.FullHttpRequest;
+import io.netty.handler.codec.http.FullHttpResponse;
 import io.netty.handler.codec.http.HttpHeaders;
 import io.netty.handler.codec.http.HttpMethod;
-import io.netty.handler.codec.http.HttpRequest;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringDecoder;
+import io.netty.handler.codec.http.ServerCookieEncoder;
 import io.netty.handler.traffic.TrafficCounter;
+
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
 import org.waarp.common.crypto.ssl.WaarpSslUtility;
@@ -55,8 +54,8 @@ import org.waarp.common.database.DbSession;
 import org.waarp.common.database.exception.WaarpDatabaseException;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.file.FtpDir;
 import org.waarp.ftp.core.session.FtpSession;
@@ -75,11 +74,11 @@ import org.waarp.gateway.kernel.http.HttpWriteCacheEnable;
  * @author Frederic Bregier
  * 
  */
-public class HttpSslHandler extends SimpleChannelInboundHandler {
+public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
+	private static final WaarpLogger logger = WaarpLoggerFactory
 			.getLogger(HttpSslHandler.class);
 	/**
 	 * Session Management
@@ -94,7 +93,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 	private FileBasedAuth authentHttp =
 			new FileBasedAuth(ftpSession);
 
-	private HttpRequest request;
+	private FullHttpRequest request;
 	private volatile boolean newSession = false;
 	private volatile Cookie admin = null;
 	private final StringBuilder responseContent = new StringBuilder();
@@ -200,11 +199,11 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 						+ " " + Thread.activeCount());
 		TrafficCounter trafficCounter =
 				FileBasedConfiguration.fileBasedConfiguration.getFtpInternalConfiguration()
-						.getGlobalTrafficShapingHandler().getTrafficCounter();
+						.getGlobalTrafficShapingHandler().trafficCounter();
 		WaarpStringUtils.replace(builder, "XXXBANDWIDTHXXX",
-				"IN:" + (trafficCounter.getLastReadThroughput() / 131072) +
+				"IN:" + (trafficCounter.lastReadThroughput() / 131072) +
 						"Mbits&nbsp;<br>&nbsp;OUT:" +
-						(trafficCounter.getLastWriteThroughput() / 131072) + "Mbits");
+						(trafficCounter.lastWriteThroughput() / 131072) + "Mbits");
 		WaarpStringUtils.replaceAll(builder, "XXXHOSTIDXXX",
 				FileBasedConfiguration.fileBasedConfiguration.HOST_ID);
 		WaarpStringUtils.replaceAll(builder, "XXXADMINXXX",
@@ -531,14 +530,14 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 	}
 
 	private void getParams() {
-		if (request.getMethod() == HttpMethod.GET) {
+		if (request.method() == HttpMethod.GET) {
 			params = null;
-		} else if (request.getMethod() == HttpMethod.POST) {
-			ByteBuf content = request.getContent();
-			if (content.readable()) {
+		} else if (request.method() == HttpMethod.POST) {
+			ByteBuf content = request.content();
+			if (content.isReadable()) {
 				String param = content.toString(WaarpStringUtils.UTF8);
 				QueryStringDecoder queryStringDecoder2 = new QueryStringDecoder("/?" + param);
-				params = queryStringDecoder2.getParameters();
+				params = queryStringDecoder2.parameters();
 			} else {
 				params = null;
 			}
@@ -547,8 +546,8 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 
 	private void clearSession() {
 		if (admin != null) {
-			FileBasedAuth auth = sessions.remove(admin.getValue());
-			DbSession ldbsession = dbSessions.remove(admin.getValue());
+			FileBasedAuth auth = sessions.remove(admin.value());
+			DbSession ldbsession = dbSessions.remove(admin.value());
 			admin = null;
 			if (auth != null) {
 				auth.clear();
@@ -560,21 +559,21 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 		}
 	}
 
-	private void checkAuthent(MessageEvent e) {
+	private void checkAuthent(ChannelHandlerContext ctx) {
 		newSession = true;
-		if (request.getMethod() == HttpMethod.GET) {
+		if (request.method() == HttpMethod.GET) {
 			String logon = Logon();
 			responseContent.append(logon);
 			clearSession();
-			writeResponse(e.channel());
+			writeResponse(ctx.channel());
 			return;
-		} else if (request.getMethod() == HttpMethod.POST) {
+		} else if (request.method() == HttpMethod.POST) {
 			getParams();
 			if (params == null) {
 				String logon = Logon();
 				responseContent.append(logon);
 				clearSession();
-				writeResponse(e.channel());
+				writeResponse(ctx.channel());
 				return;
 			}
 		}
@@ -652,7 +651,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 			String logon = Logon();
 			responseContent.append(logon);
 			clearSession();
-			writeResponse(e.channel());
+			writeResponse(ctx.channel());
 		} else {
 			String index = index();
 			responseContent.append(index);
@@ -660,32 +659,32 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 			admin = new DefaultCookie(FTPSESSION,
 					FileBasedConfiguration.fileBasedConfiguration.HOST_ID +
 							Long.toHexString(random.nextLong()));
-			sessions.put(admin.getValue(), this.authentHttp);
+			sessions.put(admin.value(), this.authentHttp);
 			if (this.isPrivateDbSession) {
-				dbSessions.put(admin.getValue(), dbSession);
+				dbSessions.put(admin.value(), dbSession);
 			}
 			logger.debug("CreateSession: " + uriRequest + ":{}", admin);
-			writeResponse(e.channel());
+			writeResponse(ctx.channel());
 		}
 	}
 
-	@Override
-	public void channelRead(ChannelHandlerContext ctx, MessageEvent e) throws Exception {
-		HttpRequest request = this.request = (HttpRequest) e.getMessage();
-		queryStringDecoder = new QueryStringDecoder(request.getUri());
-		uriRequest = queryStringDecoder.getPath();
+    @Override
+    protected void channelRead0(ChannelHandlerContext ctx, FullHttpRequest msg) throws Exception {
+		this.request = msg;
+		queryStringDecoder = new QueryStringDecoder(request.uri());
+		uriRequest = queryStringDecoder.path();
 		if (uriRequest.contains("gre/") || uriRequest.contains("img/") ||
 				uriRequest.contains("res/")) {
 			HttpWriteCacheEnable.writeFile(request,
-					e.channel(),
+					ctx.channel(),
 					FileBasedConfiguration.fileBasedConfiguration.httpBasePath + uriRequest,
 					FTPSESSION);
 			return;
 		}
-		checkSession(e.channel());
+		checkSession(ctx.channel());
 		if (!authentHttp.isIdentified()) {
 			logger.debug("Not Authent: " + uriRequest + ":{}", authentHttp);
-			checkAuthent(e);
+			checkAuthent(ctx);
 			return;
 		}
 		String find = uriRequest;
@@ -723,17 +722,16 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 				responseContent.append(index());
 				break;
 		}
-		writeResponse(e.channel());
+		writeResponse(ctx.channel());
 	}
 
 	private void checkSession(Channel channel) {
 		String cookieString = request.headers().get(HttpHeaders.Names.COOKIE);
 		if (cookieString != null) {
-			CookieDecoder cookieDecoder = new CookieDecoder();
-			Set<Cookie> cookies = cookieDecoder.decode(cookieString);
+			Set<Cookie> cookies = CookieDecoder.decode(cookieString);
 			if (!cookies.isEmpty()) {
 				for (Cookie elt : cookies) {
-					if (elt.getName().equalsIgnoreCase(FTPSESSION)) {
+					if (elt.name().equalsIgnoreCase(FTPSESSION)) {
 						admin = elt;
 						break;
 					}
@@ -741,11 +739,11 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 			}
 		}
 		if (admin != null) {
-			FileBasedAuth auth = sessions.get(admin.getValue());
+			FileBasedAuth auth = sessions.get(admin.value());
 			if (auth != null) {
 				authentHttp = auth;
 			}
-			DbSession dbSession = dbSessions.get(admin.getValue());
+			DbSession dbSession = dbSessions.get(admin.value());
 			if (dbSession != null) {
 				this.dbSession = dbSession;
 			}
@@ -757,42 +755,33 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 	private void handleCookies(HttpResponse response) {
 		String cookieString = request.headers().get(HttpHeaders.Names.COOKIE);
 		if (cookieString != null) {
-			CookieDecoder cookieDecoder = new CookieDecoder();
-			Set<Cookie> cookies = cookieDecoder.decode(cookieString);
+			Set<Cookie> cookies = CookieDecoder.decode(cookieString);
 			if (!cookies.isEmpty()) {
 				// Reset the sessions if necessary.
-				CookieEncoder cookieEncoder = new CookieEncoder(true);
 				boolean findSession = false;
 				for (Cookie cookie : cookies) {
-					if (cookie.getName().equalsIgnoreCase(FTPSESSION)) {
+					if (cookie.name().equalsIgnoreCase(FTPSESSION)) {
 						if (newSession) {
 							findSession = false;
 						} else {
 							findSession = true;
-							cookieEncoder.addCookie(cookie);
-							response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
-							cookieEncoder = new CookieEncoder(true);
+							response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie));
 						}
 					} else {
-						cookieEncoder.addCookie(cookie);
-						response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
-						cookieEncoder = new CookieEncoder(true);
+						response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie));
 					}
 				}
 				newSession = false;
 				if (!findSession) {
 					if (admin != null) {
-						cookieEncoder.addCookie(admin);
-						response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
+						response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(admin));
 						logger.debug("AddSession: " + uriRequest + ":{}", admin);
 					}
 				}
 			}
 		} else if (admin != null) {
-			CookieEncoder cookieEncoder = new CookieEncoder(true);
-			cookieEncoder.addCookie(admin);
 			logger.debug("AddSession: " + uriRequest + ":{}", admin);
-			response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
+			response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(admin));
 		}
 	}
 
@@ -803,7 +792,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 	 */
 	private void writeResponse(Channel channel) {
 		// Convert the response content to a ByteBuf.
-		ByteBuf buf = ByteBufs.copiedBuffer(responseContent.toString(),
+		ByteBuf buf = Unpooled.copiedBuffer(responseContent.toString(),
 				WaarpStringUtils.UTF8);
 		responseContent.setLength(0);
 
@@ -814,8 +803,8 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 				(!keepAlive) || forceClose;
 
 		// Build the response object.
-		HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
-		response.setContent(buf);
+		FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
+        response.headers().add(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
 		response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html");
 		if (keepAlive) {
 			response.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
@@ -855,23 +844,20 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 	 * @param status
 	 */
 	private void sendError(ChannelHandlerContext ctx, HttpResponseStatus status) {
-		HttpResponse response = new DefaultHttpResponse(
-				HttpVersion.HTTP_1_1, status);
-		response.headers().set(
-				HttpHeaders.Names.CONTENT_TYPE, "text/html");
-		responseContent.setLength(0);
-		responseContent.append(error(status.toString()));
-		response.setContent(ByteBufs.copiedBuffer(responseContent.toString(),
-				WaarpStringUtils.UTF8));
+        responseContent.setLength(0);
+        responseContent.append(error(status.toString()));
+		FullHttpResponse response = new DefaultFullHttpResponse(
+				HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(responseContent.toString(), WaarpStringUtils.UTF8));
+        response.headers().add(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
+		response.headers().set( HttpHeaders.Names.CONTENT_TYPE, "text/html");
 		clearSession();
 		// Close the connection as soon as the error message is sent.
 		ctx.channel().writeAndFlush(response).addListener(WaarpSslUtility.SSLCLOSE);
 	}
 
-	@Override
-	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e)
-			throws Exception {
-		Throwable e1 = e.getCause();
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		Throwable e1 = cause;
 		if (!(e1 instanceof CommandAbstractException)) {
 			if (e1 instanceof IOException) {
 				// Nothing to do
@@ -879,23 +865,16 @@ public class HttpSslHandler extends SimpleChannelInboundHandler {
 			}
 			logger.warn("Exception in HttpSslHandler", e1);
 		}
-		if (e.channel().isActive()) {
+		if (ctx.channel().isActive()) {
 			sendError(ctx, HttpResponseStatus.BAD_REQUEST);
 		}
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * @see
-	 * io.netty.channel.SimpleChannelInboundHandler#channelOpen(io.netty.channel.
-	 * ChannelHandlerContext, io.netty.channel.ChannelStateEvent)
-	 */
-	@Override
-	public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent e)
-			throws Exception {
-		Channel channel = e.channel();
+    @Override
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+		Channel channel = ctx.channel();
 		logger.debug("Add channel to ssl");
 		FileBasedConfiguration.fileBasedConfiguration.getHttpChannelGroup().add(channel);
-		super.channelOpen(ctx, e);
+        super.channelActive(ctx);
 	}
 }

@@ -27,21 +27,22 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
+
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.channel.ChannelFactory;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.ChannelGroupFuture;
 import io.netty.channel.group.ChannelGroupFutureListener;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import io.netty.handler.execution.OrderedMemoryAwareThreadPoolExecutor;
+import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.handler.traffic.AbstractTrafficShapingHandler;
+import io.netty.util.concurrent.EventExecutorGroup;
+
 import org.waarp.common.crypto.Des;
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
@@ -57,8 +58,9 @@ import org.waarp.common.file.FileParameterInterface;
 import org.waarp.common.file.filesystembased.FilesystemBasedDirImpl;
 import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.file.filesystembased.specific.FilesystemBasedDirJdkAbstract;
-import org.waarp.common.logging.WaarpInternalLogger;
-import org.waarp.common.logging.WaarpWaarpLoggerFactory;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
+import org.waarp.common.utility.WaarpNettyUtil;
 import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.common.utility.WaarpThreadFactory;
 import org.waarp.common.xml.XmlDecl;
@@ -97,8 +99,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	/**
 	 * Internal Logger
 	 */
-	private static final WaarpInternalLogger logger = WaarpWaarpLoggerFactory
-			.getLogger(FileBasedConfiguration.class);
+	private static final WaarpLogger logger = WaarpLoggerFactory.getLogger(FileBasedConfiguration.class);
 
 	/**
 	 * SERVER HOSTID
@@ -643,13 +644,18 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	 */
 	private ServerBootstrap httpsBootstrap = null;
 	/**
-	 * ChannelFactory for HttpsServer part
+	 * Boss Group for Http
 	 */
-	private ChannelFactory httpsChannelFactory = null;
+	private EventLoopGroup bossGroup = null;
+    /**
+     * Worker Group for Http
+     */
+	private EventLoopGroup workerGroup = null;
+
 	/**
 	 * ThreadPoolExecutor for Http and Https Server
 	 */
-	private OrderedMemoryAwareThreadPoolExecutor httpPipelineExecutor;
+	private EventExecutorGroup httpExecutor = new NioEventLoopGroup(CLIENT_THREAD, new WaarpThreadFactory("HttpExecutor"));
 	/**
 	 * Monitoring: snmp configuration file (empty means no snmp support)
 	 */
@@ -808,7 +814,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
 				return false;
 			}
 		}
-		httpChannelGroup = new DefaultChannelGroup("HttpOpenR66");
+		httpChannelGroup = new DefaultChannelGroup("HttpOpenR66", httpExecutor.next());
 		if (httpBasePath != null) {
 			// Key for HTTPS
 			value = hashConfig.get(XML_PATH_ADMIN_KEYPATH);
@@ -1357,29 +1363,20 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	public void configureHttps() {
 		// Now start the HTTPS support
 		// Configure the server.
-		httpPipelineExecutor = new OrderedMemoryAwareThreadPoolExecutor(
-				CLIENT_THREAD, maxGlobalMemory / 10, maxGlobalMemory, 1000,
-				TimeUnit.MILLISECONDS, getFtpInternalConfiguration().getObjectSizeEstimator(),
-				new WaarpThreadFactory("HttpExecutor"));
-		httpsChannelFactory = new NioServerSocketChannelFactory(
-				Executors.newCachedThreadPool(),
-				Executors.newCachedThreadPool(),
-				SERVER_THREAD);
-		httpsBootstrap = new ServerBootstrap(
-				httpsChannelFactory);
-		// Set up the event pipeline factory.
-		httpsBootstrap.setInitializer(new HttpSslInitializer(useHttpCompression,
-				false));
-		httpsBootstrap.setOption("child.tcpNoDelay", true);
-		httpsBootstrap.setOption("child.keepAlive", true);
-		httpsBootstrap.setOption("child.reuseAddress", true);
-		httpsBootstrap.setOption("child.connectTimeoutMillis", TIMEOUTCON);
-		httpsBootstrap.setOption("tcpNoDelay", true);
-		httpsBootstrap.setOption("reuseAddress", true);
-		httpsBootstrap.setOption("connectTimeoutMillis", TIMEOUTCON);
-		// Bind and start to accept incoming connections.
-		logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT);
-		httpChannelGroup.add(httpsBootstrap.bind(new InetSocketAddress(SERVER_HTTPSPORT)));
+		httpsBootstrap = new ServerBootstrap();
+		bossGroup = new NioEventLoopGroup(SERVER_THREAD, new WaarpThreadFactory("HTTP_Boss"));
+		workerGroup = new NioEventLoopGroup(CLIENT_THREAD, new WaarpThreadFactory("HTTP_Worker"));
+        WaarpNettyUtil.setServerBootstrap(httpsBootstrap, bossGroup, workerGroup, (int) TIMEOUTCON);
+
+        // Configure the pipeline factory.
+        httpsBootstrap.childHandler(new HttpSslInitializer(useHttpCompression, false));
+
+        // Bind and start to accept incoming connections.
+        logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT);
+        ChannelFuture future = httpsBootstrap.bind(new InetSocketAddress(SERVER_HTTPSPORT));
+        if (future.awaitUninterruptibly().isSuccess()) {
+            httpChannelGroup.add(future.channel());
+        }
 	}
 
 	/**
@@ -1813,8 +1810,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	/**
 	 * @return the httpPipelineExecutor
 	 */
-	public OrderedMemoryAwareThreadPoolExecutor getHttpPipelineExecutor() {
-		return httpPipelineExecutor;
+	public EventExecutorGroup getHttpPipelineExecutor() {
+		return httpExecutor;
 	}
 
 	/**
@@ -1831,27 +1828,26 @@ public class FileBasedConfiguration extends FtpConfiguration {
 	 */
 	private static class GgChannelGroupFutureListener implements
 			ChannelGroupFutureListener {
-		OrderedMemoryAwareThreadPoolExecutor pool;
+		EventExecutorGroup executorBoss;
+        EventExecutorGroup executorWorker;
 		String name;
-		ChannelFactory channelFactory;
 
 		public GgChannelGroupFutureListener(
 				String name,
-				OrderedMemoryAwareThreadPoolExecutor pool,
-				ChannelFactory channelFactory) {
+				EventExecutorGroup executorBoss, EventExecutorGroup executorWorker) {
 			this.name = name;
-			this.pool = pool;
-			this.channelFactory = channelFactory;
+			this.executorBoss = executorBoss;
+			this.executorWorker = executorWorker;
 		}
 
 		public void operationComplete(ChannelGroupFuture future)
 				throws Exception {
-			if (pool != null) {
-				pool.shutdownNow();
+			if (executorBoss != null) {
+			    executorBoss.shutdownGracefully();
 			}
-			if (channelFactory != null) {
-				channelFactory.releaseExternalResources();
-			}
+            if (executorWorker != null) {
+                executorWorker.shutdownGracefully();
+            }
 			logger.info("Done with shutdown " + name);
 		}
 	}
@@ -1864,8 +1860,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
 		getHttpChannelGroup().close().addListener(
 				new GgChannelGroupFutureListener(
 						"HttpChannelGroup",
-						httpPipelineExecutor,
-						httpsChannelFactory));
+						bossGroup, workerGroup));
+		httpExecutor.shutdownGracefully();
 		if (useLocalExec) {
 			LocalExecClient.releaseResources();
 		}

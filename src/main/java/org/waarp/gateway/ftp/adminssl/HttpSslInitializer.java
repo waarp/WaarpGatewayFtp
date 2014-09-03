@@ -18,15 +18,14 @@
 package org.waarp.gateway.ftp.adminssl;
 
 import io.netty.channel.ChannelPipeline;
-import io.netty.channel.ChannelInitializer<SocketChannel>;
-import io.netty.channel.Channels;
-import io.netty.handler.codec.http.HttpChunkAggregator;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.handler.codec.http.HttpContentCompressor;
-import io.netty.handler.codec.http.HttpRequestDecoder;
-import io.netty.handler.codec.http.HttpResponseEncoder;
-import io.netty.handler.execution.ExecutionHandler;
+import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.ssl.SslHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+
 import org.waarp.common.crypto.ssl.WaarpSecureKeyStore;
 import org.waarp.common.crypto.ssl.WaarpSslContextFactory;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
@@ -35,7 +34,7 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
  * @author Frederic Bregier
  * 
  */
-public class HttpSslInitializer implements ChannelInitializer<SocketChannel> {
+public class HttpSslInitializer extends ChannelInitializer<SocketChannel> {
 	public static WaarpSslContextFactory waarpSslContextFactory;
 	public static WaarpSecureKeyStore waarpSecureKeyStore;
 	public boolean useHttpCompression = false;
@@ -48,25 +47,20 @@ public class HttpSslInitializer implements ChannelInitializer<SocketChannel> {
 	}
 
 	@Override
-	protected void initChannel(Channel ch) {
+	protected void initChannel(SocketChannel ch) {
 		final ChannelPipeline pipeline = ch.pipeline();
 		// Add SSL handler first to encrypt and decrypt everything.
-        SslHandler sslhandler = waarpSslContextFactory.initInitializer(true,
-				false,
-				enableRenegotiation);
-        sslhandler.setIssueHandshake(true);
+        SslHandler sslhandler = waarpSslContextFactory.initInitializer(true, false);
         pipeline.addLast("ssl", sslhandler);
 
-		pipeline.addLast("decoder", new HttpRequestDecoder());
-		pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
-		pipeline.addLast("encoder", new HttpResponseEncoder());
-		pipeline.addLast("pipelineExecutor", new ExecutionHandler(
-				FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor()));
+        pipeline.addLast("codec", new HttpServerCodec());
+		//pipeline.addLast("decoder", new HttpRequestDecoder());
+		pipeline.addLast("aggregator", new HttpObjectAggregator(1048576));
+		//pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("streamer", new ChunkedWriteHandler());
 		if (useHttpCompression) {
 			pipeline.addLast("deflater", new HttpContentCompressor());
 		}
-		pipeline.addLast("handler", new HttpSslHandler());
-		return pipeline;
+		pipeline.addLast(FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor(), "handler", new HttpSslHandler());
 	}
 }
