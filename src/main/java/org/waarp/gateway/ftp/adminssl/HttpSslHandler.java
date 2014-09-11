@@ -565,7 +565,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 			String logon = Logon();
 			responseContent.append(logon);
 			clearSession();
-			writeResponse(ctx.channel());
+			writeResponse(ctx);
 			return;
 		} else if (request.method() == HttpMethod.POST) {
 			getParams();
@@ -573,7 +573,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 				String logon = Logon();
 				responseContent.append(logon);
 				clearSession();
-				writeResponse(ctx.channel());
+				writeResponse(ctx);
 				return;
 			}
 		}
@@ -651,7 +651,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 			String logon = Logon();
 			responseContent.append(logon);
 			clearSession();
-			writeResponse(ctx.channel());
+			writeResponse(ctx);
 		} else {
 			String index = index();
 			responseContent.append(index);
@@ -664,7 +664,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 				dbSessions.put(admin.value(), dbSession);
 			}
 			logger.debug("CreateSession: " + uriRequest + ":{}", admin);
-			writeResponse(ctx.channel());
+			writeResponse(ctx);
 		}
 	}
 
@@ -676,7 +676,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 		if (uriRequest.contains("gre/") || uriRequest.contains("img/") ||
 				uriRequest.contains("res/")) {
 			HttpWriteCacheEnable.writeFile(request,
-					ctx.channel(),
+					ctx,
 					FileBasedConfiguration.fileBasedConfiguration.httpBasePath + uriRequest,
 					FTPSESSION);
 			return;
@@ -722,7 +722,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 				responseContent.append(index());
 				break;
 		}
-		writeResponse(ctx.channel());
+		writeResponse(ctx);
 	}
 
 	private void checkSession(Channel channel) {
@@ -788,9 +788,9 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 	/**
 	 * Write the response
 	 * 
-	 * @param e
+	 * @param ctx
 	 */
-	private void writeResponse(Channel channel) {
+	private void writeResponse(ChannelHandlerContext ctx) {
 		// Convert the response content to a ByteBuf.
 		ByteBuf buf = Unpooled.copiedBuffer(responseContent.toString(),
 				WaarpStringUtils.UTF8);
@@ -819,7 +819,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
 		handleCookies(response);
 
 		// Write the response.
-		ChannelFuture future = channel.writeAndFlush(response);
+		ChannelFuture future = ctx.writeAndFlush(response);
 		// Close the connection after the write operation is done if necessary.
 		if (close) {
 			future.addListener(WaarpSslUtility.SSLCLOSE);
