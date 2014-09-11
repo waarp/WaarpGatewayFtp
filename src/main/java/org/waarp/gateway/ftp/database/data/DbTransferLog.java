@@ -78,7 +78,7 @@ public class DbTransferLog extends AbstractDbData {
 			Types.VARCHAR,
 			Types.TIMESTAMP, Types.TIMESTAMP,
 			Types.LONGVARCHAR, Types.INTEGER, Types.INTEGER,
-			Types.VARCHAR, Types.VARCHAR, Types.VARCHAR, Types.BIGINT };
+			Types.NVARCHAR, Types.NVARCHAR, Types.NVARCHAR, Types.BIGINT };
 
 	public static final String table = " TRANSFLOG ";
 
