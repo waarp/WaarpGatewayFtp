@@ -27,38 +27,38 @@ import org.waarp.ftp.core.data.handler.DataBusinessHandler;
  * 
  */
 public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#cleanSession(goldengate
-	 * .ftp.core.session.FtpSession)
-	 */
-	@Override
-	protected void cleanSession() {
-	}
+    /*
+     * (non-Javadoc)
+     * @see goldengate.ftp.core.data.handler.DataBusinessHandler#cleanSession(goldengate
+     * .ftp.core.session.FtpSession)
+     */
+    @Override
+    protected void cleanSession() {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#exceptionLocalCaught
-	 * (org.jboss.netty.channel.ExceptionEvent)
-	 */
-	@Override
-	public void exceptionLocalCaught(ExceptionEvent e) {
-	}
+    /*
+     * (non-Javadoc)
+     * @see goldengate.ftp.core.data.handler.DataBusinessHandler#exceptionLocalCaught
+     * (org.jboss.netty.channel.ExceptionEvent)
+     */
+    @Override
+    public void exceptionLocalCaught(ExceptionEvent e) {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#executeChannelClosed ()
-	 */
-	@Override
-	public void executeChannelClosed() {
-	}
+    /*
+     * (non-Javadoc)
+     * @see goldengate.ftp.core.data.handler.DataBusinessHandler#executeChannelClosed ()
+     */
+    @Override
+    public void executeChannelClosed() {
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see goldengate.ftp.core.data.handler.DataBusinessHandler#executeChannelConnected
-	 * (org.jboss.netty.channel.Channel)
-	 */
-	@Override
-	public void executeChannelConnected(Channel channel) {
-	}
+    /*
+     * (non-Javadoc)
+     * @see goldengate.ftp.core.data.handler.DataBusinessHandler#executeChannelConnected
+     * (org.jboss.netty.channel.Channel)
+     */
+    @Override
+    public void executeChannelConnected(Channel channel) {
+    }
 }

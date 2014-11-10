@@ -28,40 +28,40 @@ import org.waarp.snmp.interf.WaarpCounter32;
  */
 public class FtpCounter32 extends WaarpCounter32 {
 
-	/**
+    /**
      * 
      */
-	private static final long serialVersionUID = -4099770842827593900L;
-	private int type = 1;
-	private int entry = 0;
+    private static final long serialVersionUID = -4099770842827593900L;
+    private int type = 1;
+    private int entry = 0;
 
-	public FtpCounter32(int type, int entry) {
-		this.type = type;
-		this.entry = entry;
-		setInternalValue();
-	}
+    public FtpCounter32(int type, int entry) {
+        this.type = type;
+        this.entry = entry;
+        setInternalValue();
+    }
 
-	public FtpCounter32(int type, int entry, long value) {
-		this.type = type;
-		this.entry = entry;
-		setInternalValue(value);
-	}
+    public FtpCounter32(int type, int entry, long value) {
+        this.type = type;
+        this.entry = entry;
+        setInternalValue(value);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue()
-	 */
-	@Override
-	protected void setInternalValue() {
-		FileBasedConfiguration.fileBasedConfiguration.monitoring.run(type, entry);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue()
+     */
+    @Override
+    protected void setInternalValue() {
+        FileBasedConfiguration.fileBasedConfiguration.monitoring.run(type, entry);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue(long)
-	 */
-	@Override
-	protected void setInternalValue(long value) {
-		setValue(value);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue(long)
+     */
+    @Override
+    protected void setInternalValue(long value) {
+        setValue(value);
+    }
 }

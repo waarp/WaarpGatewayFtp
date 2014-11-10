@@ -23,5 +23,4 @@ package org.waarp.gateway.ftp.database;
  * @author Frederic Bregier
  * 
  */
-public class DbConstant extends org.waarp.common.database.DbConstant {
-}
+public class DbConstant extends org.waarp.common.database.DbConstant {}

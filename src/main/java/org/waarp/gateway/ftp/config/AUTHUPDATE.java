@@ -37,59 +37,59 @@ import org.waarp.ftp.core.command.AbstractCommand;
  * 
  */
 public class AUTHUPDATE extends AbstractCommand {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
-			.getLogger(AUTHUPDATE.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpInternalLogger logger = WaarpInternalLoggerFactory
+            .getLogger(AUTHUPDATE.class);
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.common.command.CommandInterface#exec()
-	 */
-	@Override
-	public void exec() throws CommandAbstractException {
-		if (!getSession().getAuth().isAdmin()) {
-			// not admin
-			throw new Reply500Exception("Command Not Allowed");
-		}
-		String filename = null;
-		boolean purge = false;
-		boolean write = false;
-		if (!hasArg()) {
-			filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
-		} else {
-			String[] authents = getArgs();
-			for (int i = 0; i < authents.length; i++) {
-				if (authents[i].equalsIgnoreCase("PURGE")) {
-					purge = true;
-				} else if (authents[i].equalsIgnoreCase("SAVE")) {
-					write = true;
-				} else if (filename == null) {
-					filename = authents[i];
-				}
-			}
-			if (filename == null) {
-				filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
-			}
-			File file = new File(filename);
-			if (!file.canRead()) {
-				throw new Reply501Exception("Filename given as parameter is not found: " + filename);
-			}
-		}
-		if (!((FileBasedConfiguration) getConfiguration()).initializeAuthent(filename, purge)) {
-			throw new Reply501Exception("Filename given as parameter is not correct");
-		}
-		if (write) {
-			if (!((FileBasedConfiguration) getConfiguration()).
-					saveAuthenticationFile(
-					((FileBasedConfiguration) getConfiguration()).authenticationFile)) {
-				throw new Reply501Exception("Update is done but Write operation is not correct");
-			}
-		}
-		logger.warn("Authentication was updated from " + filename);
-		getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
-				"Authentication is updated");
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.common.command.CommandInterface#exec()
+     */
+    @Override
+    public void exec() throws CommandAbstractException {
+        if (!getSession().getAuth().isAdmin()) {
+            // not admin
+            throw new Reply500Exception("Command Not Allowed");
+        }
+        String filename = null;
+        boolean purge = false;
+        boolean write = false;
+        if (!hasArg()) {
+            filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
+        } else {
+            String[] authents = getArgs();
+            for (int i = 0; i < authents.length; i++) {
+                if (authents[i].equalsIgnoreCase("PURGE")) {
+                    purge = true;
+                } else if (authents[i].equalsIgnoreCase("SAVE")) {
+                    write = true;
+                } else if (filename == null) {
+                    filename = authents[i];
+                }
+            }
+            if (filename == null) {
+                filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
+            }
+            File file = new File(filename);
+            if (!file.canRead()) {
+                throw new Reply501Exception("Filename given as parameter is not found: " + filename);
+            }
+        }
+        if (!((FileBasedConfiguration) getConfiguration()).initializeAuthent(filename, purge)) {
+            throw new Reply501Exception("Filename given as parameter is not correct");
+        }
+        if (write) {
+            if (!((FileBasedConfiguration) getConfiguration()).
+                    saveAuthenticationFile(
+                    ((FileBasedConfiguration) getConfiguration()).authenticationFile)) {
+                throw new Reply501Exception("Update is done but Write operation is not correct");
+            }
+        }
+        logger.warn("Authentication was updated from " + filename);
+        getSession().setReplyCode(ReplyCode.REPLY_200_COMMAND_OKAY,
+                "Authentication is updated");
+    }
 
 }
