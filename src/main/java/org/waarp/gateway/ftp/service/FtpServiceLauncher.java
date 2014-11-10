@@ -29,28 +29,32 @@ import org.waarp.common.service.ServiceLauncher;
  */
 public class FtpServiceLauncher extends ServiceLauncher {
 
-	public static void main(String[] args) {
-		_main(args);
-	}
-	public static void windowsService(String args[]) throws Exception {
-		_windowsService(args);
-	}
-	public static void windowsStart(String args[]) throws Exception {
-		_windowsStart(args);
-	}
-	public static void windowsStop(String args[]) {
-		_windowsStop(args);
-	}
-	/**
+    public static void main(String[] args) {
+        _main(args);
+    }
+
+    public static void windowsService(String args[]) throws Exception {
+        _windowsService(args);
+    }
+
+    public static void windowsStart(String args[]) throws Exception {
+        _windowsStart(args);
+    }
+
+    public static void windowsStop(String args[]) {
+        _windowsStop(args);
+    }
+
+    /**
 	 * 
 	 */
-	public FtpServiceLauncher() {
-		super();
-	}
+    public FtpServiceLauncher() {
+        super();
+    }
 
-	@Override
-	protected EngineAbstract getNewEngineAbstract() {
-		return new FtpEngine();
-	}
+    @Override
+    protected EngineAbstract getNewEngineAbstract() {
+        return new FtpEngine();
+    }
 
 }

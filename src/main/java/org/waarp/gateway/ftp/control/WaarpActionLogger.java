@@ -39,191 +39,191 @@ import org.waarp.gateway.ftp.database.data.DbTransferLog;
  * 
  */
 public class WaarpActionLogger {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(WaarpActionLogger.class);
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(WaarpActionLogger.class);
 
-	/**
-	 * Log the action
-	 * 
-	 * @param ftpSession
-	 * @param message
-	 * @param file
-	 * @param handler
-	 */
-	public static long logCreate(DbSession ftpSession,
-			String message, String file, BusinessHandler handler) {
-		FtpSession session = handler.getFtpSession();
-		String sessionContexte = session.toString();
-		logger.info(message + " " + sessionContexte);
-		if (ftpSession != null) {
-			FtpCommandCode code = session.getCurrentCommand().getCode();
-			if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
-				boolean isSender =
-						FtpCommandCode.isRetrLikeCommand(code);
-				try {
-					// Insert new one
-					DbTransferLog log =
-							new DbTransferLog(ftpSession,
-									session.getAuth().getUser(),
-									session.getAuth().getAccount(),
-									DbConstant.ILLEGALVALUE,
-									isSender, file,
-									code.name(),
-									ReplyCode.REPLY_000_SPECIAL_NOSTATUS, message,
-									UpdatedInfo.TOSUBMIT);
-					logger.debug("Create FS: " + log.toString());
-					if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
-						if (isSender) {
-							FileBasedConfiguration.fileBasedConfiguration.monitoring
-									.updateLastOutBand();
-						} else {
-							FileBasedConfiguration.fileBasedConfiguration.monitoring
-									.updateLastInBound();
-						}
-					}
-					return log.getSpecialId();
-				} catch (WaarpDatabaseException e1) {
-					// Do nothing
-				}
-			}
-		}
-		return DbConstant.ILLEGALVALUE;
-	}
+    /**
+     * Log the action
+     * 
+     * @param ftpSession
+     * @param message
+     * @param file
+     * @param handler
+     */
+    public static long logCreate(DbSession ftpSession,
+            String message, String file, BusinessHandler handler) {
+        FtpSession session = handler.getFtpSession();
+        String sessionContexte = session.toString();
+        logger.info(message + " " + sessionContexte);
+        if (ftpSession != null) {
+            FtpCommandCode code = session.getCurrentCommand().getCode();
+            if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
+                boolean isSender =
+                        FtpCommandCode.isRetrLikeCommand(code);
+                try {
+                    // Insert new one
+                    DbTransferLog log =
+                            new DbTransferLog(ftpSession,
+                                    session.getAuth().getUser(),
+                                    session.getAuth().getAccount(),
+                                    DbConstant.ILLEGALVALUE,
+                                    isSender, file,
+                                    code.name(),
+                                    ReplyCode.REPLY_000_SPECIAL_NOSTATUS, message,
+                                    UpdatedInfo.TOSUBMIT);
+                    logger.debug("Create FS: " + log.toString());
+                    if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                        if (isSender) {
+                            FileBasedConfiguration.fileBasedConfiguration.monitoring
+                                    .updateLastOutBand();
+                        } else {
+                            FileBasedConfiguration.fileBasedConfiguration.monitoring
+                                    .updateLastInBound();
+                        }
+                    }
+                    return log.getSpecialId();
+                } catch (WaarpDatabaseException e1) {
+                    // Do nothing
+                }
+            }
+        }
+        return DbConstant.ILLEGALVALUE;
+    }
 
-	/**
-	 * Log the action
-	 * 
-	 * @param ftpSession
-	 * @param specialId
-	 * @param message
-	 * @param handler
-	 * @param rcode
-	 * @param info
-	 */
-	public static long logAction(DbSession ftpSession, long specialId,
-			String message, BusinessHandler handler, ReplyCode rcode,
-			UpdatedInfo info) {
-		FtpSession session = handler.getFtpSession();
-		String sessionContexte = session.toString();
-		logger.info(message + " " + sessionContexte);
-		if (ftpSession != null && specialId != DbConstant.ILLEGALVALUE) {
-			FtpCommandCode code = session.getCurrentCommand().getCode();
-			if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
-				try {
-					// Try load
-					DbTransferLog log =
-							new DbTransferLog(ftpSession,
-									session.getAuth().getUser(),
-									session.getAuth().getAccount(), specialId);
-					log.changeUpdatedInfo(info);
-					log.setInfotransf(message);
-					log.setReplyCodeExecutionStatus(rcode);
-					log.update();
-					logger.debug("Update FS: " + log.toString());
-					return log.getSpecialId();
-				} catch (WaarpDatabaseException e) {
-					// Do nothing
-				}
-			} else {
-				if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
-					FileBasedConfiguration.fileBasedConfiguration.monitoring.
-							updateCodeNoTransfer(rcode);
-				}
-			}
-		} else {
-			if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
-				FileBasedConfiguration.fileBasedConfiguration.monitoring.
-						updateCodeNoTransfer(rcode);
-			}
-		}
-		return specialId;
-	}
+    /**
+     * Log the action
+     * 
+     * @param ftpSession
+     * @param specialId
+     * @param message
+     * @param handler
+     * @param rcode
+     * @param info
+     */
+    public static long logAction(DbSession ftpSession, long specialId,
+            String message, BusinessHandler handler, ReplyCode rcode,
+            UpdatedInfo info) {
+        FtpSession session = handler.getFtpSession();
+        String sessionContexte = session.toString();
+        logger.info(message + " " + sessionContexte);
+        if (ftpSession != null && specialId != DbConstant.ILLEGALVALUE) {
+            FtpCommandCode code = session.getCurrentCommand().getCode();
+            if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
+                try {
+                    // Try load
+                    DbTransferLog log =
+                            new DbTransferLog(ftpSession,
+                                    session.getAuth().getUser(),
+                                    session.getAuth().getAccount(), specialId);
+                    log.changeUpdatedInfo(info);
+                    log.setInfotransf(message);
+                    log.setReplyCodeExecutionStatus(rcode);
+                    log.update();
+                    logger.debug("Update FS: " + log.toString());
+                    return log.getSpecialId();
+                } catch (WaarpDatabaseException e) {
+                    // Do nothing
+                }
+            } else {
+                if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                    FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                            updateCodeNoTransfer(rcode);
+                }
+            }
+        } else {
+            if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                        updateCodeNoTransfer(rcode);
+            }
+        }
+        return specialId;
+    }
 
-	/**
-	 * Log the action in error
-	 * 
-	 * @param ftpSession
-	 * @param specialId
-	 * @param transfer
-	 * @param message
-	 * @param rcode
-	 * @param handler
-	 */
-	public static void logErrorAction(DbSession ftpSession, long specialId,
-			FtpTransfer transfer,
-			String message, ReplyCode rcode, BusinessHandler handler) {
-		FtpSession session = handler.getFtpSession();
-		String sessionContexte = session.toString();
-		logger.error(rcode.getCode() + ":" + message + " " + sessionContexte);
-		logger.debug("Log",
-				new Exception("Log"));
-		if (ftpSession != null && specialId != DbConstant.ILLEGALVALUE) {
-			FtpCommandCode code = session.getCurrentCommand().getCode();
-			if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
-				String file = null;
-				if (transfer != null) {
-					try {
-						file = transfer.getFtpFile().getFile();
-					} catch (CommandAbstractException e1) {
-					} catch (FtpNoFileException e1) {
-					}
-				} else {
-					file = null;
-				}
-				UpdatedInfo info = UpdatedInfo.INERROR;
-				try {
-					// Try load
-					DbTransferLog log =
-							new DbTransferLog(ftpSession,
-									session.getAuth().getUser(),
-									session.getAuth().getAccount(), specialId);
-					log.changeUpdatedInfo(info);
-					log.setInfotransf(message);
-					if (rcode.getCode() < 400) {
-						log.setReplyCodeExecutionStatus(ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED);
-					} else {
-						log.setReplyCodeExecutionStatus(rcode);
-					}
-					if (file != null) {
-						log.setFilename(file);
-					}
-					log.update();
-					if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
-						FileBasedConfiguration.fileBasedConfiguration.ftpMib.
-								notifyInfoTask(message, log);
-					}
-					logger.debug("Update FS: " + log.toString());
-				} catch (WaarpDatabaseException e) {
-					// Do nothing
-				}
-			} else {
-				if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
-					FileBasedConfiguration.fileBasedConfiguration.monitoring.
-							updateCodeNoTransfer(rcode);
-				}
-				if (rcode != ReplyCode.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN &&
-						rcode != ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN) {
-					if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
-						FileBasedConfiguration.fileBasedConfiguration.ftpMib.
-								notifyWarning(rcode.getMesg(), message);
-					}
-				}
-			}
-		} else {
-			if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
-				FileBasedConfiguration.fileBasedConfiguration.monitoring.
-						updateCodeNoTransfer(rcode);
-			}
-			if (rcode != ReplyCode.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN &&
-					rcode != ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN) {
-				if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
-					FileBasedConfiguration.fileBasedConfiguration.ftpMib.
-							notifyWarning(rcode.getMesg(), message);
-				}
-			}
-		}
-	}
+    /**
+     * Log the action in error
+     * 
+     * @param ftpSession
+     * @param specialId
+     * @param transfer
+     * @param message
+     * @param rcode
+     * @param handler
+     */
+    public static void logErrorAction(DbSession ftpSession, long specialId,
+            FtpTransfer transfer,
+            String message, ReplyCode rcode, BusinessHandler handler) {
+        FtpSession session = handler.getFtpSession();
+        String sessionContexte = session.toString();
+        logger.error(rcode.getCode() + ":" + message + " " + sessionContexte);
+        logger.debug("Log",
+                new Exception("Log"));
+        if (ftpSession != null && specialId != DbConstant.ILLEGALVALUE) {
+            FtpCommandCode code = session.getCurrentCommand().getCode();
+            if (FtpCommandCode.isStorOrRetrLikeCommand(code)) {
+                String file = null;
+                if (transfer != null) {
+                    try {
+                        file = transfer.getFtpFile().getFile();
+                    } catch (CommandAbstractException e1) {
+                    } catch (FtpNoFileException e1) {
+                    }
+                } else {
+                    file = null;
+                }
+                UpdatedInfo info = UpdatedInfo.INERROR;
+                try {
+                    // Try load
+                    DbTransferLog log =
+                            new DbTransferLog(ftpSession,
+                                    session.getAuth().getUser(),
+                                    session.getAuth().getAccount(), specialId);
+                    log.changeUpdatedInfo(info);
+                    log.setInfotransf(message);
+                    if (rcode.getCode() < 400) {
+                        log.setReplyCodeExecutionStatus(ReplyCode.REPLY_426_CONNECTION_CLOSED_TRANSFER_ABORTED);
+                    } else {
+                        log.setReplyCodeExecutionStatus(rcode);
+                    }
+                    if (file != null) {
+                        log.setFilename(file);
+                    }
+                    log.update();
+                    if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+                        FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+                                notifyInfoTask(message, log);
+                    }
+                    logger.debug("Update FS: " + log.toString());
+                } catch (WaarpDatabaseException e) {
+                    // Do nothing
+                }
+            } else {
+                if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                    FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                            updateCodeNoTransfer(rcode);
+                }
+                if (rcode != ReplyCode.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN &&
+                        rcode != ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN) {
+                    if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+                        FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+                                notifyWarning(rcode.getMesg(), message);
+                    }
+                }
+            }
+        } else {
+            if (FileBasedConfiguration.fileBasedConfiguration.monitoring != null) {
+                FileBasedConfiguration.fileBasedConfiguration.monitoring.
+                        updateCodeNoTransfer(rcode);
+            }
+            if (rcode != ReplyCode.REPLY_450_REQUESTED_FILE_ACTION_NOT_TAKEN &&
+                    rcode != ReplyCode.REPLY_550_REQUESTED_ACTION_NOT_TAKEN) {
+                if (FileBasedConfiguration.fileBasedConfiguration.ftpMib != null) {
+                    FileBasedConfiguration.fileBasedConfiguration.ftpMib.
+                            notifyWarning(rcode.getMesg(), message);
+                }
+            }
+        }
+    }
 }

@@ -32,66 +32,66 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 
 /**
  * Engine used to start and stop the real Gateway Ftp service
+ * 
  * @author Frederic Bregier
  *
  */
 public class FtpEngine extends EngineAbstract {
-	/**
-	 * Internal Logger
-	 */
-	private static final WaarpLogger logger = WaarpLoggerFactory
-			.getLogger(FtpEngine.class);
-	
-	public static final WaarpFuture closeFuture = new WaarpFuture(true);
-	
-	public static final String CONFIGFILE = "org.waarp.gateway.ftp.config.file";
-	
-	public static final String R66CONFIGFILE = "org.waarp.r66.config.file";
-	
-	@Override
-	public void run() {
-		String ftpfile = SystemPropertyUtil.get(CONFIGFILE);
-		String r66file = SystemPropertyUtil.get(R66CONFIGFILE);
-		if (ftpfile == null) {
-			logger.error("Cannot find "+CONFIGFILE+" parameter");
-			shutdown();
-			return;
-		}
-		try {
-			if (!ExecGatewayFtpServer.initialize(ftpfile, r66file)) {
-				logger.error("Cannot start Gateway FTP");
-				shutdown();
-				return;
-			}
-		} catch (Throwable e) {
-			logger.error("Cannot start Gateway FTP", e);
-			shutdown();
-			return;
-		}
-		logger.warn("Service started with "+ftpfile);
-	}
+    /**
+     * Internal Logger
+     */
+    private static final WaarpLogger logger = WaarpLoggerFactory
+            .getLogger(FtpEngine.class);
 
-	
-	private static void exit(FtpConfiguration configuration) {
-		FtpChannelUtils util = new FtpChannelUtils(configuration);
-		util.run();
-	}
-	
-	@Override
-	public void shutdown() {
-		exit(FileBasedConfiguration.fileBasedConfiguration);
-		closeFuture.setSuccess();
-		logger.info("Service stopped");
-	}
+    public static final WaarpFuture closeFuture = new WaarpFuture(true);
 
-	@Override
-	public boolean isShutdown() {
-		return closeFuture.isDone();
-	}
+    public static final String CONFIGFILE = "org.waarp.gateway.ftp.config.file";
 
-	@Override
-	public boolean waitShutdown() throws InterruptedException {
-		closeFuture.await();
-		return closeFuture.isSuccess();
-	}
+    public static final String R66CONFIGFILE = "org.waarp.r66.config.file";
+
+    @Override
+    public void run() {
+        String ftpfile = SystemPropertyUtil.get(CONFIGFILE);
+        String r66file = SystemPropertyUtil.get(R66CONFIGFILE);
+        if (ftpfile == null) {
+            logger.error("Cannot find " + CONFIGFILE + " parameter");
+            shutdown();
+            return;
+        }
+        try {
+            if (!ExecGatewayFtpServer.initialize(ftpfile, r66file)) {
+                logger.error("Cannot start Gateway FTP");
+                shutdown();
+                return;
+            }
+        } catch (Throwable e) {
+            logger.error("Cannot start Gateway FTP", e);
+            shutdown();
+            return;
+        }
+        logger.warn("Service started with " + ftpfile);
+    }
+
+    private static void exit(FtpConfiguration configuration) {
+        FtpChannelUtils util = new FtpChannelUtils(configuration);
+        util.run();
+    }
+
+    @Override
+    public void shutdown() {
+        exit(FileBasedConfiguration.fileBasedConfiguration);
+        closeFuture.setSuccess();
+        logger.info("Service stopped");
+    }
+
+    @Override
+    public boolean isShutdown() {
+        return closeFuture.isDone();
+    }
+
+    @Override
+    public boolean waitShutdown() throws InterruptedException {
+        closeFuture.await();
+        return closeFuture.isSuccess();
+    }
 }

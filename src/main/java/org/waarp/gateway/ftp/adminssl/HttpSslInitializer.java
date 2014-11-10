@@ -35,32 +35,33 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
  * 
  */
 public class HttpSslInitializer extends ChannelInitializer<SocketChannel> {
-	public static WaarpSslContextFactory waarpSslContextFactory;
-	public static WaarpSecureKeyStore waarpSecureKeyStore;
-	public boolean useHttpCompression = false;
-	public boolean enableRenegotiation = false;
+    public static WaarpSslContextFactory waarpSslContextFactory;
+    public static WaarpSecureKeyStore waarpSecureKeyStore;
+    public boolean useHttpCompression = false;
+    public boolean enableRenegotiation = false;
 
-	public HttpSslInitializer(boolean useHttpCompression,
-			boolean enableRenegotiation) {
-		this.useHttpCompression = useHttpCompression;
-		this.enableRenegotiation = enableRenegotiation;
-	}
+    public HttpSslInitializer(boolean useHttpCompression,
+            boolean enableRenegotiation) {
+        this.useHttpCompression = useHttpCompression;
+        this.enableRenegotiation = enableRenegotiation;
+    }
 
-	@Override
-	protected void initChannel(SocketChannel ch) {
-		final ChannelPipeline pipeline = ch.pipeline();
-		// Add SSL handler first to encrypt and decrypt everything.
+    @Override
+    protected void initChannel(SocketChannel ch) {
+        final ChannelPipeline pipeline = ch.pipeline();
+        // Add SSL handler first to encrypt and decrypt everything.
         SslHandler sslhandler = waarpSslContextFactory.initInitializer(true, false);
         pipeline.addLast("ssl", sslhandler);
 
         pipeline.addLast("codec", new HttpServerCodec());
-		//pipeline.addLast("decoder", new HttpRequestDecoder());
-		pipeline.addLast("aggregator", new HttpObjectAggregator(1048576));
-		//pipeline.addLast("encoder", new HttpResponseEncoder());
+        //pipeline.addLast("decoder", new HttpRequestDecoder());
+        pipeline.addLast("aggregator", new HttpObjectAggregator(1048576));
+        //pipeline.addLast("encoder", new HttpResponseEncoder());
         pipeline.addLast("streamer", new ChunkedWriteHandler());
-		if (useHttpCompression) {
-			pipeline.addLast("deflater", new HttpContentCompressor());
-		}
-		pipeline.addLast(FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor(), "handler", new HttpSslHandler());
-	}
+        if (useHttpCompression) {
+            pipeline.addLast("deflater", new HttpContentCompressor());
+        }
+        pipeline.addLast(FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor(), "handler",
+                new HttpSslHandler());
+    }
 }

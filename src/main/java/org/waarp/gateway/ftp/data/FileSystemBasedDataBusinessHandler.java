@@ -26,19 +26,19 @@ import org.waarp.ftp.core.data.handler.DataBusinessHandler;
  * 
  */
 public class FileSystemBasedDataBusinessHandler extends DataBusinessHandler {
-	@Override
-	protected void cleanSession() {
-	}
+    @Override
+    protected void cleanSession() {
+    }
 
-	@Override
-	public void exceptionLocalCaught(Throwable e) {
-	}
+    @Override
+    public void exceptionLocalCaught(Throwable e) {
+    }
 
-	@Override
-	public void executeChannelClosed() {
-	}
+    @Override
+    public void executeChannelClosed() {
+    }
 
-	@Override
-	public void executeChannelConnected(Channel channel) {
-	}
+    @Override
+    public void executeChannelConnected(Channel channel) {
+    }
 }

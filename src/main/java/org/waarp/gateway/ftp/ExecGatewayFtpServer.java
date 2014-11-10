@@ -36,86 +36,86 @@ import org.waarp.openr66.protocol.configuration.Configuration;
  * 
  */
 public class ExecGatewayFtpServer {
-	/**
-	 * Internal Logger
-	 */
-	private static WaarpLogger logger = null;
+    /**
+     * Internal Logger
+     */
+    private static WaarpLogger logger = null;
 
-	/**
-	 * Take a simple XML file as configuration.
-	 * 
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		if (args.length < 1) {
-			System.err.println("Usage: " +
-					ExecGatewayFtpServer.class.getName() + " <config-file> [<r66config-file>]");
-			return;
-		}
-		WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
-		logger = WaarpLoggerFactory
-				.getLogger(ExecGatewayFtpServer.class);
-		initialize(args[0], args.length > 1 ? args[1] : null);
-	}
-	
-	public static boolean initialize(String config, String r66file) {
-		boolean asAService = false;
-		if (logger == null) {
-			// Called as a service
-			logger = WaarpLoggerFactory
-					.getLogger(ExecGatewayFtpServer.class);
-			asAService = true;
-		}
-		FileBasedConfiguration configuration = new FileBasedConfiguration(
-				ExecGatewayFtpServer.class, ExecBusinessHandler.class,
-				FileSystemBasedDataBusinessHandler.class,
-				new FilesystemBasedFileParameterImpl());
-		if (asAService) {
-			configuration.shutdownConfiguration.serviceFuture = FtpEngine.closeFuture;
-		}
-		if (!configuration.setConfigurationServerFromXml(config)) {
-			System.err.println("Bad main configuration");
-			return false;
-		}
-		Configuration.configuration.useLocalExec = configuration.useLocalExec;
-		if (AbstractExecutor.useDatabase) {
-			// Use R66 module
-			if (r66file != null) {
-				if (!org.waarp.openr66.configuration.FileBasedConfiguration
-						.setSubmitClientConfigurationFromXml(Configuration.configuration,
-								r66file)) {
-					// if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1]))
-					// {
-					System.err.println("Bad R66 configuration");
-					return false;
-				}
-			} else {
-				// Cannot get R66 functional
-				System.err.println("No R66PrepareTransfer configuration file");
-			}
-		}
-		FileBasedConfiguration.fileBasedConfiguration = configuration;
-		// Start server.
-		configuration.configureLExec();
-		try {
+    /**
+     * Take a simple XML file as configuration.
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
+        if (args.length < 1) {
+            System.err.println("Usage: " +
+                    ExecGatewayFtpServer.class.getName() + " <config-file> [<r66config-file>]");
+            return;
+        }
+        WaarpLoggerFactory.setDefaultFactory(new WaarpSlf4JLoggerFactory(null));
+        logger = WaarpLoggerFactory
+                .getLogger(ExecGatewayFtpServer.class);
+        initialize(args[0], args.length > 1 ? args[1] : null);
+    }
+
+    public static boolean initialize(String config, String r66file) {
+        boolean asAService = false;
+        if (logger == null) {
+            // Called as a service
+            logger = WaarpLoggerFactory
+                    .getLogger(ExecGatewayFtpServer.class);
+            asAService = true;
+        }
+        FileBasedConfiguration configuration = new FileBasedConfiguration(
+                ExecGatewayFtpServer.class, ExecBusinessHandler.class,
+                FileSystemBasedDataBusinessHandler.class,
+                new FilesystemBasedFileParameterImpl());
+        if (asAService) {
+            configuration.shutdownConfiguration.serviceFuture = FtpEngine.closeFuture;
+        }
+        if (!configuration.setConfigurationServerFromXml(config)) {
+            System.err.println("Bad main configuration");
+            return false;
+        }
+        Configuration.configuration.useLocalExec = configuration.useLocalExec;
+        if (AbstractExecutor.useDatabase) {
+            // Use R66 module
+            if (r66file != null) {
+                if (!org.waarp.openr66.configuration.FileBasedConfiguration
+                        .setSubmitClientConfigurationFromXml(Configuration.configuration,
+                                r66file)) {
+                    // if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1]))
+                    // {
+                    System.err.println("Bad R66 configuration");
+                    return false;
+                }
+            } else {
+                // Cannot get R66 functional
+                System.err.println("No R66PrepareTransfer configuration file");
+            }
+        }
+        FileBasedConfiguration.fileBasedConfiguration = configuration;
+        // Start server.
+        configuration.configureLExec();
+        try {
             configuration.serverStartup();
         } catch (FtpNoConnectionException e1) {
             e1.printStackTrace();
             configuration.releaseResources();
             return false;
         }
-		configuration.configureHttps();
-		configuration.configureConstraint();
-		try {
-			configuration.configureSnmp();
-		} catch (FtpNoConnectionException e) {
-			System.err.println("Cannot start SNMP support: " + e.getMessage());
-		}
-		logger.warn("FTP started "+ 
-				(configuration.getFtpInternalConfiguration().isUsingNativeSsl()? "Implicit SSL On" :
-					configuration.getFtpInternalConfiguration().isAcceptAuthProt() ?"Explicit SSL On":
-						"with SSL Off"));
-		return true;
-	}
+        configuration.configureHttps();
+        configuration.configureConstraint();
+        try {
+            configuration.configureSnmp();
+        } catch (FtpNoConnectionException e) {
+            System.err.println("Cannot start SNMP support: " + e.getMessage());
+        }
+        logger.warn("FTP started " +
+                (configuration.getFtpInternalConfiguration().isUsingNativeSsl() ? "Implicit SSL On" :
+                        configuration.getFtpInternalConfiguration().isAcceptAuthProt() ? "Explicit SSL On" :
+                                "with SSL Off"));
+        return true;
+    }
 
 }
