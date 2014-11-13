@@ -655,8 +655,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * ThreadPoolExecutor for Http and Https Server
      */
-    private EventExecutorGroup httpExecutor = new NioEventLoopGroup(CLIENT_THREAD, new WaarpThreadFactory(
-            "HttpExecutor"));
+    private EventExecutorGroup httpExecutor;
     /**
      * Monitoring: snmp configuration file (empty means no snmp support)
      */
@@ -1000,6 +999,9 @@ public class FileBasedConfiguration extends FtpConfiguration {
         value = hashConfig.get(XML_CLIENT_THREAD);
         if (value != null && (!value.isEmpty())) {
             CLIENT_THREAD = value.getInteger();
+        }
+        if (SERVER_THREAD == 0 || CLIENT_THREAD == 0) {
+            computeNbThreads();
         }
         value = hashConfig.get(XML_MEMORY_LIMIT);
         if (value != null && (!value.isEmpty())) {
@@ -1364,8 +1366,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
         // Now start the HTTPS support
         // Configure the server.
         httpsBootstrap = new ServerBootstrap();
+        httpExecutor = new NioEventLoopGroup(SERVER_THREAD * 10, new WaarpThreadFactory(
+                "HttpExecutor"));
         bossGroup = new NioEventLoopGroup(SERVER_THREAD, new WaarpThreadFactory("HTTP_Boss"));
-        workerGroup = new NioEventLoopGroup(CLIENT_THREAD, new WaarpThreadFactory("HTTP_Worker"));
+        workerGroup = new NioEventLoopGroup(SERVER_THREAD * 10, new WaarpThreadFactory("HTTP_Worker"));
         WaarpNettyUtil.setServerBootstrap(httpsBootstrap, bossGroup, workerGroup, (int) TIMEOUTCON);
 
         // Configure the pipeline factory.
