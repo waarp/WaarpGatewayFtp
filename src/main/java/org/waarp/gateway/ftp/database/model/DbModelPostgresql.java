@@ -35,150 +35,151 @@ import org.waarp.gateway.ftp.database.data.DbTransferLog;
  * 
  */
 public class DbModelPostgresql extends org.waarp.common.database.model.DbModelPostgresql {
-	/**
-	 * Create the object and initialize if necessary the driver
-	 * 
-	 * @throws WaarpDatabaseNoConnectionException
-	 */
-	public DbModelPostgresql() throws WaarpDatabaseNoConnectionException {
-		super();
-	}
+    /**
+     * Create the object and initialize if necessary the driver
+     * 
+     * @throws WaarpDatabaseNoConnectionException
+     */
+    public DbModelPostgresql() throws WaarpDatabaseNoConnectionException {
+        super();
+    }
 
-	@Override
-	public void createTables(DbSession session) throws WaarpDatabaseNoConnectionException {
-		// Create tables: configuration, hosts, rules, runner, cptrunner
-		String createTableH2 = "CREATE TABLE ";
-		String primaryKey = " PRIMARY KEY ";
-		String notNull = " NOT NULL ";
+    @Override
+    public void createTables(DbSession session) throws WaarpDatabaseNoConnectionException {
+        // Create tables: configuration, hosts, rules, runner, cptrunner
+        String createTableH2 = "CREATE TABLE ";
+        String primaryKey = " PRIMARY KEY ";
+        String notNull = " NOT NULL ";
 
-		DbRequest request = new DbRequest(session);
-		// TRANSLOG
-		String action = createTableH2 + DbTransferLog.table + "(";
-		DbTransferLog.Columns[] acolumns = DbTransferLog.Columns.values();
-		for (int i = 0; i < acolumns.length; i++) {
-			action += acolumns[i].name() +
-					DBType.getType(DbTransferLog.dbTypes[i]) + notNull + ", ";
-		}
-		// Several columns for primary key
-		action += " CONSTRAINT TRANSLOG_PK " + primaryKey + "(";
-		for (int i = DbTransferLog.NBPRKEY; i > 1; i--) {
-			action += acolumns[acolumns.length - i].name() + ",";
-		}
-		action += acolumns[acolumns.length - 1].name() + "))";
-		System.out.println(action);
-		try {
-			request.query(action);
-		} catch (WaarpDatabaseNoConnectionException e) {
-			e.printStackTrace();
-			return;
-		} catch (WaarpDatabaseSqlException e) {
-			e.printStackTrace();
-			return;
-		} finally {
-			request.close();
-		}
-		// Index TRANSLOG
-		action = "CREATE INDEX IDX_TRANSLOG ON " + DbTransferLog.table + "(";
-		DbTransferLog.Columns[] icolumns = DbTransferLog.indexes;
-		for (int i = 0; i < icolumns.length - 1; i++) {
-			action += icolumns[i].name() + ", ";
-		}
-		action += icolumns[icolumns.length - 1].name() + ")";
-		System.out.println(action);
-		try {
-			request.query(action);
-		} catch (WaarpDatabaseNoConnectionException e) {
-			e.printStackTrace();
-			return;
-		} catch (WaarpDatabaseSqlException e) {
-			return;
-		} finally {
-			request.close();
-		}
+        DbRequest request = new DbRequest(session);
+        // TRANSLOG
+        String action = createTableH2 + DbTransferLog.table + "(";
+        DbTransferLog.Columns[] acolumns = DbTransferLog.Columns.values();
+        for (int i = 0; i < acolumns.length; i++) {
+            action += acolumns[i].name() +
+                    DBType.getType(DbTransferLog.dbTypes[i]) + notNull + ", ";
+        }
+        // Several columns for primary key
+        action += " CONSTRAINT TRANSLOG_PK " + primaryKey + "(";
+        for (int i = DbTransferLog.NBPRKEY; i > 1; i--) {
+            action += acolumns[acolumns.length - i].name() + ",";
+        }
+        action += acolumns[acolumns.length - 1].name() + "))";
+        System.out.println(action);
+        try {
+            request.query(action);
+        } catch (WaarpDatabaseNoConnectionException e) {
+            e.printStackTrace();
+            return;
+        } catch (WaarpDatabaseSqlException e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            request.close();
+        }
+        // Index TRANSLOG
+        action = "CREATE INDEX IDX_TRANSLOG ON " + DbTransferLog.table + "(";
+        DbTransferLog.Columns[] icolumns = DbTransferLog.indexes;
+        for (int i = 0; i < icolumns.length - 1; i++) {
+            action += icolumns[i].name() + ", ";
+        }
+        action += icolumns[icolumns.length - 1].name() + ")";
+        System.out.println(action);
+        try {
+            request.query(action);
+        } catch (WaarpDatabaseNoConnectionException e) {
+            e.printStackTrace();
+            return;
+        } catch (WaarpDatabaseSqlException e) {
+            return;
+        } finally {
+            request.close();
+        }
 
-		// cptrunner
-		action = "CREATE SEQUENCE " + DbTransferLog.fieldseq +
-				" MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
-				" RESTART WITH " + (DbConstant.ILLEGALVALUE + 1);
-		System.out.println(action);
-		try {
-			request.query(action);
-		} catch (WaarpDatabaseNoConnectionException e) {
-			e.printStackTrace();
-			return;
-		} catch (WaarpDatabaseSqlException e) {
-			e.printStackTrace();
-			return;
-		} finally {
-			request.close();
-		}
-	}
+        // cptrunner
+        action = "CREATE SEQUENCE " + DbTransferLog.fieldseq +
+                " MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
+                " RESTART WITH " + (DbConstant.ILLEGALVALUE + 1);
+        System.out.println(action);
+        try {
+            request.query(action);
+        } catch (WaarpDatabaseNoConnectionException e) {
+            e.printStackTrace();
+            return;
+        } catch (WaarpDatabaseSqlException e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            request.close();
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.openr66.databaseold.model.DbModel#resetSequence()
-	 */
-	@Override
-	public void resetSequence(DbSession session, long newvalue)
-			throws WaarpDatabaseNoConnectionException {
-		String action = "ALTER SEQUENCE " + DbTransferLog.fieldseq +
-				" MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
-				" RESTART WITH " + newvalue;
-		DbRequest request = new DbRequest(session);
-		try {
-			request.query(action);
-		} catch (WaarpDatabaseNoConnectionException e) {
-			e.printStackTrace();
-			return;
-		} catch (WaarpDatabaseSqlException e) {
-			e.printStackTrace();
-			return;
-		} finally {
-			request.close();
-		}
-		System.out.println(action);
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.openr66.databaseold.model.DbModel#resetSequence()
+     */
+    @Override
+    public void resetSequence(DbSession session, long newvalue)
+            throws WaarpDatabaseNoConnectionException {
+        String action = "ALTER SEQUENCE " + DbTransferLog.fieldseq +
+                " MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
+                " RESTART WITH " + newvalue;
+        DbRequest request = new DbRequest(session);
+        try {
+            request.query(action);
+        } catch (WaarpDatabaseNoConnectionException e) {
+            e.printStackTrace();
+            return;
+        } catch (WaarpDatabaseSqlException e) {
+            e.printStackTrace();
+            return;
+        } finally {
+            request.close();
+        }
+        System.out.println(action);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * @see org.waarp.openr66.databaseold.model.DbModel#nextSequence()
-	 */
-	@Override
-	public long nextSequence(DbSession dbSession)
-			throws WaarpDatabaseNoConnectionException,
-			WaarpDatabaseSqlException, WaarpDatabaseNoDataException {
-		long result = DbConstant.ILLEGALVALUE;
-		String action = "SELECT NEXTVAL('" + DbTransferLog.fieldseq + "')";
-		DbPreparedStatement preparedStatement = new DbPreparedStatement(
-				dbSession);
-		try {
-			preparedStatement.createPrepareStatement(action);
-			// Limit the search
-			preparedStatement.executeQuery();
-			if (preparedStatement.getNext()) {
-				try {
-					result = preparedStatement.getResultSet().getLong(1);
-				} catch (SQLException e) {
-					throw new WaarpDatabaseSqlException(e);
-				}
-				return result;
-			} else {
-				throw new WaarpDatabaseNoDataException(
-						"No sequence found. Must be initialized first");
-			}
-		} finally {
-			preparedStatement.realClose();
-		}
-	}
-	@Override
-	public boolean upgradeDb(DbSession session, String version)
-			throws WaarpDatabaseNoConnectionException {
-		return true;
-	}
+    /*
+     * (non-Javadoc)
+     * @see org.waarp.openr66.databaseold.model.DbModel#nextSequence()
+     */
+    @Override
+    public long nextSequence(DbSession dbSession)
+            throws WaarpDatabaseNoConnectionException,
+            WaarpDatabaseSqlException, WaarpDatabaseNoDataException {
+        long result = DbConstant.ILLEGALVALUE;
+        String action = "SELECT NEXTVAL('" + DbTransferLog.fieldseq + "')";
+        DbPreparedStatement preparedStatement = new DbPreparedStatement(
+                dbSession);
+        try {
+            preparedStatement.createPrepareStatement(action);
+            // Limit the search
+            preparedStatement.executeQuery();
+            if (preparedStatement.getNext()) {
+                try {
+                    result = preparedStatement.getResultSet().getLong(1);
+                } catch (SQLException e) {
+                    throw new WaarpDatabaseSqlException(e);
+                }
+                return result;
+            } else {
+                throw new WaarpDatabaseNoDataException(
+                        "No sequence found. Must be initialized first");
+            }
+        } finally {
+            preparedStatement.realClose();
+        }
+    }
 
-	@Override
-	public boolean needUpgradeDb(DbSession session, String version, boolean tryFix)
-			throws WaarpDatabaseNoConnectionException {
-		return false;
-	}
+    @Override
+    public boolean upgradeDb(DbSession session, String version)
+            throws WaarpDatabaseNoConnectionException {
+        return true;
+    }
+
+    @Override
+    public boolean needUpgradeDb(DbSession session, String version, boolean tryFix)
+            throws WaarpDatabaseNoConnectionException {
+        return false;
+    }
 }

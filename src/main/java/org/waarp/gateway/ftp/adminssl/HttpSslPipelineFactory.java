@@ -36,37 +36,37 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
  * 
  */
 public class HttpSslPipelineFactory implements ChannelPipelineFactory {
-	public static WaarpSslContextFactory waarpSslContextFactory;
-	public static WaarpSecureKeyStore waarpSecureKeyStore;
-	public boolean useHttpCompression = false;
-	public boolean enableRenegotiation = false;
+    public static WaarpSslContextFactory waarpSslContextFactory;
+    public static WaarpSecureKeyStore waarpSecureKeyStore;
+    public boolean useHttpCompression = false;
+    public boolean enableRenegotiation = false;
 
-	public HttpSslPipelineFactory(boolean useHttpCompression,
-			boolean enableRenegotiation) {
-		this.useHttpCompression = useHttpCompression;
-		this.enableRenegotiation = enableRenegotiation;
-	}
+    public HttpSslPipelineFactory(boolean useHttpCompression,
+            boolean enableRenegotiation) {
+        this.useHttpCompression = useHttpCompression;
+        this.enableRenegotiation = enableRenegotiation;
+    }
 
-	@Override
-	public ChannelPipeline getPipeline() {
-		final ChannelPipeline pipeline = Channels.pipeline();
-		// Add SSL handler first to encrypt and decrypt everything.
+    @Override
+    public ChannelPipeline getPipeline() {
+        final ChannelPipeline pipeline = Channels.pipeline();
+        // Add SSL handler first to encrypt and decrypt everything.
         SslHandler sslhandler = waarpSslContextFactory.initPipelineFactory(true,
-				false,
-				enableRenegotiation);
+                false,
+                enableRenegotiation);
         sslhandler.setIssueHandshake(true);
         pipeline.addLast("ssl", sslhandler);
 
-		pipeline.addLast("decoder", new HttpRequestDecoder());
-		pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
-		pipeline.addLast("encoder", new HttpResponseEncoder());
-		pipeline.addLast("pipelineExecutor", new ExecutionHandler(
-				FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor()));
+        pipeline.addLast("decoder", new HttpRequestDecoder());
+        pipeline.addLast("aggregator", new HttpChunkAggregator(1048576));
+        pipeline.addLast("encoder", new HttpResponseEncoder());
+        pipeline.addLast("pipelineExecutor", new ExecutionHandler(
+                FileBasedConfiguration.fileBasedConfiguration.getHttpPipelineExecutor()));
         pipeline.addLast("streamer", new ChunkedWriteHandler());
-		if (useHttpCompression) {
-			pipeline.addLast("deflater", new HttpContentCompressor());
-		}
-		pipeline.addLast("handler", new HttpSslHandler());
-		return pipeline;
-	}
+        if (useHttpCompression) {
+            pipeline.addLast("deflater", new HttpContentCompressor());
+        }
+        pipeline.addLast("handler", new HttpSslHandler());
+        return pipeline;
+    }
 }
