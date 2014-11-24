@@ -271,7 +271,6 @@
 	          <windowtitle>${project.name} ${project.version} API Reference</windowtitle>
 	          <additionalparam>
 	            -link http://java.sun.com/javase/6/docs/api/
-	            -link http://static.netty.io/3.5/api/
 
 				-group "Waarp Gateway Ftp Server package" "org.waarp.gateway.ftp.ExecGatewayFtpServer*:org.waarp.gateway.ftp.ServerInitDatabase*"
 				-group "Waarp Gateway Ftp Configuration file based loaders package" "org.waarp.gateway.ftp.config*"
