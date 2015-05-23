@@ -33,10 +33,6 @@ import org.jboss.netty.channel.ChannelStateEvent;
 import org.jboss.netty.channel.ExceptionEvent;
 import org.jboss.netty.channel.MessageEvent;
 import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
-import org.jboss.netty.handler.codec.http.Cookie;
-import org.jboss.netty.handler.codec.http.CookieDecoder;
-import org.jboss.netty.handler.codec.http.CookieEncoder;
-import org.jboss.netty.handler.codec.http.DefaultCookie;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
 import org.jboss.netty.handler.codec.http.HttpHeaders;
 import org.jboss.netty.handler.codec.http.HttpMethod;
@@ -45,6 +41,10 @@ import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
 import org.jboss.netty.handler.codec.http.QueryStringDecoder;
+import org.jboss.netty.handler.codec.http.cookie.Cookie;
+import org.jboss.netty.handler.codec.http.cookie.DefaultCookie;
+import org.jboss.netty.handler.codec.http.cookie.ServerCookieDecoder;
+import org.jboss.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import org.jboss.netty.handler.traffic.TrafficCounter;
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.command.exception.CommandAbstractException;
@@ -547,8 +547,8 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
 
     private void clearSession() {
         if (admin != null) {
-            FileBasedAuth auth = sessions.remove(admin.getValue());
-            DbSession ldbsession = dbSessions.remove(admin.getValue());
+            FileBasedAuth auth = sessions.remove(admin.value());
+            DbSession ldbsession = dbSessions.remove(admin.value());
             admin = null;
             if (auth != null) {
                 auth.clear();
@@ -660,9 +660,9 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             admin = new DefaultCookie(FTPSESSION,
                     FileBasedConfiguration.fileBasedConfiguration.HOST_ID +
                             Long.toHexString(random.nextLong()));
-            sessions.put(admin.getValue(), this.authentHttp);
+            sessions.put(admin.value(), this.authentHttp);
             if (this.isPrivateDbSession) {
-                dbSessions.put(admin.getValue(), dbSession);
+                dbSessions.put(admin.value(), dbSession);
             }
             logger.debug("CreateSession: " + uriRequest + ":{}", admin);
             writeResponse(e.getChannel());
@@ -729,11 +729,10 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
     private void checkSession(Channel channel) {
         String cookieString = request.headers().get(HttpHeaders.Names.COOKIE);
         if (cookieString != null) {
-            CookieDecoder cookieDecoder = new CookieDecoder();
-            Set<Cookie> cookies = cookieDecoder.decode(cookieString);
+            Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
             if (!cookies.isEmpty()) {
                 for (Cookie elt : cookies) {
-                    if (elt.getName().equalsIgnoreCase(FTPSESSION)) {
+                    if (elt.name().equalsIgnoreCase(FTPSESSION)) {
                         admin = elt;
                         break;
                     }
@@ -741,11 +740,11 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             }
         }
         if (admin != null) {
-            FileBasedAuth auth = sessions.get(admin.getValue());
+            FileBasedAuth auth = sessions.get(admin.value());
             if (auth != null) {
                 authentHttp = auth;
             }
-            DbSession dbSession = dbSessions.get(admin.getValue());
+            DbSession dbSession = dbSessions.get(admin.value());
             if (dbSession != null) {
                 this.dbSession = dbSession;
             }
@@ -757,42 +756,33 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
     private void handleCookies(HttpResponse response) {
         String cookieString = request.headers().get(HttpHeaders.Names.COOKIE);
         if (cookieString != null) {
-            CookieDecoder cookieDecoder = new CookieDecoder();
-            Set<Cookie> cookies = cookieDecoder.decode(cookieString);
+            Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
             if (!cookies.isEmpty()) {
                 // Reset the sessions if necessary.
-                CookieEncoder cookieEncoder = new CookieEncoder(true);
                 boolean findSession = false;
                 for (Cookie cookie : cookies) {
-                    if (cookie.getName().equalsIgnoreCase(FTPSESSION)) {
+                    if (cookie.name().equalsIgnoreCase(FTPSESSION)) {
                         if (newSession) {
                             findSession = false;
                         } else {
                             findSession = true;
-                            cookieEncoder.addCookie(cookie);
-                            response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
-                            cookieEncoder = new CookieEncoder(true);
+                            response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie));
                         }
                     } else {
-                        cookieEncoder.addCookie(cookie);
-                        response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
-                        cookieEncoder = new CookieEncoder(true);
+                        response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie));
                     }
                 }
                 newSession = false;
                 if (!findSession) {
                     if (admin != null) {
-                        cookieEncoder.addCookie(admin);
-                        response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
+                        response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.LAX.encode(admin));
                         logger.debug("AddSession: " + uriRequest + ":{}", admin);
                     }
                 }
             }
         } else if (admin != null) {
-            CookieEncoder cookieEncoder = new CookieEncoder(true);
-            cookieEncoder.addCookie(admin);
+            response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.LAX.encode(admin));
             logger.debug("AddSession: " + uriRequest + ":{}", admin);
-            response.headers().add(HttpHeaders.Names.SET_COOKIE, cookieEncoder.encode());
         }
     }
 
