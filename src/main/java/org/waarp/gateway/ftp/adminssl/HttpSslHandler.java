@@ -30,19 +30,21 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.Cookie;
-import io.netty.handler.codec.http.CookieDecoder;
-import io.netty.handler.codec.http.DefaultCookie;
 import io.netty.handler.codec.http.DefaultFullHttpResponse;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
-import io.netty.handler.codec.http.HttpHeaders;
+import io.netty.handler.codec.http.HttpHeaderNames;
+import io.netty.handler.codec.http.HttpHeaderUtil;
+import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http.HttpMethod;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.codec.http.HttpResponseStatus;
 import io.netty.handler.codec.http.HttpVersion;
 import io.netty.handler.codec.http.QueryStringDecoder;
-import io.netty.handler.codec.http.ServerCookieEncoder;
+import io.netty.handler.codec.http.cookie.Cookie;
+import io.netty.handler.codec.http.cookie.DefaultCookie;
+import io.netty.handler.codec.http.cookie.ServerCookieDecoder;
+import io.netty.handler.codec.http.cookie.ServerCookieEncoder;
 import io.netty.handler.traffic.TrafficCounter;
 
 import org.waarp.common.command.ReplyCode;
@@ -726,9 +728,9 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
     }
 
     private void checkSession(Channel channel) {
-        String cookieString = request.headers().get(HttpHeaders.Names.COOKIE);
+        String cookieString = request.headers().get(HttpHeaderNames.COOKIE);
         if (cookieString != null) {
-            Set<Cookie> cookies = CookieDecoder.decode(cookieString);
+            Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
             if (!cookies.isEmpty()) {
                 for (Cookie elt : cookies) {
                     if (elt.name().equalsIgnoreCase(FTPSESSION)) {
@@ -753,9 +755,9 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
     }
 
     private void handleCookies(HttpResponse response) {
-        String cookieString = request.headers().get(HttpHeaders.Names.COOKIE);
+        String cookieString = request.headers().get(HttpHeaderNames.COOKIE);
         if (cookieString != null) {
-            Set<Cookie> cookies = CookieDecoder.decode(cookieString);
+            Set<Cookie> cookies = ServerCookieDecoder.LAX.decode(cookieString);
             if (!cookies.isEmpty()) {
                 // Reset the sessions if necessary.
                 boolean findSession = false;
@@ -765,23 +767,23 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
                             findSession = false;
                         } else {
                             findSession = true;
-                            response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie));
+                            response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie));
                         }
                     } else {
-                        response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(cookie));
+                        response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(cookie));
                     }
                 }
                 newSession = false;
                 if (!findSession) {
                     if (admin != null) {
-                        response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(admin));
+                        response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(admin));
                         logger.debug("AddSession: " + uriRequest + ":{}", admin);
                     }
                 }
             }
         } else if (admin != null) {
             logger.debug("AddSession: " + uriRequest + ":{}", admin);
-            response.headers().add(HttpHeaders.Names.SET_COOKIE, ServerCookieEncoder.encode(admin));
+            response.headers().add(HttpHeaderNames.SET_COOKIE, ServerCookieEncoder.LAX.encode(admin));
         }
     }
 
@@ -797,22 +799,22 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
         responseContent.setLength(0);
 
         // Decide whether to close the connection or not.
-        boolean keepAlive = HttpHeaders.isKeepAlive(request);
-        boolean close = HttpHeaders.Values.CLOSE.equalsIgnoreCase(request
-                .headers().get(HttpHeaders.Names.CONNECTION)) ||
+        boolean keepAlive = HttpHeaderUtil.isKeepAlive(request);
+        boolean close = HttpHeaderValues.CLOSE.equalsIgnoreCase(request
+                .headers().get(HttpHeaderNames.CONNECTION)) ||
                 (!keepAlive) || forceClose;
 
         // Build the response object.
         FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, buf);
-        response.headers().add(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
-        response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html");
+        response.headers().add(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
         if (keepAlive) {
-            response.headers().set(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE);
+            response.headers().set(HttpHeaderNames.CONNECTION, HttpHeaderValues.KEEP_ALIVE);
         }
         if (!close) {
             // There's no need to add 'Content-Length' header
             // if this is the last response.
-            response.headers().set(HttpHeaders.Names.CONTENT_LENGTH,
+            response.headers().set(HttpHeaderNames.CONTENT_LENGTH,
                     String.valueOf(buf.readableBytes()));
         }
 
@@ -848,8 +850,8 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
         responseContent.append(error(status.toString()));
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1, status, Unpooled.copiedBuffer(responseContent.toString(), WaarpStringUtils.UTF8));
-        response.headers().add(HttpHeaders.Names.CONTENT_LENGTH, response.content().readableBytes());
-        response.headers().set(HttpHeaders.Names.CONTENT_TYPE, "text/html");
+        response.headers().add(HttpHeaderNames.CONTENT_LENGTH, response.content().readableBytes());
+        response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/html");
         clearSession();
         // Close the connection as soon as the error message is sent.
         ctx.channel().writeAndFlush(response).addListener(WaarpSslUtility.SSLCLOSE);
