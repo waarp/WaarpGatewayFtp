@@ -814,7 +814,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 return false;
             }
         }
-        httpChannelGroup = new DefaultChannelGroup("HttpOpenR66", httpExecutor.next());
         if (httpBasePath != null) {
             // Key for HTTPS
             value = hashConfig.get(XML_PATH_ADMIN_KEYPATH);
@@ -1374,9 +1373,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
         // Configure the pipeline factory.
         httpsBootstrap.childHandler(new HttpSslInitializer(useHttpCompression, false));
+        httpChannelGroup = new DefaultChannelGroup("HttpOpenR66", httpExecutor.next());
 
         // Bind and start to accept incoming connections.
-        logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT);
+        logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT + " with "+ (useHttpCompression ? "" : "no") +" compression support");
         ChannelFuture future = httpsBootstrap.bind(new InetSocketAddress(SERVER_HTTPSPORT));
         if (future.awaitUninterruptibly().isSuccess()) {
             httpChannelGroup.add(future.channel());
@@ -1858,18 +1858,26 @@ public class FileBasedConfiguration extends FtpConfiguration {
     @Override
     public void releaseResources() {
         super.releaseResources();
-        final int result = getHttpChannelGroup().size();
-        logger.debug("HttpChannelGroup: " + result);
-        getHttpChannelGroup().close().addListener(
-                new GgChannelGroupFutureListener(
-                        "HttpChannelGroup",
-                        bossGroup, workerGroup));
-        httpExecutor.shutdownGracefully();
+        if (httpChannelGroup != null) {
+            final int result = httpChannelGroup.size();
+            logger.debug("HttpChannelGroup: " + result);
+            httpChannelGroup.close().addListener(
+                    new GgChannelGroupFutureListener(
+                            "HttpChannelGroup",
+                            bossGroup, workerGroup));
+        }
+        if (httpExecutor != null) {
+            httpExecutor.shutdownGracefully();
+        }
         if (useLocalExec) {
             LocalExecClient.releaseResources();
         }
-        this.constraintLimitHandler.release();
-        agentSnmp.stop();
+        if (constraintLimitHandler != null) {
+            this.constraintLimitHandler.release();
+        }
+        if (agentSnmp != null) {
+            agentSnmp.stop();
+        }
         DbAdmin.closeAllConnection();
     }
 
