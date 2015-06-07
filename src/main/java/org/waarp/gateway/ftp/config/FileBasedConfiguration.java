@@ -1141,7 +1141,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         XmlValue value = hashConfig.get(XML_DBDRIVER);
         if (value == null || (value.isEmpty())) {
             logger.error("Unable to find DBDriver in Config file");
-            DbConstant.admin = new DbAdmin(); // no database support
+            DbConstant.gatewayAdmin = new DbAdmin(); // no database support
         } else {
             String dbdriver = value.getString();
             value = hashConfig.get(XML_DBSERVER);
@@ -1170,14 +1170,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 return false;
             }
             try {
-                DbConstant.admin =
+                DbConstant.gatewayAdmin =
                         DbModelFactory.initialize(dbdriver, dbserver, dbuser, dbpasswd,
                                 true);
+                DbConstant.admin = DbConstant.gatewayAdmin;
             } catch (WaarpDatabaseNoConnectionException e2) {
                 logger.error("Unable to Connect to DB", e2);
                 return false;
             }
-            AbstractExecutor.useDatabase = true;
         }
         return true;
     }
@@ -1744,7 +1744,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
          * XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX XXXUPINFXXX
          * XXXSTARTXXX XXXSTOPXXX
          */
-        if (!DbConstant.admin.isActive) {
+        if (!DbConstant.gatewayAdmin.isActive) {
             return "";
         }
         DbPreparedStatement preparedStatement = null;
@@ -1752,7 +1752,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             try {
                 preparedStatement =
                         DbTransferLog
-                                .getStatusPrepareStament(DbConstant.admin.session, null, limit);
+                                .getStatusPrepareStament(DbConstant.gatewayAdmin.session, null, limit);
                 preparedStatement.executeQuery();
             } catch (WaarpDatabaseNoConnectionException e) {
                 return "";

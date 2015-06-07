@@ -119,7 +119,7 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
         if (session != null) {
             dbSession = session;
         } else {
-            dbSession = DbConstant.admin.session;
+            dbSession = DbConstant.gatewayAdmin.session;
         }
         this.initialize();
     }
