@@ -85,8 +85,6 @@ public class ExecGatewayFtpServer {
                 if (!org.waarp.openr66.configuration.FileBasedConfiguration
                         .setSubmitClientConfigurationFromXml(Configuration.configuration,
                                 r66file)) {
-                    // if (!R66FileBasedConfiguration.setSimpleClientConfigurationFromXml(args[1]))
-                    // {
                     System.err.println("Bad R66 configuration");
                     return false;
                 }
@@ -94,6 +92,8 @@ public class ExecGatewayFtpServer {
                 // Cannot get R66 functional
                 System.err.println("No R66PrepareTransfer configuration file");
             }
+        } else {
+            System.err.println("No R66PrepareTransfer support");
         }
         FileBasedConfiguration.fileBasedConfiguration = configuration;
         // Start server.

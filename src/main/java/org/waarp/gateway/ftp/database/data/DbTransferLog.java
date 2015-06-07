@@ -45,7 +45,6 @@ import org.waarp.common.xml.XmlValue;
 import org.waarp.ftp.core.command.FtpCommandCode;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.database.DbConstant;
-import org.waarp.gateway.ftp.database.model.DbModelFactory;
 
 /**
  * Transfer Log for FtpExec
@@ -399,14 +398,16 @@ public class DbTransferLog extends AbstractDbData {
             isSaved = true;
             return;
         }
+        logger.debug("Dbrelated info: "+dbSession.getAdmin().getServer());
         // First need to find a new id if id is not ok
         if (specialId == DbConstant.ILLEGALVALUE) {
-            specialId = DbModelFactory.dbModel.nextSequence(dbSession);
+            specialId = dbSession.admin.getDbModel().nextSequence(dbSession);
             logger.debug("Try Insert create a new Id from sequence: " +
                     specialId);
             setPrimaryKey();
         }
         super.insert();
+        logger.debug("TransferLog shall be created: {}", this);
     }
 
     /**
@@ -428,7 +429,7 @@ public class DbTransferLog extends AbstractDbData {
         }
         // First need to find a new id if id is not ok
         if (specialId == DbConstant.ILLEGALVALUE) {
-            specialId = DbModelFactory.dbModel.nextSequence(dbSession);
+            specialId = dbSession.admin.getDbModel().nextSequence(dbSession);
             logger.debug("Try Insert create a new Id from sequence: " +
                     specialId);
             setPrimaryKey();
@@ -466,7 +467,7 @@ public class DbTransferLog extends AbstractDbData {
                             throw new WaarpDatabaseSqlException(e1);
                         }
                         specialId = result + 1;
-                        DbModelFactory.dbModel.resetSequence(dbSession, specialId + 1);
+                        dbSession.admin.getDbModel().resetSequence(dbSession, specialId + 1);
                         setToArray();
                         preparedStatement.close();
                         setValues(preparedStatement, allFields);
@@ -536,7 +537,7 @@ public class DbTransferLog extends AbstractDbData {
         }
         request += " ORDER BY " + Columns.STARTTRANS.name() + " DESC ";
         if (limit > 0) {
-            request = DbModelFactory.dbModel.limitRequest(selectAllFields, request, limit);
+            request = session.admin.getDbModel().limitRequest(selectAllFields, request, limit);
         }
         return new DbPreparedStatement(session, request);
     }
