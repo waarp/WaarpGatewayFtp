@@ -44,7 +44,7 @@
   	<dependency>
   		<groupId>Waarp</groupId>
   		<artifactId>WaarpR66</artifactId>
-  		<version>3.0.3.1</version>
+  		<version>3.0.4</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>xom</artifactId>
