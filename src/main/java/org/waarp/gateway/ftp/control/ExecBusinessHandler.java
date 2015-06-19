@@ -84,7 +84,9 @@ public class ExecBusinessHandler extends BusinessHandler {
             return;
         }
         long specialId = auth.getSpecialId();
-        if (getFtpSession().getReplyCode() != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY) {
+        ReplyCode replyCode = getFtpSession().getReplyCode();
+        logger.debug("Transfer done but action needed: "+(!(replyCode != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY && replyCode != ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION)));
+        if (replyCode != ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY && replyCode != ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION) {
             // Do nothing
             String message = "Transfer done with code: " + getFtpSession().getReplyCode().getMesg();
             WaarpActionLogger.logErrorAction(dbFtpSession,
@@ -92,7 +94,9 @@ public class ExecBusinessHandler extends BusinessHandler {
             return;
         }
         // if STOR like: get file (can be STOU) and execute external action
-        switch (transfer.getCommand()) {
+        FtpCommandCode code = transfer.getCommand();
+        logger.debug("Checking action vs auth after transfer: {}", code);
+        switch (code) {
             case RETR:
                 // nothing to do since All done
                 WaarpActionLogger.logAction(dbFtpSession, specialId,
@@ -104,7 +108,7 @@ public class ExecBusinessHandler extends BusinessHandler {
             case STOU:
                 // execute the store command
                 WaarpFuture futureCompletion = new WaarpFuture(true);
-                String[] args = new String[5];
+                String[] args = new String[6];
                 args[0] = auth.getUser();
                 args[1] = auth.getAccount();
                 args[2] = auth.getBaseDirectory();
@@ -154,6 +158,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                     throw exc;
                 }
                 args[4] = transfer.getCommand().toString();
+                args[5] = Long.toString(specialId);
                 AbstractExecutor executor =
                         AbstractExecutor.createAbstractExecutor(auth, args, true, futureCompletion);
                 if (executor instanceof R66PreparedTransferExecutor) {
@@ -234,6 +239,7 @@ public class ExecBusinessHandler extends BusinessHandler {
         }
         FileBasedAuth auth = (FileBasedAuth) getFtpSession().getAuth();
         if (auth.isAdmin()) {
+            logger.debug("Admin user so all actions are allowed");
             return;
         }
         // Test limits
@@ -264,12 +270,13 @@ public class ExecBusinessHandler extends BusinessHandler {
             }
         }
         FtpCommandCode code = getFtpSession().getCurrentCommand().getCode();
+        logger.debug("Checking action vs auth before command: {}", code);
         switch (code) {
             case APPE:
             case STOR:
             case STOU:
                 auth.setSpecialId(specialId);
-                if (!AbstractExecutor.isValidOperation(true)) {
+                if (!auth.getCommandExecutor().isValidOperation(true)) {
                     throw new Reply504Exception("STORe like operations are not allowed");
                 }
                 // create entry in log
@@ -282,7 +289,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                 break;
             case RETR:
                 auth.setSpecialId(specialId);
-                if (!AbstractExecutor.isValidOperation(false)) {
+                if (!auth.getCommandExecutor().isValidOperation(false)) {
                     throw new Reply504Exception("RETRieve like operations are not allowed");
                 }
                 // create entry in log
@@ -293,7 +300,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                 auth.setSpecialId(specialId);
                 // execute the external retrieve command before the execution of RETR
                 WaarpFuture futureCompletion = new WaarpFuture(true);
-                String[] args = new String[5];
+                String[] args = new String[6];
                 args[0] = auth.getUser();
                 args[1] = auth.getAccount();
                 args[2] = auth.getBaseDirectory();
@@ -301,6 +308,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                 FtpFile file = getFtpSession().getDir().setFile(filename, false);
                 args[3] = file.getFile();
                 args[4] = code.toString();
+                args[5] = Long.toString(specialId);
                 AbstractExecutor executor =
                         AbstractExecutor
                                 .createAbstractExecutor(auth, args, false, futureCompletion);
@@ -381,10 +389,10 @@ public class ExecBusinessHandler extends BusinessHandler {
                     dbR66Session = null;
                 }
             }
-            if (dbFtpSession != null) {
-                dbFtpSession.disconnect();
-                dbFtpSession = null;
-            }
+        }
+        if (dbFtpSession != null) {
+            dbFtpSession.disconnect();
+            dbFtpSession = null;
         }
     }
 
@@ -403,17 +411,17 @@ public class ExecBusinessHandler extends BusinessHandler {
                     dbR66Session = null;
                     internalDb = true;
                 }
-                if (DbConstant.admin.isActive) {
-                    try {
-                        dbFtpSession = new DbSession(DbConstant.admin, false);
-                    } catch (WaarpDatabaseNoConnectionException e1) {
-                        logger.warn("Database not ready due to {}", e1.getMessage());
-                        QUIT command = (QUIT)
-                                FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
-                        this.getFtpSession().setNextCommand(command);
-                        dbFtpSession = null;
-                    }
-                }
+            }
+        }
+        if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive) {
+            try {
+                dbFtpSession = new DbSession(DbConstant.gatewayAdmin, false);
+            } catch (WaarpDatabaseNoConnectionException e1) {
+                logger.warn("Database not ready due to {}", e1.getMessage());
+                QUIT command = (QUIT)
+                        FtpCommandCode.getFromLine(getFtpSession(), FtpCommandCode.QUIT.name());
+                this.getFtpSession().setNextCommand(command);
+                dbFtpSession = null;
             }
         }
     }

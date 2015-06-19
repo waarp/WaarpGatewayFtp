@@ -27,7 +27,6 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.control.ExecBusinessHandler;
 import org.waarp.gateway.ftp.data.FileSystemBasedDataBusinessHandler;
 import org.waarp.gateway.ftp.database.DbConstant;
-import org.waarp.gateway.ftp.database.model.DbModelFactory;
 
 /**
  * Program to initialize the database for Waarp Ftp Exec
@@ -73,8 +72,8 @@ public class ServerInitDatabase {
             logger.error("Need at least the configuration file as first argument then optionally\n"
                     +
                     "    -initdb");
-            if (DbConstant.admin != null && DbConstant.admin.isActive) {
-                DbConstant.admin.close();
+            if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive) {
+                DbConstant.gatewayAdmin.close();
             }
             FtpChannelUtils.stopLogger();
             System.exit(1);
@@ -86,8 +85,8 @@ public class ServerInitDatabase {
         try {
             if (!configuration.setConfigurationServerFromXml(args[0])) {
                 System.err.println("Bad main configuration");
-                if (DbConstant.admin != null) {
-                    DbConstant.admin.close();
+                if (DbConstant.gatewayAdmin != null) {
+                    DbConstant.gatewayAdmin.close();
                 }
                 FtpChannelUtils.stopLogger();
                 System.exit(1);
@@ -105,15 +104,15 @@ public class ServerInitDatabase {
             }
             System.out.println("Load done");
         } finally {
-            if (DbConstant.admin != null) {
-                DbConstant.admin.close();
+            if (DbConstant.gatewayAdmin != null) {
+                DbConstant.gatewayAdmin.close();
             }
         }
     }
 
     public static void initdb() throws WaarpDatabaseNoConnectionException {
         // Create tables: configuration, hosts, rules, runner, cptrunner
-        DbModelFactory.dbModel.createTables(DbConstant.admin.session);
+        DbConstant.gatewayAdmin.getDbModel().createTables(DbConstant.gatewayAdmin.session);
     }
 
 }

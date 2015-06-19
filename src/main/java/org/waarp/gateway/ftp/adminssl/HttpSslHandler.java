@@ -376,7 +376,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
         String head = REQUEST.Transfer.readHeader();
         String end = REQUEST.Transfer.readEnd();
         String body = REQUEST.Transfer.readBody();
-        if (params == null || (!DbConstant.admin.isActive)) {
+        if (params == null || (!DbConstant.gatewayAdmin.isActive)) {
             end = end.replace("XXXRESULTXXX", "");
             body = FileBasedConfiguration.fileBasedConfiguration.getHtmlTransfer(body, LIMITROW);
             return head + body + end;
@@ -634,15 +634,15 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
                 // load DbSession
                 if (this.dbSession == null) {
                     try {
-                        if (DbConstant.admin.isActive) {
-                            this.dbSession = new DbSession(DbConstant.admin, false);
+                        if (DbConstant.gatewayAdmin.isActive) {
+                            this.dbSession = new DbSession(DbConstant.gatewayAdmin, false);
                             DbAdmin.nbHttpSession++;
                             this.isPrivateDbSession = true;
                         }
                     } catch (WaarpDatabaseNoConnectionException e1) {
                         // Cannot connect so use default connection
                         logger.warn("Use default database connection");
-                        this.dbSession = DbConstant.admin.session;
+                        this.dbSession = DbConstant.gatewayAdmin.session;
                     }
                 }
             }
