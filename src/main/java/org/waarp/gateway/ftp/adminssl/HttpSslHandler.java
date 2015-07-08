@@ -401,7 +401,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
                 String action = "purgeAll";
 
                 if (purgeCorrect) {
-                    status = ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY;
+                    status = ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION;
                     action = "purge";
                 }
                 try {
