@@ -21,6 +21,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.sql.Timestamp;
 
 import org.waarp.common.command.ReplyCode;
 import org.waarp.common.database.DbPreparedStatement;
@@ -30,6 +31,7 @@ import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
+import org.waarp.common.utility.WaarpStringUtils;
 import org.waarp.ftp.core.file.FtpDir;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
@@ -54,6 +56,8 @@ public class LogExport {
     private static boolean purge = false;
     private static boolean correctOnly = false;
     private static String destinationPath = null;
+    protected static Timestamp start;
+    protected static Timestamp stop;
 
     /**
      * Internal pointer to the destination writer object
@@ -69,10 +73,12 @@ public class LogExport {
      * Usage for the command
      */
     private static String usage = "Need at least the configuration file as first argument then optionally\n"
-                                + "    -correctOnly      Only exports successful transfers\n"
-                                + "    -purge            Purge exported transfers\n"
-                                + "    -out [filepath|-] The path to the file created\n"
-                                + "                      Use '-' for stdout\n";
+        + "    -correctOnly      Only exports successful transfers\n"
+        + "    -purge            Purge exported transfers\n"
+        + "    -out [filepath|-] The path to the file created\n"
+        + "                      Use '-' for stdout\n"
+        + "    -start timestamp  in format yyyyMMddHHmmssSSS possibly truncated and where one of ':-. ' can be separators\n"
+        + "    -stop timestamp   in same format than start\n";
 
     /**
      * Verifies command line arguments and initialize internals (mainly config)
@@ -161,6 +167,22 @@ public class LogExport {
                     return false;
                 }
                 destinationPath = args[i].trim();
+            } else if (args[i].equalsIgnoreCase("-start")) {
+                i++;
+                if (i >= args.length
+                        || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
+                    System.err.println("Error: -start needs a value.\n\n" + usage);
+                    return false;
+                }
+                start = WaarpStringUtils.fixDate(args[i]);
+            } else if (args[i].equalsIgnoreCase("-stop")) {
+                i++;
+                if (i >= args.length
+                        || (args[i].charAt(0) == '-' && args[i].length() > 1)) {
+                    System.err.println("Error: -stop needs a value.\n\n" + usage);
+                    return false;
+                }
+                stop = WaarpStringUtils.fixDate(args[i]);
             }
         }
         return true;
@@ -173,13 +195,13 @@ public class LogExport {
     protected static String run() {
         ReplyCode status = null;
         if (correctOnly) {
-            status = ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY;
+            status = ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION;
         }
 
         DbPreparedStatement preparedStatement = null;
         try {
-            preparedStatement = DbTransferLog.getStatusPrepareStament(
-                        DbConstant.gatewayAdmin.session, status, 0);
+            preparedStatement = DbTransferLog.getLogPrepareStament(
+                DbConstant.gatewayAdmin.session, start, stop, status);
 
         } catch (WaarpDatabaseNoConnectionException e) {
             return "An error occured while connecting to the database: "

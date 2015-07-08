@@ -557,10 +557,33 @@ public class DbTransferLog extends AbstractDbData {
     public static DbPreparedStatement getLogPrepareStament(DbSession session,
             Timestamp start, Timestamp stop)
             throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        return getLogPrepareStament(session, start, stop, null);
+    }
+
+    /**
+     *
+     * @param session
+     * @param start
+     * @param stop
+     * @return the DbPreparedStatement for getting Selected Object, whatever their status
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getLogPrepareStament(DbSession session,
+            Timestamp start, Timestamp stop, ReplyCode status)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+
+        String statusWhereFilter = "";
+        if (status != null) {
+            statusWhereFilter = Columns.INFOSTATUS.name() + " = " +
+                status.getCode() + " AND ";
+        }
+
         DbPreparedStatement preparedStatement = new DbPreparedStatement(session);
         String request = "SELECT " + selectAllFields + " FROM " + table;
-        if (start != null & stop != null) {
-            request += " WHERE " + Columns.STARTTRANS.name() + " >= ? AND " +
+        if (start != null && stop != null) {
+            request += " WHERE " + statusWhereFilter +
+                    Columns.STARTTRANS.name() + " >= ? AND " +
                     Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
@@ -572,8 +595,8 @@ public class DbTransferLog extends AbstractDbData {
                 throw new WaarpDatabaseSqlException(e);
             }
         } else if (start != null) {
-            request += " WHERE " + Columns.STARTTRANS.name() +
-                    " >= ? AND " + getLimitWhereCondition() +
+            request += " WHERE " + statusWhereFilter +
+                    Columns.STARTTRANS.name() + " >= ? AND " + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
             try {
@@ -583,8 +606,8 @@ public class DbTransferLog extends AbstractDbData {
                 throw new WaarpDatabaseSqlException(e);
             }
         } else if (stop != null) {
-            request += " WHERE " + Columns.STARTTRANS.name() +
-                    " <= ? AND " + getLimitWhereCondition() +
+            request += " WHERE " + statusWhereFilter +
+                    Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
             try {
@@ -594,7 +617,7 @@ public class DbTransferLog extends AbstractDbData {
                 throw new WaarpDatabaseSqlException(e);
             }
         } else {
-            request += " WHERE " + getLimitWhereCondition() +
+            request += " WHERE " + statusWhereFilter + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
         }
