@@ -1,24 +1,27 @@
 /**
  * This file is part of Waarp Project.
- * 
+ *
  * Copyright 2009, Frederic Bregier, and individual contributors by the @author tags. See the
  * COPYRIGHT.txt in the distribution for a full listing of individual contributors.
- * 
+ *
  * All Waarp Project is free software: you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by the Free Software Foundation, either version 3 of
  * the License, or (at your option) any later version.
- * 
+ *
  * Waarp is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even
  * the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General
  * Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with Waarp . If not, see
  * <http://www.gnu.org/licenses/>.
  */
 package org.waarp.gateway.ftp.database.data;
 
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InvalidObjectException;
+import java.io.Writer;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -48,9 +51,10 @@ import org.waarp.gateway.ftp.database.DbConstant;
 
 /**
  * Transfer Log for FtpExec
- * 
+ *
  * @author Frederic Bregier
- * 
+ * @author Bruno Carlin
+ *
  */
 public class DbTransferLog extends AbstractDbData {
     /**
@@ -554,10 +558,33 @@ public class DbTransferLog extends AbstractDbData {
     public static DbPreparedStatement getLogPrepareStament(DbSession session,
             Timestamp start, Timestamp stop)
             throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+        return getLogPrepareStament(session, start, stop, null);
+    }
+
+    /**
+     *
+     * @param session
+     * @param start
+     * @param stop
+     * @return the DbPreparedStatement for getting Selected Object, whatever their status
+     * @throws WaarpDatabaseNoConnectionException
+     * @throws WaarpDatabaseSqlException
+     */
+    public static DbPreparedStatement getLogPrepareStament(DbSession session,
+            Timestamp start, Timestamp stop, ReplyCode status)
+            throws WaarpDatabaseNoConnectionException, WaarpDatabaseSqlException {
+
+        String statusWhereFilter = "";
+        if (status != null) {
+            statusWhereFilter = Columns.INFOSTATUS.name() + " = " +
+                status.getCode() + " AND ";
+        }
+
         DbPreparedStatement preparedStatement = new DbPreparedStatement(session);
         String request = "SELECT " + selectAllFields + " FROM " + table;
-        if (start != null & stop != null) {
-            request += " WHERE " + Columns.STARTTRANS.name() + " >= ? AND " +
+        if (start != null && stop != null) {
+            request += " WHERE " + statusWhereFilter +
+                    Columns.STARTTRANS.name() + " >= ? AND " +
                     Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
@@ -569,8 +596,8 @@ public class DbTransferLog extends AbstractDbData {
                 throw new WaarpDatabaseSqlException(e);
             }
         } else if (start != null) {
-            request += " WHERE " + Columns.STARTTRANS.name() +
-                    " >= ? AND " + getLimitWhereCondition() +
+            request += " WHERE " + statusWhereFilter +
+                    Columns.STARTTRANS.name() + " >= ? AND " + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
             try {
@@ -580,8 +607,8 @@ public class DbTransferLog extends AbstractDbData {
                 throw new WaarpDatabaseSqlException(e);
             }
         } else if (stop != null) {
-            request += " WHERE " + Columns.STARTTRANS.name() +
-                    " <= ? AND " + getLimitWhereCondition() +
+            request += " WHERE " + statusWhereFilter +
+                    Columns.STARTTRANS.name() + " <= ? AND " + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
             try {
@@ -591,7 +618,7 @@ public class DbTransferLog extends AbstractDbData {
                 throw new WaarpDatabaseSqlException(e);
             }
         } else {
-            request += " WHERE " + getLimitWhereCondition() +
+            request += " WHERE " + statusWhereFilter + getLimitWhereCondition() +
                     " ORDER BY " + Columns.SPECIALID.name() + " DESC ";
             preparedStatement.createPrepareStatement(request);
         }
@@ -1086,8 +1113,8 @@ public class DbTransferLog extends AbstractDbData {
     }
 
     /**
-     * Export DbTransferLogs to a file and purge the corresponding DbTransferLogs
-     * 
+     * Exports DbTransferLogs to a file and purges the corresponding DbTransferLogs
+     *
      * @param preparedStatement
      *            the DbTransferLog as SELECT command to export (and purge)
      * @param filename
@@ -1096,6 +1123,30 @@ public class DbTransferLog extends AbstractDbData {
      */
     public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
             String filename) {
+            Writer outWriter = null;
+            try {
+                outWriter = new FileWriter(filename);
+            } catch(IOException e) {
+                return "Cannot open file " + filename + ": " + e.getMessage();
+            }
+
+        return saveDbTransferLogFile(preparedStatement, outWriter, true);
+    }
+
+    /**
+     * Exports DbTransferLogs to a Writer object and  optionally purges
+     * the corresponding DbTransferLogs
+     *
+     * @param preparedStatement
+     *            the DbTransferLog as SELECT command to export (and purge)
+     * @param outWriter
+     *            a Writer object where the DbLogs will be written
+     * @param  purge
+     *            sets whether or not the selected results must be purged
+     * @return The message for the HTTPS interface
+     */
+    public static String saveDbTransferLogFile(DbPreparedStatement preparedStatement,
+            Writer outWriter, boolean purge) {
         Document document = XmlUtil.createEmptyDocument();
         XmlValue[] roots = new XmlValue[1];
         XmlValue root = new XmlValue(logsElements[0]);
@@ -1116,24 +1167,29 @@ public class DbTransferLog extends AbstractDbData {
                         logger.error("Error during Write DbTransferLog file", e);
                         return "Error during purge";
                     }
-                    log.delete();
+
+                    if (purge) {
+                        log.delete();
+                    }
                 }
-                message = "Purge Correct Logs successful";
             } catch (WaarpDatabaseNoConnectionException e) {
-                message = "Error during purge";
+                message = "Error during export or purge";
             } catch (WaarpDatabaseSqlException e) {
-                message = "Error during purge";
+                message = "Error during export or purge";
             } catch (WaarpDatabaseException e) {
-                message = "Error during purge";
+                message = "Error during export or purge";
             }
         } finally {
             preparedStatement.realClose();
         }
+
         XmlUtil.write(document, roots);
         try {
-            XmlUtil.saveDocument(filename, document);
+            XmlUtil.saveDocument(outWriter, document);
+            message = "Logs exported " + (purge ? "and purged" : "")
+                    + " successfully";
         } catch (IOException e1) {
-            logger.error("Cannot write to file: " + filename + " since {}", e1.getMessage());
+            logger.error("Cannot write to file since {}", e1.getMessage());
             return message + " but cannot save file as export";
         }
         return message;
