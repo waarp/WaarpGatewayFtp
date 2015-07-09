@@ -74,7 +74,8 @@ import org.waarp.gateway.kernel.http.HttpWriteCacheEnable;
 
 /**
  * @author Frederic Bregier
- * 
+ * @author Bruno Carlin
+ *
  */
 public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     /**

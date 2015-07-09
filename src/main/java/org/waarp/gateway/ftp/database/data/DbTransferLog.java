@@ -51,9 +51,10 @@ import org.waarp.gateway.ftp.database.DbConstant;
 
 /**
  * Transfer Log for FtpExec
- * 
+ *
  * @author Frederic Bregier
- * 
+ * @author Bruno Carlin
+ *
  */
 public class DbTransferLog extends AbstractDbData {
     /**
