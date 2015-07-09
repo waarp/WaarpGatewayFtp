@@ -394,40 +394,23 @@ public class HttpSslHandler extends SimpleChannelUpstreamHandler {
             } else if ("Delete".equalsIgnoreCase(parm)) {
                 delete = true;
             }
-            if (purgeCorrect) {
+            if (purgeCorrect || purgeAll) {
                 DbPreparedStatement preparedStatement = null;
+                ReplyCode status = null;
+                String action = "purgeAll";
+
+                if (purgeCorrect) {
+                    status = ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION;
+                    action = "purge";
+                }
                 try {
                     preparedStatement =
                             DbTransferLog.getStatusPrepareStament(dbSession,
-                                    ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY, 0);
+                                    status, 0);
                 } catch (WaarpDatabaseNoConnectionException e) {
-                    message = "Error during purge";
+                    message = "Error during " + action;
                 } catch (WaarpDatabaseSqlException e) {
-                    message = "Error during purge";
-                }
-                if (preparedStatement != null) {
-                    try {
-                        FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
-                        String filename =
-                                config.getBaseDirectory() +
-                                        FtpDir.SEPARATOR + config.ADMINNAME + FtpDir.SEPARATOR +
-                                        config.HOST_ID + "_logs_" + System.currentTimeMillis()
-                                        + ".xml";
-                        message = DbTransferLog.saveDbTransferLogFile(preparedStatement, filename);
-                    } finally {
-                        preparedStatement.realClose();
-                    }
-                }
-            } else if (purgeAll) {
-                DbPreparedStatement preparedStatement = null;
-                try {
-                    preparedStatement =
-                            DbTransferLog.getStatusPrepareStament(dbSession,
-                                    null, 0);
-                } catch (WaarpDatabaseNoConnectionException e) {
-                    message = "Error during purgeAll";
-                } catch (WaarpDatabaseSqlException e) {
-                    message = "Error during purgeAll";
+                    message = "Error during " + action;
                 }
                 if (preparedStatement != null) {
                     try {
