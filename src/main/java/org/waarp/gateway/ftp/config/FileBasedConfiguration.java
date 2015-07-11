@@ -1857,18 +1857,24 @@ public class FileBasedConfiguration extends FtpConfiguration {
     @Override
     public void releaseResources() {
         super.releaseResources();
-        final int result = getHttpChannelGroup().size();
-        logger.debug("HttpChannelGroup: " + result);
-        getHttpChannelGroup().close().addListener(
-                new GgChannelGroupFutureListener(
-                        "HttpChannelGroup",
-                        httpPipelineExecutor,
-                        httpsChannelFactory));
+        if (getHttpChannelGroup() != null) {
+            final int result = getHttpChannelGroup().size();
+            logger.debug("HttpChannelGroup: " + result);
+            getHttpChannelGroup().close().addListener(
+                    new GgChannelGroupFutureListener(
+                            "HttpChannelGroup",
+                            httpPipelineExecutor,
+                            httpsChannelFactory));
+        }
         if (useLocalExec) {
             LocalExecClient.releaseResources();
         }
-        this.constraintLimitHandler.release();
-        agentSnmp.stop();
+        if (this.constraintLimitHandler != null) {
+            this.constraintLimitHandler.release();
+        }
+        if (agentSnmp != null) {
+            agentSnmp.stop();
+        }
         DbAdmin.closeAllConnection();
     }
 
