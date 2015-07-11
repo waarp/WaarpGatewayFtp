@@ -17,10 +17,17 @@
  */
 package org.waarp.gateway.ftp.database;
 
+import org.waarp.common.database.DbAdmin;
+
 /**
  * Constants value for database
  * 
  * @author Frederic Bregier
  * 
  */
-public class DbConstant extends org.waarp.common.database.DbConstant {}
+public class DbConstant extends org.waarp.common.database.DbConstant {
+    /**
+     * Specific admin for Gateway (to not be confused with the one for R66)
+     */
+    public static DbAdmin gatewayAdmin;
+}
