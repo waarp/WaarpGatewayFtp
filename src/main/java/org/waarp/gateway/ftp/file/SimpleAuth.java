@@ -91,9 +91,9 @@ public class SimpleAuth {
         this.retrDelay = retrDelay;
         this.commandExecutor = new CommandExecutor(retrCmd, retrDelay, storCmd, storDelay);
         logger.info("Executor for " + user + " configured as [RETR: " +
-                commandExecutor.pretrCMD + ":" + commandExecutor.pretrDelay + ":" +
+                commandExecutor.getRetrType() + ":" + commandExecutor.pretrCMD + ":" + commandExecutor.pretrDelay + ":" +
                 commandExecutor.pretrRefused +
-                "] [STOR: " + commandExecutor.pstorCMD + ":" +
+                "] [STOR: " + commandExecutor.getStorType() + ":" + commandExecutor.pstorCMD + ":" +
                 commandExecutor.pstorDelay + ":" + commandExecutor.pstorRefused + "]");
     }
 

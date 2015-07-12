@@ -814,7 +814,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 return false;
             }
         }
-        httpChannelGroup = new DefaultChannelGroup("HttpOpenR66", httpExecutor.next());
         if (httpBasePath != null) {
             // Key for HTTPS
             value = hashConfig.get(XML_PATH_ADMIN_KEYPATH);
@@ -1142,7 +1141,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
         XmlValue value = hashConfig.get(XML_DBDRIVER);
         if (value == null || (value.isEmpty())) {
             logger.error("Unable to find DBDriver in Config file");
-            DbConstant.admin = new DbAdmin(); // no database support
+            DbConstant.gatewayAdmin = new DbAdmin(); // no database support
         } else {
             String dbdriver = value.getString();
             value = hashConfig.get(XML_DBSERVER);
@@ -1171,14 +1170,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 return false;
             }
             try {
-                DbConstant.admin =
+                DbConstant.gatewayAdmin =
                         DbModelFactory.initialize(dbdriver, dbserver, dbuser, dbpasswd,
                                 true);
+                DbConstant.admin = DbConstant.gatewayAdmin;
             } catch (WaarpDatabaseNoConnectionException e2) {
                 logger.error("Unable to Connect to DB", e2);
                 return false;
             }
-            AbstractExecutor.useDatabase = true;
         }
         return true;
     }
@@ -1374,9 +1373,10 @@ public class FileBasedConfiguration extends FtpConfiguration {
 
         // Configure the pipeline factory.
         httpsBootstrap.childHandler(new HttpSslInitializer(useHttpCompression, false));
+        httpChannelGroup = new DefaultChannelGroup("HttpOpenR66", httpExecutor.next());
 
         // Bind and start to accept incoming connections.
-        logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT);
+        logger.warn("Start Https Support on port: " + SERVER_HTTPSPORT + " with "+ (useHttpCompression ? "" : "no") +" compression support");
         ChannelFuture future = httpsBootstrap.bind(new InetSocketAddress(SERVER_HTTPSPORT));
         if (future.awaitUninterruptibly().isSuccess()) {
             httpChannelGroup.add(future.channel());
@@ -1744,7 +1744,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
          * XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX XXXUPINFXXX
          * XXXSTARTXXX XXXSTOPXXX
          */
-        if (!DbConstant.admin.isActive) {
+        if (!DbConstant.gatewayAdmin.isActive) {
             return "";
         }
         DbPreparedStatement preparedStatement = null;
@@ -1752,7 +1752,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             try {
                 preparedStatement =
                         DbTransferLog
-                                .getStatusPrepareStament(DbConstant.admin.session, null, limit);
+                                .getStatusPrepareStament(DbConstant.gatewayAdmin.session, null, limit);
                 preparedStatement.executeQuery();
             } catch (WaarpDatabaseNoConnectionException e) {
                 return "";
@@ -1858,18 +1858,26 @@ public class FileBasedConfiguration extends FtpConfiguration {
     @Override
     public void releaseResources() {
         super.releaseResources();
-        final int result = getHttpChannelGroup().size();
-        logger.debug("HttpChannelGroup: " + result);
-        getHttpChannelGroup().close().addListener(
-                new GgChannelGroupFutureListener(
-                        "HttpChannelGroup",
-                        bossGroup, workerGroup));
-        httpExecutor.shutdownGracefully();
+        if (httpChannelGroup != null) {
+            final int result = httpChannelGroup.size();
+            logger.debug("HttpChannelGroup: " + result);
+            httpChannelGroup.close().addListener(
+                    new GgChannelGroupFutureListener(
+                            "HttpChannelGroup",
+                            bossGroup, workerGroup));
+        }
+        if (httpExecutor != null) {
+            httpExecutor.shutdownGracefully();
+        }
         if (useLocalExec) {
             LocalExecClient.releaseResources();
         }
-        this.constraintLimitHandler.release();
-        agentSnmp.stop();
+        if (constraintLimitHandler != null) {
+            this.constraintLimitHandler.release();
+        }
+        if (agentSnmp != null) {
+            agentSnmp.stop();
+        }
         DbAdmin.closeAllConnection();
     }
 

@@ -74,7 +74,8 @@ import org.waarp.gateway.kernel.http.HttpWriteCacheEnable;
 
 /**
  * @author Frederic Bregier
- * 
+ * @author Bruno Carlin
+ *
  */
 public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest> {
     /**
@@ -376,7 +377,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
         String head = REQUEST.Transfer.readHeader();
         String end = REQUEST.Transfer.readEnd();
         String body = REQUEST.Transfer.readBody();
-        if (params == null || (!DbConstant.admin.isActive)) {
+        if (params == null || (!DbConstant.gatewayAdmin.isActive)) {
             end = end.replace("XXXRESULTXXX", "");
             body = FileBasedConfiguration.fileBasedConfiguration.getHtmlTransfer(body, LIMITROW);
             return head + body + end;
@@ -395,40 +396,23 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
             } else if ("Delete".equalsIgnoreCase(parm)) {
                 delete = true;
             }
-            if (purgeCorrect) {
+            if (purgeCorrect || purgeAll) {
                 DbPreparedStatement preparedStatement = null;
+                ReplyCode status = null;
+                String action = "purgeAll";
+
+                if (purgeCorrect) {
+                    status = ReplyCode.REPLY_226_CLOSING_DATA_CONNECTION;
+                    action = "purge";
+                }
                 try {
                     preparedStatement =
                             DbTransferLog.getStatusPrepareStament(dbSession,
-                                    ReplyCode.REPLY_250_REQUESTED_FILE_ACTION_OKAY, 0);
+                                    status, 0);
                 } catch (WaarpDatabaseNoConnectionException e) {
-                    message = "Error during purge";
+                    message = "Error during " + action;
                 } catch (WaarpDatabaseSqlException e) {
-                    message = "Error during purge";
-                }
-                if (preparedStatement != null) {
-                    try {
-                        FileBasedConfiguration config = FileBasedConfiguration.fileBasedConfiguration;
-                        String filename =
-                                config.getBaseDirectory() +
-                                        FtpDir.SEPARATOR + config.ADMINNAME + FtpDir.SEPARATOR +
-                                        config.HOST_ID + "_logs_" + System.currentTimeMillis()
-                                        + ".xml";
-                        message = DbTransferLog.saveDbTransferLogFile(preparedStatement, filename);
-                    } finally {
-                        preparedStatement.realClose();
-                    }
-                }
-            } else if (purgeAll) {
-                DbPreparedStatement preparedStatement = null;
-                try {
-                    preparedStatement =
-                            DbTransferLog.getStatusPrepareStament(dbSession,
-                                    null, 0);
-                } catch (WaarpDatabaseNoConnectionException e) {
-                    message = "Error during purgeAll";
-                } catch (WaarpDatabaseSqlException e) {
-                    message = "Error during purgeAll";
+                    message = "Error during " + action;
                 }
                 if (preparedStatement != null) {
                     try {
@@ -634,15 +618,15 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
                 // load DbSession
                 if (this.dbSession == null) {
                     try {
-                        if (DbConstant.admin.isActive) {
-                            this.dbSession = new DbSession(DbConstant.admin, false);
+                        if (DbConstant.gatewayAdmin.isActive) {
+                            this.dbSession = new DbSession(DbConstant.gatewayAdmin, false);
                             DbAdmin.nbHttpSession++;
                             this.isPrivateDbSession = true;
                         }
                     } catch (WaarpDatabaseNoConnectionException e1) {
                         // Cannot connect so use default connection
                         logger.warn("Use default database connection");
-                        this.dbSession = DbConstant.admin.session;
+                        this.dbSession = DbConstant.gatewayAdmin.session;
                     }
                 }
             }
