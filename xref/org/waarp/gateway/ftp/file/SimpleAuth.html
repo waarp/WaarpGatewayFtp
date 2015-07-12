@@ -99,9 +99,9 @@
 <a class="jxr_linenumber" name="L91" href="#L91">91</a>          <strong class="jxr_keyword">this</strong>.retrDelay = retrDelay;
 <a class="jxr_linenumber" name="L92" href="#L92">92</a>          <strong class="jxr_keyword">this</strong>.commandExecutor = <strong class="jxr_keyword">new</strong> CommandExecutor(retrCmd, retrDelay, storCmd, storDelay);
 <a class="jxr_linenumber" name="L93" href="#L93">93</a>          logger.info(<span class="jxr_string">"Executor for "</span> + user + <span class="jxr_string">" configured as [RETR: "</span> +
-<a class="jxr_linenumber" name="L94" href="#L94">94</a>                  commandExecutor.pretrCMD + <span class="jxr_string">":"</span> + commandExecutor.pretrDelay + <span class="jxr_string">":"</span> +
+<a class="jxr_linenumber" name="L94" href="#L94">94</a>                  commandExecutor.getRetrType() + <span class="jxr_string">":"</span> + commandExecutor.pretrCMD + <span class="jxr_string">":"</span> + commandExecutor.pretrDelay + <span class="jxr_string">":"</span> +
 <a class="jxr_linenumber" name="L95" href="#L95">95</a>                  commandExecutor.pretrRefused +
-<a class="jxr_linenumber" name="L96" href="#L96">96</a>                  <span class="jxr_string">"] [STOR: "</span> + commandExecutor.pstorCMD + <span class="jxr_string">":"</span> +
+<a class="jxr_linenumber" name="L96" href="#L96">96</a>                  <span class="jxr_string">"] [STOR: "</span> + commandExecutor.getStorType() + <span class="jxr_string">":"</span> + commandExecutor.pstorCMD + <span class="jxr_string">":"</span> +
 <a class="jxr_linenumber" name="L97" href="#L97">97</a>                  commandExecutor.pstorDelay + <span class="jxr_string">":"</span> + commandExecutor.pstorRefused + <span class="jxr_string">"]"</span>);
 <a class="jxr_linenumber" name="L98" href="#L98">98</a>      }
 <a class="jxr_linenumber" name="L99" href="#L99">99</a>  
