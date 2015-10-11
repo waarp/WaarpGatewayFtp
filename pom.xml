@@ -44,7 +44,7 @@
   	<dependency>
   		<groupId>Waarp</groupId>
   		<artifactId>WaarpR66</artifactId>
-  		<version>3.0.4</version>
+  		<version>3.0.5</version>
   		<exclusions>
   			<exclusion>
   				<artifactId>xom</artifactId>
@@ -90,13 +90,13 @@
     <dependency>
     	<groupId>org.postgresql</groupId>
     	<artifactId>postgresql</artifactId>
-    	<version>9.4-1201-jdbc4</version>
+    	<version>9.4-1203-jdbc4</version>
     	<optional>true</optional>
     </dependency>
     <dependency>
     	<groupId>mysql</groupId>
     	<artifactId>mysql-connector-java</artifactId>
-    	<version>5.1.35</version>
+    	<version>5.1.36</version>
     	<optional>true</optional>
     </dependency>
     <dependency>
@@ -114,7 +114,7 @@
     <dependency>
     	<groupId>Waarp</groupId>
     	<artifactId>WaarpSnmp</artifactId>
-    	<version>3.0.0</version>
+    	<version>3.0.1</version>
     	<optional>true</optional>
     </dependency>
   </dependencies>
@@ -297,5 +297,5 @@
       </plugin>
 	</plugins>
   </reporting>
-  <version>3.0.2</version>
+  <version>3.0.3</version>
 </project>
