@@ -119,15 +119,11 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
         if (session != null) {
             dbSession = session;
         } else {
-            dbSession = DbConstant.gatewayAdmin.session;
+            dbSession = DbConstant.gatewayAdmin.getSession();
         }
         this.initialize();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMonitor#setAgent(org.waarp.snmp.WaarpSnmpAgent)
-     */
     @Override
     public void setAgent(WaarpSnmpAgent agent) {
         this.agent = agent;
@@ -135,10 +131,6 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
         this.lastOutActiveTransfer = this.agent.getUptimeSystemTime();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMonitor#initialize()
-     */
     @Override
     public void initialize() {
         logger.debug("Initialize monitoring");
@@ -167,10 +159,6 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMonitor#releaseResources()
-     */
     @Override
     public void releaseResources() {
         try {
@@ -235,15 +223,15 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
         MibLevel level = MibLevel.values()[type];
         switch (level) {
             case globalInfo:// Global
-                if (((FtpPrivateMib) this.agent.mib).rowGlobal != null)
+                if (((FtpPrivateMib) this.agent.getMib()).rowGlobal != null)
                     run(nbMs, WaarpGlobalValuesIndex.values()[entry]);
                 return;
             case detailedInfo:// Detailed
-                if (((FtpPrivateMib) this.agent.mib).rowDetailed != null)
+                if (((FtpPrivateMib) this.agent.getMib()).rowDetailed != null)
                     run(nbMs, WaarpDetailedValuesIndex.values()[entry]);
                 return;
             case errorInfo:// Error
-                if (((FtpPrivateMib) this.agent.mib).rowError != null)
+                if (((FtpPrivateMib) this.agent.getMib()).rowError != null)
                     run(nbMs, WaarpErrorValuesIndex.values()[entry]);
                 return;
             case staticInfo:
@@ -262,7 +250,7 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
      * @param value
      */
     protected void updateGlobalValue(int rank, long value) {
-        ((FtpPrivateMib) this.agent.mib).rowGlobal.setValue(rank, value);
+        ((FtpPrivateMib) this.agent.getMib()).rowGlobal.setValue(rank, value);
     }
 
     /**
@@ -272,7 +260,7 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
      * @param value
      */
     protected void updateDetailedValue(int rank, long value) {
-        ((FtpPrivateMib) this.agent.mib).rowDetailed.setValue(rank, value);
+        ((FtpPrivateMib) this.agent.getMib()).rowDetailed.setValue(rank, value);
     }
 
     /**
@@ -282,7 +270,7 @@ public class FtpMonitoring implements WaarpInterfaceMonitor {
      * @param value
      */
     protected void updateErrorValue(int rank, long value) {
-        ((FtpPrivateMib) this.agent.mib).rowError.setValue(rank, value);
+        ((FtpPrivateMib) this.agent.getMib()).rowError.setValue(rank, value);
     }
 
     /**

@@ -37,13 +37,10 @@ import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 public class HttpSslInitializer extends ChannelInitializer<SocketChannel> {
     public static WaarpSslContextFactory waarpSslContextFactory;
     public static WaarpSecureKeyStore waarpSecureKeyStore;
-    public boolean useHttpCompression = false;
-    public boolean enableRenegotiation = false;
+    private boolean useHttpCompression = false;
 
-    public HttpSslInitializer(boolean useHttpCompression,
-            boolean enableRenegotiation) {
+    public HttpSslInitializer(boolean useHttpCompression) {
         this.useHttpCompression = useHttpCompression;
-        this.enableRenegotiation = enableRenegotiation;
     }
 
     @Override

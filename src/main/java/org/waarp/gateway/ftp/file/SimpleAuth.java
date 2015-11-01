@@ -36,40 +36,40 @@ public class SimpleAuth {
     /**
      * User name
      */
-    public String user = null;
+    private String user = null;
 
     /**
      * Password
      */
-    public String password = null;
+    private String password = null;
 
     /**
      * Multiple accounts
      */
-    public String[] accounts = null;
+    private String[] accounts = null;
 
     /**
      * Is the current user an administrator (which can shutdown or change bandwidth limitation)
      */
-    public boolean isAdmin = false;
+    private boolean isAdmin = false;
     /**
      * Specific Store command for this user
      */
-    public String storCmd = null;
+    private String storCmd = null;
     /**
      * Specific Store command delay for this user
      */
-    public long storDelay = 0;
+    private long storDelay = 0;
     /**
      * Specific Retrieve command for this user
      */
-    public String retrCmd = null;
+    private String retrCmd = null;
     /**
      * Specific Retrieve command delay for this user
      */
-    public long retrDelay = 0;
+    private long retrDelay = 0;
 
-    public CommandExecutor commandExecutor = null;
+    private CommandExecutor commandExecutor = null;
 
     /**
      * @param user
@@ -82,19 +82,19 @@ public class SimpleAuth {
      */
     public SimpleAuth(String user, String password, String[] accounts,
             String storCmd, long storDelay, String retrCmd, long retrDelay) {
-        this.user = user;
-        this.password = password;
-        this.accounts = accounts;
-        this.storCmd = storCmd;
-        this.storDelay = storDelay;
-        this.retrCmd = retrCmd;
-        this.retrDelay = retrDelay;
-        this.commandExecutor = new CommandExecutor(retrCmd, retrDelay, storCmd, storDelay);
+        this.setUser(user);
+        this.setPassword(password);
+        this.setAccounts(accounts);
+        this.setStorCmd(storCmd);
+        this.setStorDelay(storDelay);
+        this.setRetrCmd(retrCmd);
+        this.setRetrDelay(retrDelay);
+        this.setCommandExecutor(new CommandExecutor(retrCmd, retrDelay, storCmd, storDelay));
         logger.info("Executor for " + user + " configured as [RETR: " +
-                commandExecutor.getRetrType() + ":" + commandExecutor.pretrCMD + ":" + commandExecutor.pretrDelay + ":" +
-                commandExecutor.pretrRefused +
-                "] [STOR: " + commandExecutor.getStorType() + ":" + commandExecutor.pstorCMD + ":" +
-                commandExecutor.pstorDelay + ":" + commandExecutor.pstorRefused + "]");
+                getCommandExecutor().getRetrType() + ":" + getCommandExecutor().pretrCMD + ":" + getCommandExecutor().pretrDelay + ":" +
+                getCommandExecutor().pretrRefused +
+                "] [STOR: " + getCommandExecutor().getStorType() + ":" + getCommandExecutor().pstorCMD + ":" +
+                getCommandExecutor().pstorDelay + ":" + getCommandExecutor().pstorRefused + "]");
     }
 
     /**
@@ -104,13 +104,13 @@ public class SimpleAuth {
      * @return True if the password is valid (or any password is valid)
      */
     public boolean isPasswordValid(String newpassword) {
-        if (password == null) {
+        if (getPassword() == null) {
             return true;
         }
         if (newpassword == null) {
             return false;
         }
-        return password.equals(newpassword);
+        return getPassword().equals(newpassword);
     }
 
     /**
@@ -120,7 +120,7 @@ public class SimpleAuth {
      * @return True if the account is valid (or any account is valid)
      */
     public boolean isAccountValid(String account) {
-        if (accounts == null) {
+        if (getAccounts() == null) {
             logger.debug("No account needed");
             return true;
         }
@@ -128,7 +128,7 @@ public class SimpleAuth {
             logger.debug("No account given");
             return false;
         }
-        for (String acct : accounts) {
+        for (String acct : getAccounts()) {
             if (acct.equals(account)) {
                 logger.debug("Account found");
                 return true;
@@ -145,5 +145,124 @@ public class SimpleAuth {
      */
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
+    }
+
+    /**
+     * @return the user
+     */
+    public String getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    private void setUser(String user) {
+        this.user = user;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword() {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    private void setPassword(String password) {
+        this.password = password;
+    }
+
+    /**
+     * @return the accounts
+     */
+    public String[] getAccounts() {
+        return accounts;
+    }
+
+    /**
+     * @param accounts the accounts to set
+     */
+    private void setAccounts(String[] accounts) {
+        this.accounts = accounts;
+    }
+
+    /**
+     * @return the isAdmin
+     */
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    /**
+     * @return the storCmd
+     */
+    public String getStorCmd() {
+        return storCmd;
+    }
+
+    /**
+     * @param storCmd the storCmd to set
+     */
+    private void setStorCmd(String storCmd) {
+        this.storCmd = storCmd;
+    }
+
+    /**
+     * @return the storDelay
+     */
+    public long getStorDelay() {
+        return storDelay;
+    }
+
+    /**
+     * @param storDelay the storDelay to set
+     */
+    private void setStorDelay(long storDelay) {
+        this.storDelay = storDelay;
+    }
+
+    /**
+     * @return the retrCmd
+     */
+    public String getRetrCmd() {
+        return retrCmd;
+    }
+
+    /**
+     * @param retrCmd the retrCmd to set
+     */
+    private void setRetrCmd(String retrCmd) {
+        this.retrCmd = retrCmd;
+    }
+
+    /**
+     * @return the retrDelay
+     */
+    public long getRetrDelay() {
+        return retrDelay;
+    }
+
+    /**
+     * @param retrDelay the retrDelay to set
+     */
+    private void setRetrDelay(long retrDelay) {
+        this.retrDelay = retrDelay;
+    }
+
+    /**
+     * @return the commandExecutor
+     */
+    public CommandExecutor getCommandExecutor() {
+        return commandExecutor;
+    }
+
+    /**
+     * @param commandExecutor the commandExecutor to set
+     */
+    private void setCommandExecutor(CommandExecutor commandExecutor) {
+        this.commandExecutor = commandExecutor;
     }
 }

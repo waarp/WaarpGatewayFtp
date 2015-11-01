@@ -72,7 +72,7 @@ public class ServerInitDatabase {
             logger.error("Need at least the configuration file as first argument then optionally\n"
                     +
                     "    -initdb");
-            if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive) {
+            if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive()) {
                 DbConstant.gatewayAdmin.close();
             }
             FtpChannelUtils.stopLogger();
@@ -112,7 +112,7 @@ public class ServerInitDatabase {
 
     public static void initdb() throws WaarpDatabaseNoConnectionException {
         // Create tables: configuration, hosts, rules, runner, cptrunner
-        DbConstant.gatewayAdmin.getDbModel().createTables(DbConstant.gatewayAdmin.session);
+        DbConstant.gatewayAdmin.getDbModel().createTables(DbConstant.gatewayAdmin.getSession());
     }
 
 }

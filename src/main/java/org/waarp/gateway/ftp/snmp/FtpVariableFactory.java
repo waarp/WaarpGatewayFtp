@@ -36,11 +36,6 @@ import org.waarp.snmp.interf.WaarpInterfaceVariableFactory;
  */
 public class FtpVariableFactory implements WaarpInterfaceVariableFactory {
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceVariableFactory#getVariable(org.snmp4j.smi.OID, int,
-     * int, int)
-     */
     @Override
     public Variable getVariable(OID oid, int type, int mibLevel, int entry) {
         Variable var;

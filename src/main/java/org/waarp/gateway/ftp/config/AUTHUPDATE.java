@@ -43,10 +43,6 @@ public class AUTHUPDATE extends AbstractCommand {
     private static final WaarpLogger logger = WaarpLoggerFactory
             .getLogger(AUTHUPDATE.class);
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.command.CommandInterface#exec()
-     */
     @Override
     public void exec() throws CommandAbstractException {
         if (!getSession().getAuth().isAdmin()) {
@@ -57,7 +53,7 @@ public class AUTHUPDATE extends AbstractCommand {
         boolean purge = false;
         boolean write = false;
         if (!hasArg()) {
-            filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
+            filename = ((FileBasedConfiguration) getConfiguration()).getAuthenticationFile();
         } else {
             String[] authents = getArgs();
             for (int i = 0; i < authents.length; i++) {
@@ -70,7 +66,7 @@ public class AUTHUPDATE extends AbstractCommand {
                 }
             }
             if (filename == null) {
-                filename = ((FileBasedConfiguration) getConfiguration()).authenticationFile;
+                filename = ((FileBasedConfiguration) getConfiguration()).getAuthenticationFile();
             }
             File file = new File(filename);
             if (!file.canRead()) {
@@ -83,7 +79,7 @@ public class AUTHUPDATE extends AbstractCommand {
         if (write) {
             if (!((FileBasedConfiguration) getConfiguration()).
                     saveAuthenticationFile(
-                    ((FileBasedConfiguration) getConfiguration()).authenticationFile)) {
+                    ((FileBasedConfiguration) getConfiguration()).getAuthenticationFile())) {
                 throw new Reply501Exception("Update is done but Write operation is not correct");
             }
         }
