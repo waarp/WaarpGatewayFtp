@@ -90,7 +90,7 @@
     <dependency>
     	<groupId>org.postgresql</groupId>
     	<artifactId>postgresql</artifactId>
-    	<version>9.4-1203-jdbc4</version>
+    	<version>9.4-1206-jdbc4</version>
     	<optional>true</optional>
     </dependency>
     <dependency>
