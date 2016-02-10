@@ -73,11 +73,11 @@
 <a class="jxr_linenumber" name="L65" href="#L65">65</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L66" href="#L66">66</a>  <em class="jxr_javadoccomment">     * Associated DbFtpSession</em>
 <a class="jxr_linenumber" name="L67" href="#L67">67</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">public</strong> DbSession dbFtpSession = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L68" href="#L68">68</a>      <strong class="jxr_keyword">private</strong> DbSession dbFtpSession = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L69" href="#L69">69</a>      <em class="jxr_javadoccomment">/**</em>
 <a class="jxr_linenumber" name="L70" href="#L70">70</a>  <em class="jxr_javadoccomment">     * Associated DbR66Session</em>
 <a class="jxr_linenumber" name="L71" href="#L71">71</a>  <em class="jxr_javadoccomment">     */</em>
-<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">public</strong> DbSession dbR66Session = <strong class="jxr_keyword">null</strong>;
+<a class="jxr_linenumber" name="L72" href="#L72">72</a>      <strong class="jxr_keyword">private</strong> DbSession dbR66Session = <strong class="jxr_keyword">null</strong>;
 <a class="jxr_linenumber" name="L73" href="#L73">73</a>      <strong class="jxr_keyword">private</strong> <strong class="jxr_keyword">boolean</strong> internalDb = false;
 <a class="jxr_linenumber" name="L74" href="#L74">74</a>  
 <a class="jxr_linenumber" name="L75" href="#L75">75</a>      @Override
@@ -408,7 +408,7 @@
 <a class="jxr_linenumber" name="L400" href="#L400">400</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">void</strong> executeChannelConnected(Channel channel) {
 <a class="jxr_linenumber" name="L401" href="#L401">401</a>         <strong class="jxr_keyword">if</strong> (AbstractExecutor.useDatabase) {
 <a class="jxr_linenumber" name="L402" href="#L402">402</a>             <strong class="jxr_keyword">if</strong> (org.waarp.openr66.database.DbConstant.admin != <strong class="jxr_keyword">null</strong> &amp;&amp;
-<a class="jxr_linenumber" name="L403" href="#L403">403</a>                     org.waarp.openr66.database.DbConstant.admin.isActive) {
+<a class="jxr_linenumber" name="L403" href="#L403">403</a>                     org.waarp.openr66.database.DbConstant.admin.isActive()) {
 <a class="jxr_linenumber" name="L404" href="#L404">404</a>                 <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L405" href="#L405">405</a>                     dbR66Session = <strong class="jxr_keyword">new</strong> DbSession(org.waarp.openr66.database.DbConstant.admin, false);
 <a class="jxr_linenumber" name="L406" href="#L406">406</a>                 } <strong class="jxr_keyword">catch</strong> (WaarpDatabaseNoConnectionException e1) {
@@ -421,7 +421,7 @@
 <a class="jxr_linenumber" name="L413" href="#L413">413</a>                 }
 <a class="jxr_linenumber" name="L414" href="#L414">414</a>             }
 <a class="jxr_linenumber" name="L415" href="#L415">415</a>         }
-<a class="jxr_linenumber" name="L416" href="#L416">416</a>         <strong class="jxr_keyword">if</strong> (DbConstant.gatewayAdmin != <strong class="jxr_keyword">null</strong> &amp;&amp; DbConstant.gatewayAdmin.isActive) {
+<a class="jxr_linenumber" name="L416" href="#L416">416</a>         <strong class="jxr_keyword">if</strong> (DbConstant.gatewayAdmin != <strong class="jxr_keyword">null</strong> &amp;&amp; DbConstant.gatewayAdmin.isActive()) {
 <a class="jxr_linenumber" name="L417" href="#L417">417</a>             <strong class="jxr_keyword">try</strong> {
 <a class="jxr_linenumber" name="L418" href="#L418">418</a>                 dbFtpSession = <strong class="jxr_keyword">new</strong> DbSession(DbConstant.gatewayAdmin, false);
 <a class="jxr_linenumber" name="L419" href="#L419">419</a>             } <strong class="jxr_keyword">catch</strong> (WaarpDatabaseNoConnectionException e1) {
@@ -514,6 +514,6 @@
 <a class="jxr_linenumber" name="L506" href="#L506">506</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2009&#x2013;2015 <a href="http://www.waarp.it">Waarp</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2009&#x2013;2016 <a href="http://www.waarp.it">Waarp</a>. All rights reserved.</div>
 </body>
 </html>

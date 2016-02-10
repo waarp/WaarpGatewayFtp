@@ -42,11 +42,11 @@
 <a class="jxr_linenumber" name="L34" href="#L34">34</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.FullHttpRequest;
 <a class="jxr_linenumber" name="L35" href="#L35">35</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.FullHttpResponse;
 <a class="jxr_linenumber" name="L36" href="#L36">36</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpHeaderNames;
-<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpHeaderValues;
-<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpMethod;
-<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpResponse;
-<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpResponseStatus;
-<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpUtil;
+<a class="jxr_linenumber" name="L37" href="#L37">37</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpHeaderUtil;
+<a class="jxr_linenumber" name="L38" href="#L38">38</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpHeaderValues;
+<a class="jxr_linenumber" name="L39" href="#L39">39</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpMethod;
+<a class="jxr_linenumber" name="L40" href="#L40">40</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpResponse;
+<a class="jxr_linenumber" name="L41" href="#L41">41</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpResponseStatus;
 <a class="jxr_linenumber" name="L42" href="#L42">42</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.HttpVersion;
 <a class="jxr_linenumber" name="L43" href="#L43">43</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.QueryStringDecoder;
 <a class="jxr_linenumber" name="L44" href="#L44">44</a>  <strong class="jxr_keyword">import</strong> io.netty.handler.codec.http.cookie.Cookie;
@@ -385,7 +385,7 @@
 <a class="jxr_linenumber" name="L377" href="#L377">377</a>         String head = REQUEST.Transfer.readHeader();
 <a class="jxr_linenumber" name="L378" href="#L378">378</a>         String end = REQUEST.Transfer.readEnd();
 <a class="jxr_linenumber" name="L379" href="#L379">379</a>         String body = REQUEST.Transfer.readBody();
-<a class="jxr_linenumber" name="L380" href="#L380">380</a>         <strong class="jxr_keyword">if</strong> (params == <strong class="jxr_keyword">null</strong> || (!DbConstant.gatewayAdmin.isActive)) {
+<a class="jxr_linenumber" name="L380" href="#L380">380</a>         <strong class="jxr_keyword">if</strong> (params == <strong class="jxr_keyword">null</strong> || (!DbConstant.gatewayAdmin.isActive())) {
 <a class="jxr_linenumber" name="L381" href="#L381">381</a>             end = end.replace(<span class="jxr_string">"XXXRESULTXXX"</span>, <span class="jxr_string">""</span>);
 <a class="jxr_linenumber" name="L382" href="#L382">382</a>             body = FileBasedConfiguration.fileBasedConfiguration.getHtmlTransfer(body, LIMITROW);
 <a class="jxr_linenumber" name="L383" href="#L383">383</a>             <strong class="jxr_keyword">return</strong> head + body + end;
@@ -498,7 +498,7 @@
 <a class="jxr_linenumber" name="L490" href="#L490">490</a>                         message += <span class="jxr_string">"Initialization of Authentication OK from "</span> + file;
 <a class="jxr_linenumber" name="L491" href="#L491">491</a>                         <strong class="jxr_keyword">if</strong> (replace) {
 <a class="jxr_linenumber" name="L492" href="#L492">492</a>                             <strong class="jxr_keyword">if</strong> (!config.saveAuthenticationFile(
-<a class="jxr_linenumber" name="L493" href="#L493">493</a>                                     config.authenticationFile)) {
+<a class="jxr_linenumber" name="L493" href="#L493">493</a>                                     config.getAuthenticationFile())) {
 <a class="jxr_linenumber" name="L494" href="#L494">494</a>                                 message += <span class="jxr_string">" but cannot replace server authenticationFile"</span>;
 <a class="jxr_linenumber" name="L495" href="#L495">495</a>                             } <strong class="jxr_keyword">else</strong> {
 <a class="jxr_linenumber" name="L496" href="#L496">496</a>                                 message += <span class="jxr_string">" and replacement done"</span>;
@@ -548,7 +548,7 @@
 <a class="jxr_linenumber" name="L540" href="#L540">540</a>             }
 <a class="jxr_linenumber" name="L541" href="#L541">541</a>             <strong class="jxr_keyword">if</strong> (ldbsession != <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L542" href="#L542">542</a>                 ldbsession.disconnect();
-<a class="jxr_linenumber" name="L543" href="#L543">543</a>                 DbAdmin.nbHttpSession--;
+<a class="jxr_linenumber" name="L543" href="#L543">543</a>                 DbAdmin.decHttpSession();
 <a class="jxr_linenumber" name="L544" href="#L544">544</a>             }
 <a class="jxr_linenumber" name="L545" href="#L545">545</a>         }
 <a class="jxr_linenumber" name="L546" href="#L546">546</a>     }
@@ -626,15 +626,15 @@
 <a class="jxr_linenumber" name="L618" href="#L618">618</a>                 <em class="jxr_comment">// load DbSession</em>
 <a class="jxr_linenumber" name="L619" href="#L619">619</a>                 <strong class="jxr_keyword">if</strong> (<strong class="jxr_keyword">this</strong>.dbSession == <strong class="jxr_keyword">null</strong>) {
 <a class="jxr_linenumber" name="L620" href="#L620">620</a>                     <strong class="jxr_keyword">try</strong> {
-<a class="jxr_linenumber" name="L621" href="#L621">621</a>                         <strong class="jxr_keyword">if</strong> (DbConstant.gatewayAdmin.isActive) {
+<a class="jxr_linenumber" name="L621" href="#L621">621</a>                         <strong class="jxr_keyword">if</strong> (DbConstant.gatewayAdmin.isActive()) {
 <a class="jxr_linenumber" name="L622" href="#L622">622</a>                             <strong class="jxr_keyword">this</strong>.dbSession = <strong class="jxr_keyword">new</strong> DbSession(DbConstant.gatewayAdmin, false);
-<a class="jxr_linenumber" name="L623" href="#L623">623</a>                             DbAdmin.nbHttpSession++;
+<a class="jxr_linenumber" name="L623" href="#L623">623</a>                             DbAdmin.incHttpSession();
 <a class="jxr_linenumber" name="L624" href="#L624">624</a>                             <strong class="jxr_keyword">this</strong>.isPrivateDbSession = <strong class="jxr_keyword">true</strong>;
 <a class="jxr_linenumber" name="L625" href="#L625">625</a>                         }
 <a class="jxr_linenumber" name="L626" href="#L626">626</a>                     } <strong class="jxr_keyword">catch</strong> (WaarpDatabaseNoConnectionException e1) {
 <a class="jxr_linenumber" name="L627" href="#L627">627</a>                         <em class="jxr_comment">// Cannot connect so use default connection</em>
 <a class="jxr_linenumber" name="L628" href="#L628">628</a>                         logger.warn(<span class="jxr_string">"Use default database connection"</span>);
-<a class="jxr_linenumber" name="L629" href="#L629">629</a>                         <strong class="jxr_keyword">this</strong>.dbSession = DbConstant.gatewayAdmin.session;
+<a class="jxr_linenumber" name="L629" href="#L629">629</a>                         <strong class="jxr_keyword">this</strong>.dbSession = DbConstant.gatewayAdmin.getSession();
 <a class="jxr_linenumber" name="L630" href="#L630">630</a>                     }
 <a class="jxr_linenumber" name="L631" href="#L631">631</a>                 }
 <a class="jxr_linenumber" name="L632" href="#L632">632</a>             }
@@ -791,8 +791,8 @@
 <a class="jxr_linenumber" name="L783" href="#L783">783</a>         responseContent.setLength(0);
 <a class="jxr_linenumber" name="L784" href="#L784">784</a> 
 <a class="jxr_linenumber" name="L785" href="#L785">785</a>         <em class="jxr_comment">// Decide whether to close the connection or not.</em>
-<a class="jxr_linenumber" name="L786" href="#L786">786</a>         <strong class="jxr_keyword">boolean</strong> keepAlive = HttpUtil.isKeepAlive(request);
-<a class="jxr_linenumber" name="L787" href="#L787">787</a>         <strong class="jxr_keyword">boolean</strong> close = HttpHeaderValues.CLOSE.contentEqualsIgnoreCase(request
+<a class="jxr_linenumber" name="L786" href="#L786">786</a>         <strong class="jxr_keyword">boolean</strong> keepAlive = HttpHeaderUtil.isKeepAlive(request);
+<a class="jxr_linenumber" name="L787" href="#L787">787</a>         <strong class="jxr_keyword">boolean</strong> close = HttpHeaderValues.CLOSE.equalsIgnoreCase(request
 <a class="jxr_linenumber" name="L788" href="#L788">788</a>                 .headers().get(HttpHeaderNames.CONNECTION)) ||
 <a class="jxr_linenumber" name="L789" href="#L789">789</a>                 (!keepAlive) || forceClose;
 <a class="jxr_linenumber" name="L790" href="#L790">790</a> 
@@ -874,6 +874,6 @@
 <a class="jxr_linenumber" name="L866" href="#L866">866</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2009&#x2013;2015 <a href="http://www.waarp.it">Waarp</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2009&#x2013;2016 <a href="http://www.waarp.it">Waarp</a>. All rights reserved.</div>
 </body>
 </html>

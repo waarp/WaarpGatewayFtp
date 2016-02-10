@@ -186,7 +186,7 @@
 <a class="jxr_linenumber" name="L178" href="#L178">178</a>     <strong class="jxr_keyword">public</strong> <strong class="jxr_keyword">boolean</strong> isAdmin() {
 <a class="jxr_linenumber" name="L179" href="#L179">179</a>         <strong class="jxr_keyword">if</strong> (currentAuth == <strong class="jxr_keyword">null</strong>)
 <a class="jxr_linenumber" name="L180" href="#L180">180</a>             <strong class="jxr_keyword">return</strong> false;
-<a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">return</strong> currentAuth.isAdmin;
+<a class="jxr_linenumber" name="L181" href="#L181">181</a>         <strong class="jxr_keyword">return</strong> currentAuth.isAdmin();
 <a class="jxr_linenumber" name="L182" href="#L182">182</a>     }
 <a class="jxr_linenumber" name="L183" href="#L183">183</a> 
 <a class="jxr_linenumber" name="L184" href="#L184">184</a>     <em class="jxr_javadoccomment">/**</em>
@@ -199,8 +199,8 @@
 <a class="jxr_linenumber" name="L191" href="#L191">191</a>         <a href="../../../../../org/waarp/gateway/ftp/file/SimpleAuth.html">SimpleAuth</a> auth = <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/gateway/ftp/file/SimpleAuth.html">SimpleAuth</a>(hostid, hostid, <strong class="jxr_keyword">null</strong>, <strong class="jxr_keyword">null</strong>, 0, <strong class="jxr_keyword">null</strong>, 0);
 <a class="jxr_linenumber" name="L192" href="#L192">192</a>         currentAuth = auth;
 <a class="jxr_linenumber" name="L193" href="#L193">193</a>         setIsIdentified(<strong class="jxr_keyword">true</strong>);
-<a class="jxr_linenumber" name="L194" href="#L194">194</a>         user = auth.user;
-<a class="jxr_linenumber" name="L195" href="#L195">195</a>         account = auth.user;
+<a class="jxr_linenumber" name="L194" href="#L194">194</a>         user = auth.getUser();
+<a class="jxr_linenumber" name="L195" href="#L195">195</a>         account = auth.getUser();
 <a class="jxr_linenumber" name="L196" href="#L196">196</a>         ((FtpSession) getSession()).setSpecialInit(<strong class="jxr_keyword">this</strong>,
 <a class="jxr_linenumber" name="L197" href="#L197">197</a>                 <strong class="jxr_keyword">new</strong> <a href="../../../../../org/waarp/gateway/ftp/file/FileBasedDir.html">FileBasedDir</a>(((FtpSession) getSession())),
 <a class="jxr_linenumber" name="L198" href="#L198">198</a>                 <strong class="jxr_keyword">new</strong> FilesystemBasedFtpRestart(((FtpSession) getSession())));
@@ -232,11 +232,11 @@
 <a class="jxr_linenumber" name="L224" href="#L224">224</a> <em class="jxr_javadoccomment">     * @return the associated Command Executor</em>
 <a class="jxr_linenumber" name="L225" href="#L225">225</a> <em class="jxr_javadoccomment">     */</em>
 <a class="jxr_linenumber" name="L226" href="#L226">226</a>     <strong class="jxr_keyword">public</strong> CommandExecutor getCommandExecutor() {
-<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.currentAuth.commandExecutor;
+<a class="jxr_linenumber" name="L227" href="#L227">227</a>         <strong class="jxr_keyword">return</strong> <strong class="jxr_keyword">this</strong>.currentAuth.getCommandExecutor();
 <a class="jxr_linenumber" name="L228" href="#L228">228</a>     }
 <a class="jxr_linenumber" name="L229" href="#L229">229</a> }
 </pre>
 <hr/>
-<div id="footer">Copyright &#169; 2009&#x2013;2015 <a href="http://www.waarp.it">Waarp</a>. All rights reserved.</div>
+<div id="footer">Copyright &#169; 2009&#x2013;2016 <a href="http://www.waarp.it">Waarp</a>. All rights reserved.</div>
 </body>
 </html>
