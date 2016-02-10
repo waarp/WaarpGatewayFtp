@@ -65,11 +65,11 @@ public class ExecBusinessHandler extends BusinessHandler {
     /**
      * Associated DbFtpSession
      */
-    public DbSession dbFtpSession = null;
+    private DbSession dbFtpSession = null;
     /**
      * Associated DbR66Session
      */
-    public DbSession dbR66Session = null;
+    private DbSession dbR66Session = null;
     private boolean internalDb = false;
 
     @Override
@@ -400,7 +400,7 @@ public class ExecBusinessHandler extends BusinessHandler {
     public void executeChannelConnected(Channel channel) {
         if (AbstractExecutor.useDatabase) {
             if (org.waarp.openr66.database.DbConstant.admin != null &&
-                    org.waarp.openr66.database.DbConstant.admin.isActive) {
+                    org.waarp.openr66.database.DbConstant.admin.isActive()) {
                 try {
                     dbR66Session = new DbSession(org.waarp.openr66.database.DbConstant.admin, false);
                 } catch (WaarpDatabaseNoConnectionException e1) {
@@ -413,7 +413,7 @@ public class ExecBusinessHandler extends BusinessHandler {
                 }
             }
         }
-        if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive) {
+        if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive()) {
             try {
                 dbFtpSession = new DbSession(DbConstant.gatewayAdmin, false);
             } catch (WaarpDatabaseNoConnectionException e1) {

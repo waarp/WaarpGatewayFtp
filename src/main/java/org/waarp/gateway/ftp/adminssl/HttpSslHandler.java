@@ -377,7 +377,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
         String head = REQUEST.Transfer.readHeader();
         String end = REQUEST.Transfer.readEnd();
         String body = REQUEST.Transfer.readBody();
-        if (params == null || (!DbConstant.gatewayAdmin.isActive)) {
+        if (params == null || (!DbConstant.gatewayAdmin.isActive())) {
             end = end.replace("XXXRESULTXXX", "");
             body = FileBasedConfiguration.fileBasedConfiguration.getHtmlTransfer(body, LIMITROW);
             return head + body + end;
@@ -490,7 +490,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
                         message += "Initialization of Authentication OK from " + file;
                         if (replace) {
                             if (!config.saveAuthenticationFile(
-                                    config.authenticationFile)) {
+                                    config.getAuthenticationFile())) {
                                 message += " but cannot replace server authenticationFile";
                             } else {
                                 message += " and replacement done";
@@ -540,7 +540,7 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
             }
             if (ldbsession != null) {
                 ldbsession.disconnect();
-                DbAdmin.nbHttpSession--;
+                DbAdmin.decHttpSession();
             }
         }
     }
@@ -618,15 +618,15 @@ public class HttpSslHandler extends SimpleChannelInboundHandler<FullHttpRequest>
                 // load DbSession
                 if (this.dbSession == null) {
                     try {
-                        if (DbConstant.gatewayAdmin.isActive) {
+                        if (DbConstant.gatewayAdmin.isActive()) {
                             this.dbSession = new DbSession(DbConstant.gatewayAdmin, false);
-                            DbAdmin.nbHttpSession++;
+                            DbAdmin.incHttpSession();
                             this.isPrivateDbSession = true;
                         }
                     } catch (WaarpDatabaseNoConnectionException e1) {
                         // Cannot connect so use default connection
                         logger.warn("Use default database connection");
-                        this.dbSession = DbConstant.gatewayAdmin.session;
+                        this.dbSession = DbConstant.gatewayAdmin.getSession();
                     }
                 }
             }

@@ -197,7 +197,7 @@ public class LogExport {
         DbPreparedStatement preparedStatement = null;
         try {
             preparedStatement = DbTransferLog.getLogPrepareStament(
-                DbConstant.gatewayAdmin.session, start, stop, status);
+                DbConstant.gatewayAdmin.getSession(), start, stop, status);
 
         } catch (WaarpDatabaseNoConnectionException e) {
             return "An error occured while connecting to the database: "

@@ -26,7 +26,7 @@ import org.waarp.snmp.interf.WaarpGauge32;
  * @author Frederic Bregier
  * 
  */
-public class FtpGauge32 extends WaarpGauge32 {
+class FtpGauge32 extends WaarpGauge32 {
 
     /**
      * 
@@ -47,19 +47,11 @@ public class FtpGauge32 extends WaarpGauge32 {
         setInternalValue(value);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue()
-     */
     @Override
     protected void setInternalValue() {
         FileBasedConfiguration.fileBasedConfiguration.monitoring.run(type, entry);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue(long)
-     */
     @Override
     protected void setInternalValue(long value) {
         setValue(value);
