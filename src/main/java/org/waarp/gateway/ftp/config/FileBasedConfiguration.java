@@ -586,16 +586,12 @@ public class FileBasedConfiguration extends FtpConfiguration {
     /**
      * File containing the authentications
      */
-    public String authenticationFile;
-    /**
-     * Default HTTP server port
-     */
-    public int SERVER_HTTPPORT = 8066;
+    private String authenticationFile;
 
     /**
      * Default HTTP server port
      */
-    public int SERVER_HTTPSPORT = 8067;
+    private int SERVER_HTTPSPORT = 8067;
     /**
      * Http Admin base
      */
@@ -708,8 +704,8 @@ public class FileBasedConfiguration extends FtpConfiguration {
         // if no database, must load authentication from file
         XmlValue value = hashConfig.get(XML_AUTHENTIFICATION_FILE);
         if (value != null && (!value.isEmpty())) {
-            authenticationFile = value.getString();
-            if (!initializeAuthent(authenticationFile, false)) {
+            setAuthenticationFile(value.getString());
+            if (!initializeAuthent(getAuthenticationFile(), false)) {
                 return false;
             }
         } else {
@@ -755,7 +751,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 } else {
                     port = 9999;
                 }
-                LocalExecClient.address = new InetSocketAddress(addr, port);
+                LocalExecClient.setAddress(new InetSocketAddress(addr, port));
             }
         }
         value = hashConfig.get(XML_SERVER_ADMIN);
@@ -978,33 +974,33 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         value = hashConfig.get(XML_TIMEOUTCON);
         if (value != null && (!value.isEmpty())) {
-            TIMEOUTCON = (value.getLong() / 10) * 10;
+            setTIMEOUTCON((value.getLong() / 10) * 10);
         }
         if (highcpuLimit > 0) {
             constraintLimitHandler =
-                    new FtpConstraintLimitHandler(TIMEOUTCON, useCpuLimit, useCpuLimitJDK,
+                    new FtpConstraintLimitHandler(getTIMEOUTCON(), useCpuLimit, useCpuLimitJDK,
                             cpulimit, connlimit,
                             lowcpuLimit, highcpuLimit, percentageDecrease, null, delay,
                             limitLowBandwidth);
         } else {
             constraintLimitHandler =
-                    new FtpConstraintLimitHandler(TIMEOUTCON, useCpuLimit, useCpuLimitJDK,
+                    new FtpConstraintLimitHandler(getTIMEOUTCON(), useCpuLimit, useCpuLimitJDK,
                             cpulimit, connlimit);
         }
         value = hashConfig.get(XML_SERVER_THREAD);
         if (value != null && (!value.isEmpty())) {
-            SERVER_THREAD = value.getInteger();
+            setSERVER_THREAD(value.getInteger());
         }
         value = hashConfig.get(XML_CLIENT_THREAD);
         if (value != null && (!value.isEmpty())) {
-            CLIENT_THREAD = value.getInteger();
+            setCLIENT_THREAD(value.getInteger());
         }
-        if (SERVER_THREAD == 0 || CLIENT_THREAD == 0) {
+        if (getSERVER_THREAD() == 0 || getCLIENT_THREAD() == 0) {
             computeNbThreads();
         }
         value = hashConfig.get(XML_MEMORY_LIMIT);
         if (value != null && (!value.isEmpty())) {
-            maxGlobalMemory = value.getLong();
+            setMaxGlobalMemory(value.getLong());
         }
         ((FilesystemBasedFileParameterImpl) getFileParameter()).deleteOnAbort = false;
         value = hashConfig.get(XML_USENIO);
@@ -1013,15 +1009,15 @@ public class FileBasedConfiguration extends FtpConfiguration {
         }
         value = hashConfig.get(XML_USEFASTMD5);
         if (value != null && (!value.isEmpty())) {
-            FilesystemBasedDigest.useFastMd5 = value.getBoolean();
+            FilesystemBasedDigest.setUseFastMd5(value.getBoolean());
         }
         value = hashConfig.get(XML_BLOCKSIZE);
         if (value != null && (!value.isEmpty())) {
-            BLOCKSIZE = value.getInteger();
+            setBLOCKSIZE(value.getInteger());
         }
         value = hashConfig.get(XML_DELETEONABORT);
         if (value != null && (!value.isEmpty())) {
-            deleteOnAbort = value.getBoolean();
+            setDeleteOnAbort(value.getBoolean());
         }
         // We use Apache Commons IO
         FilesystemBasedDirJdkAbstract.ueApacheCommonsIo = true;
@@ -1056,12 +1052,6 @@ public class FileBasedConfiguration extends FtpConfiguration {
         logger.warn("Passive Port range Min: " + min + " Max: " + max);
         CircularIntValue rangePort = new CircularIntValue(min, max);
         setRangePort(rangePort);
-        value = hashConfig.get(XML_SERVER_HTTP_PORT);
-        int httpport = 8066;
-        if (value != null && (!value.isEmpty())) {
-            httpport = value.getInteger();
-        }
-        SERVER_HTTPPORT = httpport;
         value = hashConfig.get(XML_SERVER_HTTPS_PORT);
         int httpsport = 8067;
         if (value != null && (!value.isEmpty())) {
@@ -1365,14 +1355,14 @@ public class FileBasedConfiguration extends FtpConfiguration {
         // Now start the HTTPS support
         // Configure the server.
         httpsBootstrap = new ServerBootstrap();
-        httpExecutor = new NioEventLoopGroup(SERVER_THREAD * 10, new WaarpThreadFactory(
+        httpExecutor = new NioEventLoopGroup(getSERVER_THREAD() * 10, new WaarpThreadFactory(
                 "HttpExecutor"));
-        bossGroup = new NioEventLoopGroup(SERVER_THREAD, new WaarpThreadFactory("HTTP_Boss"));
-        workerGroup = new NioEventLoopGroup(SERVER_THREAD * 10, new WaarpThreadFactory("HTTP_Worker"));
-        WaarpNettyUtil.setServerBootstrap(httpsBootstrap, bossGroup, workerGroup, (int) TIMEOUTCON);
+        bossGroup = new NioEventLoopGroup(getSERVER_THREAD(), new WaarpThreadFactory("HTTP_Boss"));
+        workerGroup = new NioEventLoopGroup(getSERVER_THREAD() * 10, new WaarpThreadFactory("HTTP_Worker"));
+        WaarpNettyUtil.setServerBootstrap(httpsBootstrap, bossGroup, workerGroup, (int) getTIMEOUTCON());
 
         // Configure the pipeline factory.
-        httpsBootstrap.childHandler(new HttpSslInitializer(useHttpCompression, false));
+        httpsBootstrap.childHandler(new HttpSslInitializer(useHttpCompression));
         httpChannelGroup = new DefaultChannelGroup("HttpOpenR66", httpExecutor.next());
 
         // Bind and start to accept incoming connections.
@@ -1396,7 +1386,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
      */
     public void configureLExec() {
         if (useLocalExec) {
-            LocalExecClient.initialize(this.CLIENT_THREAD, this.maxGlobalMemory);
+            LocalExecClient.initialize(this.getCLIENT_THREAD(), this.getMaxGlobalMemory());
         }
     }
 
@@ -1411,7 +1401,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             int snmpPortShow = getServerPort();
             ftpMib =
                     new FtpPrivateMib(snmpPortShow);
-            WaarpMOFactory.factory = new FtpVariableFactory();
+            WaarpMOFactory.setFactory(new FtpVariableFactory());
             agentSnmp = new WaarpSnmpAgent(new File(snmpConfig), monitoring, ftpMib);
             try {
                 agentSnmp.start();
@@ -1609,15 +1599,15 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 values[i] = new XmlValue(configAuthenticationDecls[i]);
             }
             try {
-                values[0].setFromString(auth.user);
+                values[0].setFromString(auth.getUser());
                 // PasswdFile: none values[1].setFromString();
-                values[2].setFromString(auth.password);
+                values[2].setFromString(auth.getPassword());
             } catch (InvalidArgumentException e1) {
                 logger.error("Error during Write Authentication file", e1);
                 return false;
             }
             // Accounts
-            String[] accts = auth.accounts;
+            String[] accts = auth.getAccounts();
             for (String string : accts) {
                 try {
                     values[3].addFromString(string);
@@ -1630,31 +1620,31 @@ public class FileBasedConfiguration extends FtpConfiguration {
                 }
             }
             try {
-                values[4].setValue(auth.isAdmin);
+                values[4].setValue(auth.isAdmin());
             } catch (InvalidObjectException e) {
                 logger.error("Error during Write Authentication file", e);
                 return false;
             }
             try {
-                values[5].setFromString(auth.retrCmd);
+                values[5].setFromString(auth.getRetrCmd());
             } catch (InvalidArgumentException e1) {
                 logger.error("Error during Write Authentication file", e1);
                 return false;
             }
             try {
-                values[6].setValue(auth.retrDelay);
+                values[6].setValue(auth.getRetrDelay());
             } catch (InvalidObjectException e) {
                 logger.error("Error during Write Authentication file", e);
                 return false;
             }
             try {
-                values[7].setFromString(auth.storCmd);
+                values[7].setFromString(auth.getStorCmd());
             } catch (InvalidArgumentException e1) {
                 logger.error("Error during Write Authentication file", e1);
                 return false;
             }
             try {
-                values[8].setValue(auth.storDelay);
+                values[8].setValue(auth.getStorDelay());
             } catch (InvalidObjectException e) {
                 logger.error("Error during Write Authentication file", e);
                 return false;
@@ -1699,25 +1689,25 @@ public class FileBasedConfiguration extends FtpConfiguration {
         SimpleAuth auth = null;
         while (simpleAuths.hasMoreElements()) {
             auth = simpleAuths.nextElement();
-            String newElt = format.replace("XXXUSERXXX", auth.user);
-            newElt = newElt.replace("XXXPWDXXX", auth.password);
-            if (auth.storCmd != null)
-                newElt = newElt.replace("XXXSTCXXX", auth.storCmd);
+            String newElt = format.replace("XXXUSERXXX", auth.getUser());
+            newElt = newElt.replace("XXXPWDXXX", auth.getPassword());
+            if (auth.getStorCmd() != null)
+                newElt = newElt.replace("XXXSTCXXX", auth.getStorCmd());
             else
                 newElt = newElt.replace("XXXSTCXXX", "");
-            if (auth.retrCmd != null)
-                newElt = newElt.replace("XXXRTCXXX", auth.retrCmd);
+            if (auth.getRetrCmd() != null)
+                newElt = newElt.replace("XXXRTCXXX", auth.getRetrCmd());
             else
                 newElt = newElt.replace("XXXRTCXXX", "");
-            newElt = newElt.replace("XXXSTDXXX", Long.toString(auth.storDelay));
-            newElt = newElt.replace("XXXRTDXXX", Long.toString(auth.retrDelay));
-            newElt = newElt.replace("XXXADMXXX", Boolean.toString(auth.isAdmin));
-            if (auth.accounts != null) {
+            newElt = newElt.replace("XXXSTDXXX", Long.toString(auth.getStorDelay()));
+            newElt = newElt.replace("XXXRTDXXX", Long.toString(auth.getRetrDelay()));
+            newElt = newElt.replace("XXXADMXXX", Boolean.toString(auth.isAdmin()));
+            if (auth.getAccounts() != null) {
                 StringBuilder accts = new StringBuilder();
-                for (int i = 0; i < auth.accounts.length - 1; i++) {
-                    accts.append(auth.accounts[i]).append(", ");
+                for (int i = 0; i < auth.getAccounts().length - 1; i++) {
+                    accts.append(auth.getAccounts()[i]).append(", ");
                 }
-                accts.append(auth.accounts[auth.accounts.length - 1]);
+                accts.append(auth.getAccounts()[auth.getAccounts().length - 1]);
                 newElt = newElt.replace("XXXACTSXXX", accts.toString());
             } else {
                 newElt = newElt.replace("XXXACTSXXX", "No Account");
@@ -1744,7 +1734,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
          * XXXIDXXX XXXUSERXXX XXXACCTXXX XXXFILEXXX XXXMODEXXX XXXSTATUSXXX XXXINFOXXX XXXUPINFXXX
          * XXXSTARTXXX XXXSTOPXXX
          */
-        if (!DbConstant.gatewayAdmin.isActive) {
+        if (!DbConstant.gatewayAdmin.isActive()) {
             return "";
         }
         DbPreparedStatement preparedStatement = null;
@@ -1752,7 +1742,7 @@ public class FileBasedConfiguration extends FtpConfiguration {
             try {
                 preparedStatement =
                         DbTransferLog
-                                .getStatusPrepareStament(DbConstant.gatewayAdmin.session, null, limit);
+                                .getStatusPrepareStament(DbConstant.gatewayAdmin.getSession(), null, limit);
                 preparedStatement.executeQuery();
             } catch (WaarpDatabaseNoConnectionException e) {
                 return "";
@@ -1881,15 +1871,25 @@ public class FileBasedConfiguration extends FtpConfiguration {
         DbAdmin.closeAllConnection();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see goldengate.ftp.core.config.FtpConfiguration#inShutdownProcess()
-     */
     @Override
     public void inShutdownProcess() {
         if (ftpMib != null) {
             ftpMib.notifyStartStop("Shutdown in progress for " + HOST_ID, "Gives extra seconds: "
-                    + TIMEOUTCON);
+                    + getTIMEOUTCON());
         }
+    }
+
+    /**
+     * @return the authenticationFile
+     */
+    public String getAuthenticationFile() {
+        return authenticationFile;
+    }
+
+    /**
+     * @param authenticationFile the authenticationFile to set
+     */
+    public void setAuthenticationFile(String authenticationFile) {
+        this.authenticationFile = authenticationFile;
     }
 }

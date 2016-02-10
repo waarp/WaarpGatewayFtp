@@ -258,18 +258,18 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
         // register General info
         rowGlobal = new WaarpMORow(this, rootOIDWaarpGlobal,
                 WaarpGlobalValues, MibLevel.globalInfo.ordinal());
-        WaarpMOScalar memoryScalar = rowGlobal.row[WaarpGlobalValuesIndex.memoryTotal
+        WaarpMOScalar memoryScalar = rowGlobal.getRow()[WaarpGlobalValuesIndex.memoryTotal
                 .ordinal()];
         memoryScalar.setValue(new MemoryGauge32(MemoryType.TotalMemory));
-        memoryScalar = rowGlobal.row[WaarpGlobalValuesIndex.memoryFree
+        memoryScalar = rowGlobal.getRow()[WaarpGlobalValuesIndex.memoryFree
                 .ordinal()];
         memoryScalar.setValue(new MemoryGauge32(MemoryType.FreeMemory));
-        memoryScalar = rowGlobal.row[WaarpGlobalValuesIndex.memoryUsed
+        memoryScalar = rowGlobal.getRow()[WaarpGlobalValuesIndex.memoryUsed
                 .ordinal()];
         memoryScalar.setValue(new MemoryGauge32(MemoryType.UsedMemory));
         rowGlobal.registerMOs(agent.getServer(), null);
         // setup UpTime to SysUpTime and change status
-        scalarUptime = rowGlobal.row[WaarpGlobalValuesIndex.applUptime
+        scalarUptime = rowGlobal.getRow()[WaarpGlobalValuesIndex.applUptime
                 .ordinal()];
         scalarUptime.setValue(new WaarpUptime(upTime));
         changeStatus(OperStatus.restarting);
@@ -295,11 +295,6 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
         rowError.unregisterMOs(agent.getServer(), agent.getDefaultContext());
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.snmp4j.agent.MOGroup#registerMOs(org.snmp4j.agent.MOServer,
-     * org.snmp4j.smi.OctetString)
-     */
     @Override
     public void registerMOs(MOServer arg0, OctetString arg1)
             throws DuplicateRegistrationException {
@@ -307,56 +302,30 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
         agentRegisterWaarpMib();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.snmp4j.agent.MOGroup#unregisterMOs(org.snmp4j.agent.MOServer,
-     * org.snmp4j.smi.OctetString)
-     */
     @Override
     public void unregisterMOs(MOServer arg0, OctetString arg1) {
         agentUnregisterMibs();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMib#setAgent(org.waarp.snmp.WaarpSnmpAgent )
-     */
     @Override
     public void setAgent(WaarpSnmpAgent agent) {
         this.agent = agent;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMib#getBaseOidStartOrShutdown()
-     */
     @Override
     public OID getBaseOidStartOrShutdown() {
         return rootOIDWaarpNotifStartOrShutdown;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMib#getSNMPv2MIB()
-     */
     @Override
     public SNMPv2MIB getSNMPv2MIB() {
         return snmpv2;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMib#updateServices(org.waarp.snmp.
-     * utils.WaarpMOScalar)
-     */
     @Override
     public void updateServices(WaarpMOScalar scalar) {
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpInterfaceMib#updateServices(org.snmp4j.agent .MOScope)
-     */
     @Override
     public void updateServices(MOScope range) {
     }
@@ -367,12 +336,12 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * @param status
      */
     public void changeStatus(OperStatus status) {
-        WaarpMOScalar statusScalar = rowGlobal.row[WaarpGlobalValuesIndex.applOperStatus
+        WaarpMOScalar statusScalar = rowGlobal.getRow()[WaarpGlobalValuesIndex.applOperStatus
                 .ordinal()];
         Integer32 var = (Integer32) statusScalar.getValue();
         if (var.getValue() != status.status) {
             var.setValue(status.status);
-            WaarpMOScalar lastTimeScalar = rowGlobal.row[WaarpGlobalValuesIndex.applLastChange
+            WaarpMOScalar lastTimeScalar = rowGlobal.getRow()[WaarpGlobalValuesIndex.applLastChange
                     .ordinal()];
             TimeTicks time = (TimeTicks) lastTimeScalar.getValue();
             time.setValue(upTime.get().getValue());
@@ -386,7 +355,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * @param message2
      */
     public void notifyStartStop(String message, String message2) {
-        if (!TrapLevel.StartStop.isLevelValid(agent.trapLevel))
+        if (!TrapLevel.StartStop.isLevelValid(agent.getTrapLevel()))
             return;
         notify(NotificationElements.TrapShutdown, message, message2);
     }
@@ -398,7 +367,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * @param message2
      */
     public void notifyError(String message, String message2) {
-        if (!TrapLevel.Alert.isLevelValid(agent.trapLevel))
+        if (!TrapLevel.Alert.isLevelValid(agent.getTrapLevel()))
             return;
         notify(NotificationElements.TrapError, message, message2);
     }
@@ -410,7 +379,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * @param message2
      */
     public void notifyOverloaded(String message, String message2) {
-        if (!TrapLevel.Warning.isLevelValid(agent.trapLevel))
+        if (!TrapLevel.Warning.isLevelValid(agent.getTrapLevel()))
             return;
         notify(NotificationElements.TrapOverloaded, message, message2);
     }
@@ -422,7 +391,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * @param message2
      */
     public void notifyWarning(String message, String message2) {
-        if (!TrapLevel.Warning.isLevelValid(agent.trapLevel))
+        if (!TrapLevel.Warning.isLevelValid(agent.getTrapLevel()))
             return;
         notify(NotificationElements.TrapWarning, message, message2);
     }
@@ -434,7 +403,7 @@ public class FtpPrivateMib implements WaarpInterfaceMib {
      * @param runner
      */
     public void notifyInfoTask(String message, DbTransferLog runner) {
-        if (!TrapLevel.All.isLevelValid(agent.trapLevel))
+        if (!TrapLevel.All.isLevelValid(agent.getTrapLevel()))
             return;
         if (logger.isDebugEnabled())
             logger.debug("Notify: " + NotificationElements.InfoTask + ":" +

@@ -26,7 +26,7 @@ import org.waarp.snmp.interf.WaarpTimeTicks;
  * @author Frederic Bregier
  * 
  */
-public class FtpTimeTicks extends WaarpTimeTicks {
+class FtpTimeTicks extends WaarpTimeTicks {
     /**
      * 
      */
@@ -46,19 +46,11 @@ public class FtpTimeTicks extends WaarpTimeTicks {
         setInternalValue(value);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue()
-     */
     @Override
     protected void setInternalValue() {
         FileBasedConfiguration.fileBasedConfiguration.monitoring.run(type, entry);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue(long)
-     */
     @Override
     protected void setInternalValue(long value) {
         setValue(value);

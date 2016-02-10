@@ -178,7 +178,7 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
     public boolean isAdmin() {
         if (currentAuth == null)
             return false;
-        return currentAuth.isAdmin;
+        return currentAuth.isAdmin();
     }
 
     /**
@@ -191,8 +191,8 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
         SimpleAuth auth = new SimpleAuth(hostid, hostid, null, null, 0, null, 0);
         currentAuth = auth;
         setIsIdentified(true);
-        user = auth.user;
-        account = auth.user;
+        user = auth.getUser();
+        account = auth.getUser();
         ((FtpSession) getSession()).setSpecialInit(this,
                 new FileBasedDir(((FtpSession) getSession())),
                 new FilesystemBasedFtpRestart(((FtpSession) getSession())));
@@ -224,6 +224,6 @@ public class FileBasedAuth extends FilesystemBasedFtpAuth implements HttpAuthInt
      * @return the associated Command Executor
      */
     public CommandExecutor getCommandExecutor() {
-        return this.currentAuth.commandExecutor;
+        return this.currentAuth.getCommandExecutor();
     }
 }

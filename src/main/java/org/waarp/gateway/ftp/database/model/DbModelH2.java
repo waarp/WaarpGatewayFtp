@@ -132,10 +132,6 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.openr66.databaseold.model.DbModel#resetSequence()
-     */
     @Override
     public void resetSequence(DbSession session, long newvalue)
             throws WaarpDatabaseNoConnectionException {
@@ -156,10 +152,6 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
         System.out.println(action);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.openr66.databaseold.model.DbModel#nextSequence()
-     */
     @Override
     public long nextSequence(DbSession dbSession)
             throws WaarpDatabaseNoConnectionException,

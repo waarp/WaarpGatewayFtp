@@ -26,7 +26,7 @@ import org.waarp.snmp.interf.WaarpCounter32;
  * @author Frederic Bregier
  * 
  */
-public class FtpCounter32 extends WaarpCounter32 {
+class FtpCounter32 extends WaarpCounter32 {
 
     /**
      * 
@@ -47,19 +47,11 @@ public class FtpCounter32 extends WaarpCounter32 {
         setInternalValue(value);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue()
-     */
     @Override
     protected void setInternalValue() {
         FileBasedConfiguration.fileBasedConfiguration.monitoring.run(type, entry);
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.snmp.interf.WaarpGauge32#setInternalValue(long)
-     */
     @Override
     protected void setInternalValue(long value) {
         setValue(value);

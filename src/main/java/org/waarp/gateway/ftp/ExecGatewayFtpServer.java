@@ -71,13 +71,13 @@ public class ExecGatewayFtpServer {
                 FileSystemBasedDataBusinessHandler.class,
                 new FilesystemBasedFileParameterImpl());
         if (asAService) {
-            configuration.shutdownConfiguration.serviceFuture = FtpEngine.closeFuture;
+            configuration.getShutdownConfiguration().serviceFuture = FtpEngine.closeFuture;
         }
         if (!configuration.setConfigurationServerFromXml(config)) {
             System.err.println("Bad main configuration");
             return false;
         }
-        Configuration.configuration.useLocalExec = configuration.useLocalExec;
+        Configuration.configuration.setUseLocalExec(configuration.useLocalExec);
         if (AbstractExecutor.useDatabase) {
             // Use R66 module
             if (r66file != null) {

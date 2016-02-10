@@ -206,10 +206,6 @@ public class DbTransferLog extends AbstractDbData {
         select();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.database.data.AbstractDbData#initObject()
-     */
     @Override
     protected void initObject() {
         primaryKey = new DbValue[] {
@@ -235,37 +231,21 @@ public class DbTransferLog extends AbstractDbData {
                 primaryKey[0], primaryKey[1], primaryKey[2], primaryKey[3] };
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.database.data.AbstractDbData#getSelectAllFields()
-     */
     @Override
     protected String getSelectAllFields() {
         return selectAllFields;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.database.data.AbstractDbData#getTable()
-     */
     @Override
     protected String getTable() {
         return table;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.database.data.AbstractDbData#getInsertAllValues()
-     */
     @Override
     protected String getInsertAllValues() {
         return insertAllValues;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.common.database.data.AbstractDbData#getUpdateAllFields()
-     */
     @Override
     protected String getUpdateAllFields() {
         return updateAllFields;
@@ -321,10 +301,10 @@ public class DbTransferLog extends AbstractDbData {
      * @return The Where condition on Primary Key
      */
     protected String getWherePrimaryKey() {
-        return primaryKey[0].column + " = ? AND " +
-                primaryKey[1].column + " = ? AND " +
-                primaryKey[2].column + " = ? AND " +
-                primaryKey[3].column + " = ? ";
+        return primaryKey[0].getColumn() + " = ? AND " +
+                primaryKey[1].getColumn() + " = ? AND " +
+                primaryKey[2].getColumn() + " = ? AND " +
+                primaryKey[3].getColumn() + " = ? ";
     }
 
     /**
@@ -371,10 +351,6 @@ public class DbTransferLog extends AbstractDbData {
         }
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.openr66.databaseold.data.AbstractDbData#delete()
-     */
     @Override
     public void delete() throws WaarpDatabaseException {
         if (dbSession == null) {
@@ -384,10 +360,6 @@ public class DbTransferLog extends AbstractDbData {
         super.delete();
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.openr66.databaseold.data.AbstractDbData#insert()
-     */
     @Override
     public void insert() throws WaarpDatabaseException {
         if (isSaved) {
@@ -404,7 +376,7 @@ public class DbTransferLog extends AbstractDbData {
         logger.debug("Dbrelated info: "+dbSession.getAdmin().getServer());
         // First need to find a new id if id is not ok
         if (specialId == DbConstant.ILLEGALVALUE) {
-            specialId = dbSession.admin.getDbModel().nextSequence(dbSession);
+            specialId = dbSession.getAdmin().getDbModel().nextSequence(dbSession);
             logger.debug("Try Insert create a new Id from sequence: " +
                     specialId);
             setPrimaryKey();
@@ -432,7 +404,7 @@ public class DbTransferLog extends AbstractDbData {
         }
         // First need to find a new id if id is not ok
         if (specialId == DbConstant.ILLEGALVALUE) {
-            specialId = dbSession.admin.getDbModel().nextSequence(dbSession);
+            specialId = dbSession.getAdmin().getDbModel().nextSequence(dbSession);
             logger.debug("Try Insert create a new Id from sequence: " +
                     specialId);
             setPrimaryKey();
@@ -454,11 +426,11 @@ public class DbTransferLog extends AbstractDbData {
                 DbPreparedStatement find = new DbPreparedStatement(dbSession);
                 try {
                     find.createPrepareStatement("SELECT MAX(" +
-                            primaryKey[3].column + ") FROM " + table + " WHERE " +
-                            primaryKey[0].column + " = ? AND " +
-                            primaryKey[1].column + " = ? AND " +
-                            primaryKey[2].column + " = ? AND " +
-                            primaryKey[3].column + " != ? ");
+                            primaryKey[3].getColumn() + ") FROM " + table + " WHERE " +
+                            primaryKey[0].getColumn() + " = ? AND " +
+                            primaryKey[1].getColumn() + " = ? AND " +
+                            primaryKey[2].getColumn() + " = ? AND " +
+                            primaryKey[3].getColumn() + " != ? ");
                     setPrimaryKey();
                     setValues(find, primaryKey);
                     find.executeQuery();
@@ -470,7 +442,7 @@ public class DbTransferLog extends AbstractDbData {
                             throw new WaarpDatabaseSqlException(e1);
                         }
                         specialId = result + 1;
-                        dbSession.admin.getDbModel().resetSequence(dbSession, specialId + 1);
+                        dbSession.getAdmin().getDbModel().resetSequence(dbSession, specialId + 1);
                         setToArray();
                         preparedStatement.close();
                         setValues(preparedStatement, allFields);
@@ -540,7 +512,7 @@ public class DbTransferLog extends AbstractDbData {
         }
         request += " ORDER BY " + Columns.STARTTRANS.name() + " DESC ";
         if (limit > 0) {
-            request = session.admin.getDbModel().limitRequest(selectAllFields, request, limit);
+            request = session.getAdmin().getDbModel().limitRequest(selectAllFields, request, limit);
         }
         return new DbPreparedStatement(session, request);
     }
@@ -847,10 +819,6 @@ public class DbTransferLog extends AbstractDbData {
         return prep;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see org.waarp.openr66.databaseold.data.AbstractDbData#changeUpdatedInfo(UpdatedInfo)
-     */
     @Override
     public void changeUpdatedInfo(UpdatedInfo info) {
         updatedInfo = info.ordinal();
