@@ -26,6 +26,8 @@ import org.waarp.common.database.DbSession;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseNoDataException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 
@@ -36,6 +38,9 @@ import org.waarp.gateway.ftp.database.data.DbTransferLog;
  * 
  */
 public class DbModelMysql extends org.waarp.common.database.model.DbModelMysql {
+
+    private WaarpLogger logger = WaarpLoggerFactory.getLogger(DbModelMysql.class);
+
     /**
      * Create the object and initialize if necessary the driver
      * 
@@ -72,7 +77,7 @@ public class DbModelMysql extends org.waarp.common.database.model.DbModelMysql {
             action += acolumns[acolumns.length - i].name() + ",";
         }
         action += acolumns[acolumns.length - 1].name() + "))";
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -91,7 +96,7 @@ public class DbModelMysql extends org.waarp.common.database.model.DbModelMysql {
             action += icolumns[i].name() + ", ";
         }
         action += icolumns[icolumns.length - 1].name() + ")";
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -113,7 +118,7 @@ public class DbModelMysql extends org.waarp.common.database.model.DbModelMysql {
          */
         action = "CREATE TABLE Sequences (name VARCHAR(22) NOT NULL PRIMARY KEY," +
                 "seq BIGINT NOT NULL)";
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -127,7 +132,7 @@ public class DbModelMysql extends org.waarp.common.database.model.DbModelMysql {
         }
         action = "INSERT INTO Sequences (name, seq) VALUES ('" + DbTransferLog.fieldseq + "', " +
                 (DbConstant.ILLEGALVALUE + 1) + ")";
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -158,7 +163,7 @@ public class DbModelMysql extends org.waarp.common.database.model.DbModelMysql {
         } finally {
             request.close();
         }
-        System.out.println(action);
+        logger.debug(action);
     }
 
     @Override

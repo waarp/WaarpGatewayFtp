@@ -69,7 +69,7 @@ public class ServerInitDatabase {
             logger = WaarpLoggerFactory.getLogger(ServerInitDatabase.class);
         }
         if (!getParams(args)) {
-            logger.error("Need at least the configuration file as first argument then optionally\n"
+            System.err.println("Need at least the configuration file as first argument then optionally\n"
                     +
                     "    -initdb");
             if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive()) {
@@ -84,6 +84,7 @@ public class ServerInitDatabase {
                 new FilesystemBasedFileParameterImpl());
         try {
             if (!configuration.setConfigurationServerFromXml(args[0])) {
+                logger.error("Bad main configuration");
                 System.err.println("Bad main configuration");
                 if (DbConstant.gatewayAdmin != null) {
                     DbConstant.gatewayAdmin.close();
@@ -100,9 +101,9 @@ public class ServerInitDatabase {
                     logger.error("Cannot connect to database");
                     return;
                 }
-                System.out.println("End creation");
+                logger.debug("End creation");
             }
-            System.out.println("Load done");
+            logger.info("Load done");
         } finally {
             if (DbConstant.gatewayAdmin != null) {
                 DbConstant.gatewayAdmin.close();

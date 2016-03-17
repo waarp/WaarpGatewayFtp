@@ -25,6 +25,8 @@ import org.waarp.common.database.DbSession;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseNoDataException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 
@@ -35,6 +37,9 @@ import org.waarp.gateway.ftp.database.data.DbTransferLog;
  * 
  */
 public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle {
+
+    private WaarpLogger logger = WaarpLoggerFactory.getLogger(DbModelOracle.class);
+
     /**
      * Create the object and initialize if necessary the driver
      * 
@@ -70,7 +75,7 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
             action += acolumns[acolumns.length - i].name() + ",";
         }
         action += acolumns[acolumns.length - 1].name() + "))";
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -88,7 +93,7 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
             action += icolumns[i].name() + ", ";
         }
         action += icolumns[icolumns.length - 1].name() + ")";
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -104,7 +109,7 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
         action = "CREATE SEQUENCE " + DbTransferLog.fieldseq +
                 " MINVALUE " + (DbConstant.ILLEGALVALUE + 1) +
                 " START WITH " + (DbConstant.ILLEGALVALUE + 1);
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -138,7 +143,7 @@ public class DbModelOracle extends org.waarp.common.database.model.DbModelOracle
             request.close();
         }
 
-        System.out.println(action);
+        logger.debug(action);
     }
 
     @Override
