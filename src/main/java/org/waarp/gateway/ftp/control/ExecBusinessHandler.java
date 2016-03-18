@@ -214,13 +214,8 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public void afterRunCommandOk() throws CommandAbstractException {
-        // nothing to do since it is only Command and not transfer
-        // except if QUIT due to database error
         if (!(this.getFtpSession().getCurrentCommand() instanceof QUIT)
                 && this.dbR66Session != null) {
-            throw new Reply421Exception(
-                    "Post operations cannot be done so force disconnection... Try again later on");
-        } else {
             long specialId =
                     ((FileBasedAuth) getFtpSession().getAuth()).getSpecialId();
             WaarpActionLogger.logAction(dbFtpSession, specialId,
