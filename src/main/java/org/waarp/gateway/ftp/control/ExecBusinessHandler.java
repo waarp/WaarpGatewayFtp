@@ -17,6 +17,7 @@
 package org.waarp.gateway.ftp.control;
 
 import java.io.File;
+import java.io.IOException;
 
 import io.netty.channel.Channel;
 import org.waarp.common.command.ReplyCode;
@@ -130,6 +131,16 @@ public class ExecBusinessHandler extends BusinessHandler {
                 try {
                     args[3] = file.getFile();
                     File newfile = new File(args[2] + args[3]);
+                    
+                    // Here the transfer is successful. If the file does not exist on disk
+                    // We create it : the transfered file was empty.
+                    try {
+                        newfile.createNewFile();
+                    } catch (IOException|SecurityException e) {
+                        throw new Reply421Exception(
+                            "PostExecution in Error for Transfer since No File found");
+                    }
+                    
                     if (!newfile.canRead()) {
                         // File cannot be sent
                         String message =
@@ -214,13 +225,8 @@ public class ExecBusinessHandler extends BusinessHandler {
 
     @Override
     public void afterRunCommandOk() throws CommandAbstractException {
-        // nothing to do since it is only Command and not transfer
-        // except if QUIT due to database error
-        if (this.getFtpSession().getCurrentCommand() instanceof QUIT
-                && this.dbR66Session == null) {
-            throw new Reply421Exception(
-                    "Post operations cannot be done so force disconnection... Try again later on");
-        } else {
+        if (!(this.getFtpSession().getCurrentCommand() instanceof QUIT)
+                && this.dbR66Session != null) {
             long specialId =
                     ((FileBasedAuth) getFtpSession().getAuth()).getSpecialId();
             WaarpActionLogger.logAction(dbFtpSession, specialId,
