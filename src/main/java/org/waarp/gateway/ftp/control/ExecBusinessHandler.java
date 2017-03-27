@@ -136,7 +136,10 @@ public class ExecBusinessHandler extends BusinessHandler {
                     // We create it : the transfered file was empty.
                     try {
                         newfile.createNewFile();
-                    } catch (IOException|SecurityException e) {
+                    } catch (IOException e) {
+                        throw new Reply421Exception(
+                            "PostExecution in Error for Transfer since No File found");
+                    }  catch (SecurityException e) {
                         throw new Reply421Exception(
                             "PostExecution in Error for Transfer since No File found");
                     }
