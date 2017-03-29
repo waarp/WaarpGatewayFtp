@@ -74,6 +74,7 @@ public class ExecGatewayFtpServer {
             configuration.getShutdownConfiguration().serviceFuture = FtpEngine.closeFuture;
         }
         if (!configuration.setConfigurationServerFromXml(config)) {
+            logger.error("Bad main configuration");
             System.err.println("Bad main configuration");
             return false;
         }
@@ -84,15 +85,16 @@ public class ExecGatewayFtpServer {
                 if (!org.waarp.openr66.configuration.FileBasedConfiguration
                         .setSubmitClientConfigurationFromXml(Configuration.configuration,
                                 r66file)) {
+                    logger.error("Bad R66 configuration");
                     System.err.println("Bad R66 configuration");
                     return false;
                 }
             } else {
                 // Cannot get R66 functional
-                System.err.println("No R66PrepareTransfer configuration file");
+                logger.info("No R66PrepareTransfer configuration file");
             }
         } else {
-            System.err.println("No R66PrepareTransfer support");
+            logger.info("No R66PrepareTransfer support");
         }
         FileBasedConfiguration.fileBasedConfiguration = configuration;
         // Start server.
@@ -109,7 +111,7 @@ public class ExecGatewayFtpServer {
         try {
             configuration.configureSnmp();
         } catch (FtpNoConnectionException e) {
-            System.err.println("Cannot start SNMP support: " + e.getMessage());
+        	logger.error("Cannot start SNMP support: " + e.getMessage());
         }
         logger.warn("FTP started " +
                 (configuration.getFtpInternalConfiguration().isUsingNativeSsl() ? "Implicit SSL On" :

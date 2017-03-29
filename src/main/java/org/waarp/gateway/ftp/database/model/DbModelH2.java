@@ -25,6 +25,8 @@ import org.waarp.common.database.DbSession;
 import org.waarp.common.database.exception.WaarpDatabaseNoConnectionException;
 import org.waarp.common.database.exception.WaarpDatabaseNoDataException;
 import org.waarp.common.database.exception.WaarpDatabaseSqlException;
+import org.waarp.common.logging.WaarpLogger;
+import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.gateway.ftp.database.DbConstant;
 import org.waarp.gateway.ftp.database.data.DbTransferLog;
 
@@ -35,6 +37,9 @@ import org.waarp.gateway.ftp.database.data.DbTransferLog;
  * 
  */
 public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
+
+    private WaarpLogger logger = WaarpLoggerFactory.getLogger(DbModelH2.class);
+
     /**
      * Create the object and initialize if necessary the driver
      * 
@@ -68,7 +73,7 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
             action += acolumns[acolumns.length - i].name() + ",";
         }
         action += acolumns[acolumns.length - 1].name() + "))";
-        System.out.println(action);
+        logger.debug(action);
         DbRequest request = new DbRequest(session);
         try {
             request.query(action);
@@ -88,7 +93,7 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
             action += icolumns[i].name() + ", ";
         }
         action += icolumns[icolumns.length - 1].name() + ")";
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -104,7 +109,7 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
         action = "CREATE SEQUENCE IF NOT EXISTS " + DbTransferLog.fieldseq +
                 " START WITH " + (DbConstant.ILLEGALVALUE + 1) +
                 " MINVALUE " + (DbConstant.ILLEGALVALUE + 1);
-        System.out.println(action);
+        logger.debug(action);
         try {
             request.query(action);
         } catch (WaarpDatabaseNoConnectionException e) {
@@ -114,7 +119,7 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
             // version <= 1.2.173
             action = "CREATE SEQUENCE IF NOT EXISTS " + DbTransferLog.fieldseq +
                     " START WITH " + (DbConstant.ILLEGALVALUE + 1);
-            System.out.println(action);
+            logger.debug(action);
             try {
                 request.query(action);
             } catch (WaarpDatabaseNoConnectionException e2) {
@@ -149,7 +154,7 @@ public class DbModelH2 extends org.waarp.common.database.model.DbModelH2 {
         } finally {
             request.close();
         }
-        System.out.println(action);
+        logger.debug(action);
     }
 
     @Override
