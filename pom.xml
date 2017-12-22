@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>WaarpGatewayFtp</artifactId>
   <name>Waarp Gateway Ftp</name>
-  <version>3.0.6</version>
+  <version>3.0.7</version>
   <description>Full Waarp FTP Server with Gateway support as Waarp Project:
   this is an extension of Waarp FTP server with execution support at the end of
   a transfer.</description>
