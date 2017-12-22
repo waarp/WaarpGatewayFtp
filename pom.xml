@@ -85,31 +85,19 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-<<<<<<< Updated upstream
-      <version>1.4.193</version>
-=======
       <version>1.4.196</version>
->>>>>>> Stashed changes
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-<<<<<<< Updated upstream
-      <version>9.4.1212.jre6</version>
-=======
       <version>42.1.4.jre6</version>
->>>>>>> Stashed changes
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
-<<<<<<< Updated upstream
-      <version>[5.1.0,6.0.0)</version>
-=======
       <version>5.1.45</version>
->>>>>>> Stashed changes
       <optional>true</optional>
     </dependency>
     <dependency>
