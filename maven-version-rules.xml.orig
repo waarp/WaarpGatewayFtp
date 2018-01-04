@@ -9,6 +9,9 @@
     <ignoreVersion type="regex">(?i).*CR(?:-?\d+)?</ignoreVersion>
     <ignoreVersion type="regex">(?i).*M(?:-?\d+)?</ignoreVersion>
   </ignoreVersions>
+<<<<<<< Updated upstream
+</ruleset>
+=======
   <rules>
     <rule groupId="dom4j" artifactId="dom4j">
       <ignoreVersions>
@@ -57,3 +60,4 @@
     </rule>
   </rules>
 </ruleset>
+>>>>>>> Stashed changes
