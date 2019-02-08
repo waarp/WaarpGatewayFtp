@@ -69,12 +69,12 @@
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpFtp-Core</artifactId>
-      <version>3.0.6</version>
+      <version>3.0.7</version>
     </dependency>
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpFtp-Filesystem</artifactId>
-      <version>3.0.6</version>
+      <version>3.0.7</version>
     </dependency>
     <dependency>
       <groupId>Oracle</groupId>
