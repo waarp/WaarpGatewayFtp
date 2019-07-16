@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>WaarpGatewayFtp</artifactId>
   <name>Waarp Gateway Ftp</name>
-  <version>3.0.9</version>
+  <version>3.1.0</version>
   <description>Full Waarp FTP Server with Gateway support as Waarp Project:
   this is an extension of Waarp FTP server with execution support at the end of
   a transfer.</description>
@@ -45,7 +45,7 @@
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpR66</artifactId>
-      <version>3.0.11</version>
+      <version>3.1.0</version>
       <exclusions>
         <exclusion>
           <artifactId>xom</artifactId>
@@ -69,12 +69,12 @@
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpFtp-Core</artifactId>
-      <version>3.0.7</version>
+      <version>3.0.8</version>
     </dependency>
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpFtp-Filesystem</artifactId>
-      <version>3.0.7</version>
+      <version>3.0.8</version>
     </dependency>
     <dependency>
       <groupId>Oracle</groupId>
@@ -85,13 +85,13 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>1.4.197</version>
+      <version>1.4.199</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.2.5.jre6</version>
+      <version>42.2.6.jre6</version>
       <optional>true</optional>
     </dependency>
     <dependency>
@@ -109,13 +109,13 @@
     <dependency>
       <groupId>commons-daemon</groupId>
       <artifactId>commons-daemon</artifactId>
-      <version>1.1.0</version>
+      <version>1.2.0</version>
       <optional>true</optional>
     </dependency>
     <dependency>
       <groupId>Waarp</groupId>
       <artifactId>WaarpSnmp</artifactId>
-      <version>3.0.6</version>
+      <version>3.0.7</version>
       <optional>true</optional>
     </dependency>
   </dependencies>
