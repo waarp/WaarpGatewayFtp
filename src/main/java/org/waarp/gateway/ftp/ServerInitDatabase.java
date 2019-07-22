@@ -22,6 +22,7 @@ import org.waarp.common.file.filesystembased.FilesystemBasedFileParameterImpl;
 import org.waarp.common.logging.WaarpLogger;
 import org.waarp.common.logging.WaarpLoggerFactory;
 import org.waarp.common.logging.WaarpSlf4JLoggerFactory;
+import org.waarp.common.utility.DetectionUtils;
 import org.waarp.ftp.core.utils.FtpChannelUtils;
 import org.waarp.gateway.ftp.config.FileBasedConfiguration;
 import org.waarp.gateway.ftp.control.ExecBusinessHandler;
@@ -75,6 +76,9 @@ public class ServerInitDatabase {
             if (DbConstant.gatewayAdmin != null && DbConstant.gatewayAdmin.isActive()) {
                 DbConstant.gatewayAdmin.close();
             }
+            if (DetectionUtils.isJunit()) {
+                return;
+            }
             FtpChannelUtils.stopLogger();
             System.exit(1);
         }
@@ -87,6 +91,9 @@ public class ServerInitDatabase {
                 System.err.println("Bad main configuration");
                 if (DbConstant.gatewayAdmin != null) {
                     DbConstant.gatewayAdmin.close();
+                }
+                if (DetectionUtils.isJunit()) {
+                    return;
                 }
                 FtpChannelUtils.stopLogger();
                 System.exit(1);
